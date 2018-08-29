@@ -1,4 +1,4 @@
-for package in robotx_msgs robotx_driver robotx_navigation
+for package in robotx_msgs robotx_driver robotx_navigation robotx_recognition
 do
     roscd $package
     bloom-generate rosdebian --os-name ubuntu --os-version xenial --ros-distro kinetic --skip-package-names ignore.txt
