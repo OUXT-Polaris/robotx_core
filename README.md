@@ -1,4 +1,5 @@
 # robotx_core packages
+core packages in [robotx_packages](https://github.com/OUXT-Polaris/robotx_packages).  
 robotx_core packages are ROS packages for Jetson TX2 or other embeded boards which is on our wam-v.
 
 # How to cross-compile
