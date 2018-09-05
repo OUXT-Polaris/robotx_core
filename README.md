@@ -2,6 +2,10 @@
 core packages in [robotx_packages](https://github.com/OUXT-Polaris/robotx_packages).  
 robotx_core packages are ROS packages for Jetson TX2 or other embeded boards which is on our wam-v.
 
+| *master* | *develop* |
+|----------|-----------|
+|[![Build Status](https://travis-ci.org/OUXT-Polaris/robotx_core.svg?branch=master)](https://travis-ci.org/OUXT-Polaris/robotx_core)|[![Build Status](https://travis-ci.org/OUXT-Polaris/robotx_core.svg?branch=develop)](https://travis-ci.org/OUXT-Polaris/robotx_core)|
+
 # How to cross-compile
 1.update bloom  
 See also https://qiita.com/musubi05/items/8d36f96122ef31145915.  
