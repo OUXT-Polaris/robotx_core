@@ -26,6 +26,5 @@
   <exec_depend>gazebo_ros</exec_depend>
   <exec_depend>controller_manager</exec_depend>
   <exec_depend>hector_gazebo_plugins</exec_depend>
-  <optional_depend option="test">ros-kinetic-naoqi-bridge-msgs</optional_depend>
 
 </package>
