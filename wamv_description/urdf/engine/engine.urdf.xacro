@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="wam-v-two-engines">
+
+<xacro:include filename="$(find wamv_description)/urdf/engine/engine.transmission.xacro"/>
+
   <!-- Macro for inserting an engine with its propeller. -->
   <xacro:macro name="engine" params="prefix position:='0 0 0' orientation:='0 0 0'">
     <link name="${prefix}_engine_link">
@@ -62,4 +65,5 @@
       <dynamics friction="0.05" damping="0.05" />
     </joint>
   </xacro:macro>
+
 </robot>
