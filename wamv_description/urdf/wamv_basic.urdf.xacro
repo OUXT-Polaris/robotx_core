@@ -5,8 +5,26 @@
 
   <!-- Load engine macro -->
   <xacro:include filename="$(find wamv_description)/urdf/base/wamv_base.urdf.xacro"/>
-  <!-- Describe both engine -->
-  <xacro:engine prefix="left" position="-2.373776 1.027135 0.318237" />
-  <xacro:engine prefix="right" position="-2.373776 -1.027135 0.318237" />
+  
+  <!-- Describe engine -->
+  <!-- Thruster Config -->
+  <xacro:arg name="thruster_config" default="H"/>
+  <xacro:property name="th_config" value="$(arg thruster_config)"/>
+  
+  <xacro:if value="${th_config == 'H'}">
+    <xacro:engine prefix="left" position="-2.373776 1.027135 0.318237" />
+    <xacro:engine prefix="right" position="-2.373776 -1.027135 0.318237" />
+  </xacro:if>
+  <xacro:if value="${th_config == 'T'}">
+    <xacro:engine prefix="left" position="-2.373776 1.027135 0.318237" />
+    <xacro:engine prefix="right" position="-2.373776 -1.027135 0.318237" />
+    <xacro:engine prefix="lateral" position="0.0 0.0 0.318237" orientation="0.0 0.0 1.5707"/>
+  </xacro:if>
+  <xacro:if value="${th_config == 'X'}">
+    <xacro:engine prefix="left_rear" position="-2.373776 1.027135 0.318237"  orientation="0.0 0.0 0.785"/>
+    <xacro:engine prefix="right_rear" position="-2.373776 -1.027135 0.318237" orientation="0.0 0.0 -0.785"/>
+    <xacro:engine prefix="left_front" position="1.6 0.7  0.25" orientation="0.0 0.0 -0.785"/>
+    <xacro:engine prefix="right_front" position="1.6 -0.7 0.25" orientation="0.0 0.0 +0.785"/>
+  </xacro:if>
   
 </robot>
