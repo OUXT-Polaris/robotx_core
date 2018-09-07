@@ -8,15 +8,15 @@ catkin_package(CATKIN_DEPENDS xacro)
 
 # Xacro build & install
 xacro_add_files(
-  urdf/wamv_basic.xacro
+  urdf/wamv_basic.urdf.xacro
+  urdf/wamv_robotx.urdf.xacro
     INORDER INSTALL DESTINATION urdf
 )
 
 #############
 ## Install ##
 #############
-set(URDF_DIRS urdf urdf/base urdf/engine urdf/ball_launcher urdf/sensors urdf/sensors/camera urdf/sensors/gps urdf/sensors/imu urdf/sensors/twist urdf/sensors/velodyne urdf/sensors/stereo_camera)
-foreach(dir launch mesh ${URDF_DIRS})
+foreach(dir launch mesh urdf)
   install(DIRECTORY ${dir}/
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
 endforeach(dir)
