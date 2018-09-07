@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="wam-v">
   <!-- Load base model (just include is enough) -->
-  <xacro:include filename="$(find wamv_description)/urdf/thruster/engine.xacro"/>
+  <xacro:include filename="$(find wamv_description)/urdf/engine/engine.urdf.xacro"/>
 
   <!-- Load engine macro -->
   <xacro:include filename="$(find wamv_description)/urdf/base/wamv_base.urdf.xacro"/>
