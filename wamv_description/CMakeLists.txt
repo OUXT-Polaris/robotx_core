@@ -3,7 +3,6 @@ project(wamv_description)
 
 find_package(catkin REQUIRED COMPONENTS
   xacro
-  hector_gazebo_plugins
 )
 catkin_package(CATKIN_DEPENDS xacro)
 
