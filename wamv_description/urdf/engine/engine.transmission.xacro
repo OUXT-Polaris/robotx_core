@@ -7,7 +7,7 @@
       <joint name="${prefix}_chasis_engine_jointt">
         <hardwareInterface>PositionJointInterface</hardwareInterface>
       </joint>
-      <actuator name="$[prefix]_engine_actuator">
+      <actuator name="${prefix}_engine_actuator">
         <hardwareInterface>PositionJointInterface</hardwareInterface>
         <mechanicalReduction>30</mechanicalReduction>
       </actuator>
