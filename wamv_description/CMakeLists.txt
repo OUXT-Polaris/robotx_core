@@ -9,8 +9,6 @@ catkin_package(CATKIN_DEPENDS xacro)
 
 # Xacro build & install
 xacro_add_files(
-  urdf/base/wamv_base.urdf.xacro
-  urdf/engine/engine.xacro
   urdf/wamv_basic.xacro
     INORDER INSTALL DESTINATION urdf
 )
