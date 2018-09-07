@@ -3,7 +3,6 @@
   <xacro:include filename="$(find wamv_description)/urdf/sensors/stereo_camera/stereo_camera.urdf.xacro"/>
   <xacro:include filename="$(find wamv_description)/urdf/sensors/gps/gps.urdf.xacro"/>
   <xacro:include filename="$(find wamv_description)/urdf/sensors/imu/imu.urdf.xacro"/>
-  <xacro:include filename="$(find wamv_description)/urdf/sensors/twist/twist.urdf.xacro"/>
   <xacro:include filename="$(find wamv_description)/urdf/sensors/velodyne/velodyne.urdf.xacro"/>
 
   <!-- Camera-->
@@ -14,8 +13,6 @@
   <xacro:gps_v0/>
   <!-- IMU -->
   <xacro:imu_v0/>
-  <!-- Twist -->
-  <xacro:twist_v0/>
   <!-- Velodyne -->
   <xacro:velodyne_v0/>
   
