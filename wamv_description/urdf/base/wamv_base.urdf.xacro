@@ -90,6 +90,13 @@
     </collision>
   </xacro:macro>
 
+  <!-- base_footprint link -->
+  <link name="base_footprint"/>
+  <joint name="base_footprint_to_base_link" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+  </joint>
+  
   <!-- Basic model of the 16' WAM-V USV -->
   <link name="base_link">
     <visual>
