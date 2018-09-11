@@ -4,11 +4,11 @@
   <xacro:macro name="engine_transmission_v0" params="prefix">
     <transmission name="${prefix}_engine_transmission">
       <type>transmission_interface/SimpleTransmission</type>
-        <hardwareInterface>PositionJointInterface</hardwareInterface>
       <joint name="${prefix}_chasis_engine_joint">
+        <hardwareInterface>VelocityJointInterface</hardwareInterface>
       </joint>
       <actuator name="${prefix}_engine_actuator">
-        <hardwareInterface>PositionJointInterface</hardwareInterface>
+        <hardwareInterface>VelocityJointInterface</hardwareInterface>
         <mechanicalReduction>30</mechanicalReduction>
       </actuator>
     </transmission>
