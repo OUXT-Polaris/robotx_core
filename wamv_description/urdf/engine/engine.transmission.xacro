@@ -4,8 +4,8 @@
   <xacro:macro name="engine_transmission_v0" params="prefix">
     <transmission name="${prefix}_engine_transmission">
       <type>transmission_interface/SimpleTransmission</type>
-      <joint name="${prefix}_chasis_engine_jointt">
         <hardwareInterface>PositionJointInterface</hardwareInterface>
+      <joint name="${prefix}_chasis_engine_joint">
       </joint>
       <actuator name="${prefix}_engine_actuator">
         <hardwareInterface>PositionJointInterface</hardwareInterface>
