@@ -3,20 +3,39 @@
   <xacro:include filename="$(find wamv_description)/urdf/sensors/stereo_camera/stereo_camera.urdf.xacro"/>
   <xacro:include filename="$(find wamv_description)/urdf/sensors/gps/gps.urdf.xacro"/>
   <xacro:include filename="$(find wamv_description)/urdf/sensors/imu/imu.urdf.xacro"/>
-  <xacro:include filename="$(find wamv_description)/urdf/sensors/twist/twist.urdf.xacro"/>
   <xacro:include filename="$(find wamv_description)/urdf/sensors/velodyne/velodyne.urdf.xacro"/>
 
-  <!-- Camera-->
-  <xacro:camera_v0 prefix="front" parent="base_link">
-    <origin xyz="0.8 0 1.6"/>
-  </xacro:camera_v0>
-  <!-- GPS -->
-  <xacro:gps_v0/>
-  <!-- IMU -->
-  <xacro:imu_v0/>
-  <!-- Twist -->
-  <xacro:twist_v0/>
-  <!-- Velodyne -->
-  <xacro:velodyne_v0/>
+  <!-- Enable Flag -->
+  <xacro:arg name="camera_enabled" default="true" />
+  <xacro:arg name="gps_enabled" default="true" />
+  <xacro:arg name="imu_enabled" default="true" />
+  <xacro:arg name="stereo_camera_enabled" default="true" />
+  <xacro:arg name="twist_enabled" default="true"/>
+  <xacro:arg name="velodyne_enabled" default="true"/>
   
+  <!-- Camera-->
+  <xacro:if value="$(arg camera_enabled)">
+    <xacro:camera_v0 prefix="front" parent="base_link">
+      <origin xyz="0.8 0 1.6"/>
+    </xacro:camera_v0>
+  </xacro:if>
+  <!-- GPS -->
+  <xacro:if value="$(arg gps_enabled)">
+    <xacro:gps_v0/>
+  </xacro:if>
+  <!-- IMU -->
+  <xacro:if value="$(arg imu_enabled)">
+    <xacro:imu_v0/>
+  </xacro:if>
+  <!-- Stereo Camera -->
+  <xacro:if value="$(arg stereo_camera_enabled)">
+    <xacro:stereo_camera_v1 prefix="front" parent="base_link" base_line_length="0.5">
+      <origin xyz="0.8 0 1.4"/>
+    </xacro:stereo_camera_v1>
+  </xacro:if>
+  <!-- Velodyne -->
+  <xacro:if value="$(arg velodyne_enabled)">
+    <xacro:velodyne_v0/>
+  </xacro:if>
+    
 </robot>
