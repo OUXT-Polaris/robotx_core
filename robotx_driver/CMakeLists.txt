@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(robotx_driver)
-include(../../Doxygen/doxygen.cmake)
-include(../../Format/ClangFormat.cmake)
+#include(../../../Doxygen/doxygen.cmake)
+#include(../../../Format/ClangFormat.cmake)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -63,16 +63,16 @@ set(heartbeat_publisher_node_src src/heartbeat_publisher_node.cpp src/heartbeat_
 add_executable(heartbeat_publisher_node ${heartbeat_publisher_node_src})
 add_dependencies(heartbeat_publisher_node robotx_msgs_generate_messages_cpp)
 target_link_libraries(heartbeat_publisher_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-add_document(heartbeat_publisher_node)
-clang_format(heartbeat_publisher_node)
+#add_document(heartbeat_publisher_node)
+#clang_format(heartbeat_publisher_node)
 
 set(robotx_hardware_interface_src 
   src/robotx_hardware_interface_node.cpp src/robotx_hardware_interface.cpp src/tcp_client.cpp src/remote_operated_interface.cpp)
 add_executable(robotx_hardware_interface_node ${robotx_hardware_interface_src} src/robotx_hardware_interface_node.cpp)
 add_dependencies(robotx_hardware_interface_node robotx_msgs_generate_messages_cpp)
 target_link_libraries(robotx_hardware_interface_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-add_document(robotx_hardware_interface_node)
-clang_format(robotx_hardware_interface_node)
+#add_document(robotx_hardware_interface_node)
+#clang_format(robotx_hardware_interface_node)
 
 message(STATUS "")
 message(STATUS "FoundCUDA              : ${CUDA_FOUND}")
@@ -88,8 +88,8 @@ if(CUDA_FOUND)
   cuda_add_executable(cuda_diagnostic_node ${cuda_diagnostic_src} src/cuda_diagnostic_node.cpp)
   add_dependencies(cuda_diagnostic_node robotx_msgs_generate_messages_cpp)
   target_link_libraries(cuda_diagnostic_node ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${CUDA_LIBRARIES})
-  add_document(cuda_diagnostic_node)
-  clang_format(cuda_diagnostic_node)
+  #add_document(cuda_diagnostic_node)
+  #clang_format(cuda_diagnostic_node)
 endif()
 
 

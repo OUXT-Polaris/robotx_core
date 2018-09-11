@@ -1,7 +1,12 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="WAM-V">
+
+  <xacro:arg name="thruster_config" default="H"/>
+  
   <!-- Defines the basic WAM-V -->
-  <xacro:include filename="$(find wamv_description)/urdf/wamv_basic.xacro"/>
+  <xacro:include filename="$(find wamv_description)/urdf/wamv_basic.urdf.xacro">
+    <xacro:thruster_config value="$(arg thruster_config)"/>
+  </xacro:include>
 
   <!-- Defines Sensors -->
   <xacro:include filename="$(find wamv_description)/urdf/sensors/sensors.urdf.xacro"/>

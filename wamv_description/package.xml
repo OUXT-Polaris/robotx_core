@@ -4,7 +4,6 @@
   <version>0.0.0</version>
   <description>The wamv_description package</description>
 
- 
   <maintainer email="groadpg@gmail.com">RyodoTanaka</maintainer>
   <author>RyodoTanaka</author>
   <author>masaya</author>
@@ -14,17 +13,18 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>python-bloom</build_depend>
   <build_depend>fakeroot</build_depend>
-
+  
   <depend>roslaunch</depend>
+  <depend>xacro</depend>
+  <depend>velodyne_description</depend>
+  
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>joint_state_publisher</exec_depend>
   <exec_depend>rviz</exec_depend>
-  <exec_depend>xacro</exec_depend>
-  <exec_depend>gazebo_plugins</exec_depend>
-  <exec_depend>velodyne_description</exec_depend>
-  <exec_depend>velodyne_gazebo_plugins</exec_depend>
-  <exec_depend>gazebo_ros</exec_depend>
-  <exec_depend>controller_manager</exec_depend>
-  <exec_depend>hector_gazebo_plugins</exec_depend>
+
+
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+  </export>
 
 </package>
