@@ -63,13 +63,19 @@ add_dependencies(obstacle_map_server_node robotx_msgs_generate_messages_cpp)
 
 add_executable(costmap_clear_request_sender_node src/costmap_clear_request_sender_node.cpp src/costmap_clear_request_sender.cpp)
 target_link_libraries(costmap_clear_request_sender_node ${catkin_LIBRARIES})
+add_dependencies(costmap_clear_request_sender_node robotx_msgs_generate_messages_cpp)
 #add_document(costmap_clear_request_sender_node)
 #clang_format(costmap_clear_request_sender_node)
 
 add_executable(ndt_mapping_node src/ndt_mapping_node.cpp src/ndt_mapping.cpp)
 target_link_libraries(ndt_mapping_node ${catkin_LIBRARIES})
+add_dependencies(ndt_mapping_node robotx_msgs_generate_messages_cpp)
 #add_document(ndt_mapping_node)
 #clang_format(ndt_mapping_node)
+
+add_executable(robotx_path_planner_node src/robotx_path_planner_node.cpp src/robotx_path_planner.cpp)
+target_link_libraries(robotx_path_planner_node ${catkin_LIBRARIES})
+add_dependencies(robotx_path_planner_node robotx_msgs_generate_messages_cpp)
 
 #############
 ## Install ##
