@@ -1,6 +1,6 @@
 #include <euclidean_cluster_buffer.h>
 
-euclidean_cluster_buffer::euclidean_cluster_buffer(double buffer_length) : _tf_listener(_tf_buffer), _buffer_length(buffer_length)
+euclidean_cluster_buffer::euclidean_cluster_buffer(double buffer_length, std::string map_frame) : _tf_listener(_tf_buffer), _buffer_length(buffer_length), _map_frame(map_frame)
 {
     
 }
@@ -37,7 +37,7 @@ void euclidean_cluster_buffer::add_cluster_data(cluster_data data)
     geometry_msgs::TransformStamped transform_stamped;
     try
     {
-        transform_stamped = _tf_buffer.lookupTransform("world", data.point.header.frame_id, data.point.header.stamp);
+        transform_stamped = _tf_buffer.lookupTransform(_map_frame, data.point.header.frame_id, data.point.header.stamp);
         geometry_msgs::PointStamped point = data.point;
         tf2::doTransform(point, point, transform_stamped);
     }

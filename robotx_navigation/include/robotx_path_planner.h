@@ -33,11 +33,12 @@ private:
     void _euclidean_cluster_callback(const jsk_recognition_msgs::BoundingBoxArrayConstPtr msg);
     void _pose_callback(const geometry_msgs::PoseStampedConstPtr msg);
     void _goal_pose_callback(const geometry_msgs::PoseStampedConstPtr msg);
-    visualization_msgs::MarkerArray _generate_markers();
+    visualization_msgs::MarkerArray _generate_markers(std::vector<cluster_data> data);
     boost::shared_ptr<euclidean_cluster_buffer> _buffer;
     double _max_cluster_length;
     double _min_cluster_length;
     double _inflation_radius;
+    std::string _map_frame;
     geometry_msgs::PoseStamped _goal_pose;
 };
 #endif  //ROBOTX_PATH_PLANNER_H_INCLUDED

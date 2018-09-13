@@ -6,9 +6,10 @@ robotx_path_planner::robotx_path_planner() : _tf_listener(_tf_buffer)
     _nh.param<double>(ros::this_node::getName()+"/buffer_length", buffer_length, 1.0);
     _nh.param<double>(ros::this_node::getName()+"/max_cluster_length", _max_cluster_length, 5.0);
     _nh.param<double>(ros::this_node::getName()+"/min_cluster_length", _min_cluster_length, 0.3);
-    _nh.param<double>(ros::this_node::getName()+"inflation_radius", _inflation_radius, 0.5);
+    _nh.param<double>(ros::this_node::getName()+"/inflation_radius", _inflation_radius, 0.5);
+    _nh.param<std::string>(ros::this_node::getName()+"/map_frame", _map_frame, "world");
     _marker_pub = _nh.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker", 1);
-    _buffer = boost::make_shared<euclidean_cluster_buffer>(buffer_length);
+    _buffer = boost::make_shared<euclidean_cluster_buffer>(buffer_length, _map_frame);
     _robot_pose_sub = _nh.subscribe("/robot_pose", 1, &robotx_path_planner::_pose_callback, this);
     _euclidean_cluster_sub = _nh.subscribe(ros::this_node::getName()+"/euclidean_cluster", 1, &robotx_path_planner::_euclidean_cluster_callback, this);
 }
@@ -24,7 +25,7 @@ void robotx_path_planner::_goal_pose_callback(const geometry_msgs::PoseStampedCo
     geometry_msgs::PoseStamped pose;
     try
     {
-        transform_stamped = _tf_buffer.lookupTransform("world", msg->header.frame_id, msg->header.stamp);
+        transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg->header.frame_id, msg->header.stamp);
         tf2::doTransform(pose, pose, transform_stamped);
     }
     catch (tf2::TransformException &ex)
@@ -44,7 +45,7 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
     geometry_msgs::TransformStamped transform_stamped;
     try
     {
-        transform_stamped = _tf_buffer.lookupTransform("world", msg->header.frame_id, msg->header.stamp);
+        transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg->header.frame_id, msg->header.stamp);
         geometry_msgs::PoseStamped pose;
         tf2::doTransform(pose, pose, transform_stamped);
     }
@@ -53,12 +54,19 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
         ROS_WARN("%s",ex.what());
         return;
     }
+    visualization_msgs::MarkerArray marker_array = _generate_markers(clusters);
     return;
 }
 
-visualization_msgs::MarkerArray robotx_path_planner::_generate_markers()
+visualization_msgs::MarkerArray robotx_path_planner::_generate_markers(std::vector<cluster_data> data)
 {
     visualization_msgs::MarkerArray ret;
+    for(auto data_itr = data.begin(); data_itr != data.end(); data_itr++)
+    {
+        visualization_msgs::Marker marker_msg;
+        marker_msg.header.stamp = ros::Time::now();
+        marker_msg.header.frame_id = _map_frame;
+    }
     return ret;
 }
 

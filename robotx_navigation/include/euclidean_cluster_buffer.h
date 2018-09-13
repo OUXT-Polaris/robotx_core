@@ -26,7 +26,7 @@ struct cluster_data
 class euclidean_cluster_buffer
 {
 public:
-    euclidean_cluster_buffer(double buffer_length);
+    euclidean_cluster_buffer(double buffer_length, std::string map_frame);
     ~euclidean_cluster_buffer();
     std::vector<cluster_data> get_cluster_data();
     void add_cluster_data(cluster_data data);
@@ -36,5 +36,6 @@ private:
     tf2_ros::Buffer _tf_buffer;
     tf2_ros::TransformListener _tf_listener;
     ros::Duration _buffer_length;
+    const std::string _map_frame;
 };
 #endif  //EUCLIDEAN_CLUSTER_BUFFER_H_INCLUDED
