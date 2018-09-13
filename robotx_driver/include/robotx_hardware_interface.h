@@ -10,6 +10,7 @@
 #include <diagnostic_updater/publisher.h>
 #include <ros/ros.h>
 #include <sensor_msgs/NavSatFix.h>
+#include <std_msgs/Float32.h>
 #include <std_msgs/Float64.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/UInt8.h>
@@ -185,13 +186,13 @@ class robotx_hardware_interface {
   ros::Publisher usv_drive_cmd_pub_;
   /**
    * @brief ROS publisher for /left_thruster_position_controller/command
-   * topic.(message type : std_msgs/Float64)
+   * topic.(message type : std_msgs/Float32)
    *
    */
   ros::Publisher left_thrust_joint_pub_;
   /**
    * @brief ROS publisher for /right_thruster_position_controller/command
-   * topic.(message type : std_msgs/Float64)
+   * topic.(message type : std_msgs/Float32)
    *
    */
   ros::Publisher right_thrust_joint_pub_;

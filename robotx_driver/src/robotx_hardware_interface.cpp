@@ -15,9 +15,9 @@ robotx_hardware_interface::robotx_hardware_interface()
   if (params_.target == params_.ALL || params_.target == params_.SIMULATION) {
     usv_drive_cmd_pub_ = nh_.advertise<robotx_msgs::UsvDrive>("/cmd_drive", 1);
     left_thrust_joint_pub_ =
-        nh_.advertise<std_msgs::Float64>("/left_thruster_position_controller/command", 1);
+        nh_.advertise<std_msgs::Float64>("/left_engine_position_controller/command", 1);
     right_thrust_joint_pub_ =
-        nh_.advertise<std_msgs::Float64>("/right_thruster_position_controller/command", 1);
+        nh_.advertise<std_msgs::Float64>("/right_engine_position_controller/command", 1);
     last_motor_cmd_msg_.data.resize(4);
     last_motor_cmd_msg_.data[0] = 0;
     last_motor_cmd_msg_.data[1] = 0;

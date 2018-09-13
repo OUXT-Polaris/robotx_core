@@ -54,7 +54,7 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
         ROS_WARN("%s",ex.what());
         return;
     }
-    ROS_ERROR_STREAM(clusters.size());
+    //ROS_ERROR_STREAM(clusters.size());
     visualization_msgs::MarkerArray marker_array = _generate_markers(clusters);
     _marker_pub.publish(marker_array);
     return;
