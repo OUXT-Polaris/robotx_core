@@ -6,13 +6,23 @@ robotx_path_planner::robotx_path_planner()
     _nh.param<double>(ros::this_node::getName()+"/buffer_length", buffer_length, 1.0);
     _nh.param<double>(ros::this_node::getName()+"/max_cluster_length", _max_cluster_length, 5.0);
     _nh.param<double>(ros::this_node::getName()+"/min_cluster_length", _min_cluster_length, 0.3);
+    _nh.param<double>(ros::this_node::getName()+"inflation_radius", _inflation_radius, 0.5);
+    _marker_pub = _nh.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker", 1);
     _buffer = boost::make_shared<euclidean_cluster_buffer>(buffer_length);
+    _robot_pose_sub = _nh.subscribe("/robot_pose", 1, &robotx_path_planner::_pose_callback, this);
     _euclidean_cluster_sub = _nh.subscribe(ros::this_node::getName()+"/euclidean_cluster", 1, &robotx_path_planner::_euclidean_cluster_callback, this);
 }
 
 robotx_path_planner::~robotx_path_planner()
 {
     
+}
+
+void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPtr msg)
+{
+    std::vector<cluster_data> clusters = _buffer->get_cluster_data();
+    //ROS_ERROR_STREAM(clusters.size());
+    return;
 }
 
 void robotx_path_planner::_euclidean_cluster_callback(const jsk_recognition_msgs::BoundingBoxArrayConstPtr msg)
@@ -46,7 +56,6 @@ void robotx_path_planner::_euclidean_cluster_callback(const jsk_recognition_msgs
                 _buffer->add_cluster_data(data);
             }            
         }
-        //bbox_size = bbox.dimensions
     }
     return;
 }

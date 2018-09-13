@@ -4,6 +4,8 @@
 //headers in ROS
 #include <ros/ros.h>
 #include <jsk_recognition_msgs/BoundingBoxArray.h>
+#include <geometry_msgs/PoseStamped.h>
+#include <visualization_msgs/MarkerArray.h>
 
 //headers in this package
 #include <euclidean_cluster_buffer.h>
@@ -18,10 +20,13 @@ public:
     ~robotx_path_planner();
 private:
     ros::NodeHandle _nh;
-    ros::Subscriber _euclidean_cluster_sub;
+    ros::Subscriber _euclidean_cluster_sub,_robot_pose_sub;
+    ros::Publisher _marker_pub;
     void _euclidean_cluster_callback(const jsk_recognition_msgs::BoundingBoxArrayConstPtr msg);
+    void _pose_callback(const geometry_msgs::PoseStampedConstPtr msg);
     boost::shared_ptr<euclidean_cluster_buffer> _buffer;
     double _max_cluster_length;
     double _min_cluster_length;
+    double _inflation_radius;
 };
 #endif  //ROBOTX_PATH_PLANNER_H_INCLUDED
