@@ -13,11 +13,11 @@
   <author email="groadpg@gmail.com">Ryodo Tanaka</author>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>robotx_driver</depend>
-  <depend>robotx_msgs</depend>
-  <depend>robotx_navigation</depend>
-  <depend>robotx_recognition</depend>
-  <depend>wamv_description</depend>
+  <exec_depend>robotx_driver</exec_depend>
+  <exec_depend>robotx_msgs</exec_depend>
+  <exec_depend>robotx_navigation</exec_depend>
+  <exec_depend>robotx_recognition</exec_depend>
+  <exec_depend>wamv_description</exec_depend>
   
   <export>
     <metapackage/>
