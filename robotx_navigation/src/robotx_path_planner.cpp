@@ -33,7 +33,7 @@ void robotx_path_planner::_goal_pose_callback(const geometry_msgs::PoseStampedCo
     {
         try
         {
-            transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg->header.frame_id, msg->header.stamp);
+            transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg->header.frame_id, ros::Time(0));//msg->header.stamp);
             tf2::doTransform(pose, pose, transform_stamped);
         }
         catch (tf2::TransformException &ex)
@@ -85,7 +85,7 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
         path_msg.waypoints[0].z = 0;
         path_msg.waypoints[1].z = 0;
     }
-    visualization_msgs::MarkerArray marker_array = _generate_markers(clusters);
+    visualization_msgs::MarkerArray marker_array = _generate_markers(clusters, path_msg);
     _marker_pub.publish(marker_array);
     _path_pub.publish(path_msg);
     _mtx.unlock();
@@ -126,9 +126,10 @@ double robotx_path_planner::_get_range(geometry_msgs::Point circle_center, geome
     return (f1*f1)/r2;
 }
 
-visualization_msgs::MarkerArray robotx_path_planner::_generate_markers(std::vector<cluster_data> data)
+visualization_msgs::MarkerArray robotx_path_planner::_generate_markers(std::vector<cluster_data> data, robotx_msgs::SplinePath path)
 {
     visualization_msgs::MarkerArray ret;
+    int id = 0;
     for(int i=0; i<data.size() ; i++)
     {
         visualization_msgs::Marker marker_msg;
@@ -149,9 +150,26 @@ visualization_msgs::MarkerArray robotx_path_planner::_generate_markers(std::vect
         marker_msg.color.b = 1;
         marker_msg.color.a = 1;
         marker_msg.frame_locked = true;
-        marker_msg.id = i;
+        marker_msg.id = id;
         ret.markers.push_back(marker_msg);
+        id = id + 1;
     }
+    visualization_msgs::Marker way_marker;
+    way_marker.header.stamp = ros::Time::now();
+    way_marker.header.frame_id = _map_frame;
+    way_marker.type = way_marker.LINE_STRIP;
+    way_marker.action = way_marker.MODIFY;
+    way_marker.scale.x = 0.1;
+    way_marker.scale.y = 0.1;
+    way_marker.scale.z = 0.1;
+    way_marker.color.r = 1;
+    way_marker.color.g = 0;
+    way_marker.color.b = 0;
+    way_marker.color.a = 1;
+    way_marker.frame_locked = true;
+    way_marker.id = id;
+    way_marker.points = path.waypoints;
+    ret.markers.push_back(way_marker);
     return ret;
 }
 
