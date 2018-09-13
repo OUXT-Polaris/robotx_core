@@ -19,6 +19,7 @@
 
 //headers in STL
 #include <mutex>
+#include <map>
 
 class robotx_path_planner
 {

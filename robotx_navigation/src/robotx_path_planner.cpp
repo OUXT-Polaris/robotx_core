@@ -75,15 +75,89 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
     }
     _mtx.lock();
     std::vector<cluster_data> filtered_clusters = _filter_clusters(clusters, pose.pose.position, _goal_pose.pose.position);
+    std::vector<cluster_data> sorted_clusters = _sort_clusters(filtered_clusters, pose.pose.position);
     robotx_msgs::SplinePath path_msg;
     path_msg.header.frame_id = _map_frame;
     path_msg.header.stamp = ros::Time::now();
     if(filtered_clusters.size() == 0)
     {
         path_msg.waypoints.push_back(pose.pose.position);
-        path_msg.waypoints.push_back( _goal_pose.pose.position);
+        path_msg.waypoints.push_back(_goal_pose.pose.position);
         path_msg.waypoints[0].z = 0;
         path_msg.waypoints[1].z = 0;
+    }
+    else
+    {
+        std::vector<double> X(sorted_clusters.size()+2), Y(sorted_clusters.size()+2);
+        X[0] = pose.pose.position.x;
+        Y[0] = pose.pose.position.y;
+        for(int i=0; i<sorted_clusters.size(); i++)
+        {
+            double vx = _goal_pose.pose.position.x - pose.pose.position.x;
+            double vy = _goal_pose.pose.position.y - pose.pose.position.y;
+            geometry_msgs::Point p1,p2;
+            p1.x = sorted_clusters[i].point.point.x - (sorted_clusters[i].radius+_inflation_radius+_robot_radius)*vy/(vx*vx+vy*vy);
+            p1.y = sorted_clusters[i].point.point.y + (sorted_clusters[i].radius+_inflation_radius+_robot_radius)*vx/(vx*vx+vy*vy);
+            p1.z = 0;
+            p2.x = sorted_clusters[i].point.point.x + (sorted_clusters[i].radius+_inflation_radius+_robot_radius)*vy/(vx*vx+vy*vy);
+            p2.y = sorted_clusters[i].point.point.y - (sorted_clusters[i].radius+_inflation_radius+_robot_radius)*vx/(vx*vx+vy*vy);
+            p2.z = 0;
+            double r1 = std::sqrt((p1.x-X[i])*(p1.x-X[i])+(p1.y-Y[i])*(p1.y-Y[i]));
+            double r2 = std::sqrt((p2.x-X[i])*(p2.x-X[i])+(p2.y-Y[i])*(p2.y-Y[i]));
+            if(r1 > r2)
+            {
+                X[i+1] = p2.x;
+                Y[i+1] = p2.y;
+            }
+            else
+            {
+                X[i+1] = p1.x;
+                Y[i+1] = p1.y;                
+            }
+        }
+        X[sorted_clusters.size()+1] = _goal_pose.pose.position.x;
+        Y[sorted_clusters.size()+1] = _goal_pose.pose.position.y;
+        for(int i=0; i<X.size(); i++)
+        {
+            geometry_msgs::Point p;
+            p.x = X[i];
+            p.y = Y[i];
+            p.z = 0;
+            path_msg.waypoints.push_back(p);
+        }
+        /*
+        tk::spline spline_solver;
+        std::vector<double> X(sorted_clusters.size()+2), Y(sorted_clusters.size()+2);
+        X[0] = pose.pose.position.x;
+        Y[0] = pose.pose.position.y;
+        for(int i=0; i<sorted_clusters.size(); i++)
+        {
+            double vx = _goal_pose.pose.position.x - pose.pose.position.x;
+            double vy = _goal_pose.pose.position.y - pose.pose.position.y;
+            geometry_msgs::Point p1,p2;
+            p1.x = sorted_clusters[i].point.point.x - vy/(vx*vx+vy*vy);
+            p1.y = sorted_clusters[i].point.point.y + vx/(vx*vx+vy*vy);
+            p1.z = 0;
+            p2.x = sorted_clusters[i].point.point.x + vy/(vx*vx+vy*vy);
+            p2.y = sorted_clusters[i].point.point.y - vx/(vx*vx+vy*vy);
+            p2.z = 0;
+            double r1 = std::sqrt((p1.x-X[i])*(p1.x-X[i])+(p1.y-Y[i])*(p1.y-Y[i]));
+            double r2 = std::sqrt((p2.x-X[i])*(p2.x-X[i])+(p2.y-Y[i])*(p2.y-Y[i]));
+            if(r1 > r2)
+            {
+                X[i+1] = p2.x;
+                Y[i+1] = p2.y;
+            }
+            else
+            {
+                X[i+1] = p1.x;
+                Y[i+1] = p1.y;                
+            }
+        }
+        X[sorted_clusters.size()+1] = _goal_pose.pose.position.x;
+        Y[sorted_clusters.size()+1] = _goal_pose.pose.position.y;
+        spline_solver.set_points(X,Y);
+        */
     }
     visualization_msgs::MarkerArray empty_marker_array;
     _marker_pub.publish(empty_marker_array);
@@ -96,7 +170,20 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
 
 std::vector<cluster_data> robotx_path_planner::_sort_clusters(std::vector<cluster_data> clusters, geometry_msgs::Point start_point)
 {
-
+    std::vector<cluster_data> ret;
+    std::map<double,boost::shared_ptr<cluster_data> > dict;
+    for(int i=0; i<clusters.size(); i++)
+    {
+        double r = std::sqrt(std::pow((clusters[i].point.point.x - start_point.x),2)+std::pow((clusters[i].point.point.y - start_point.y),2));
+        boost::shared_ptr<cluster_data> cluster= boost::make_shared<cluster_data>(clusters[i].point,clusters[i].radius);
+        dict[r] = cluster;
+    }
+    for(auto itr = dict.begin(); itr != dict.end() ; ++itr)
+    {
+        boost::shared_ptr<cluster_data> cluster = itr->second;
+        ret.push_back(*cluster);
+    }
+    return ret;
 }
 
 std::vector<cluster_data> robotx_path_planner::_filter_clusters(std::vector<cluster_data> clusters, geometry_msgs::Point start_point, geometry_msgs::Point end_point)
