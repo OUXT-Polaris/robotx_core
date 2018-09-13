@@ -25,16 +25,17 @@ void euclidean_cluster_buffer::add_cluster_data(cluster_data data)
     }
     _mtx.lock();
     ros::Time now = ros::Time::now();
-    std::vector<cluster_data> new_buffer;
-    //new_buffer.puh
+    std::vector<boost::shared_ptr<cluster_data> > new_buffer;
+    new_buffer.push_back(boost::make_shared<cluster_data>(data.point,data.radius));
     for(auto cluster_itr = _buffer.begin(); cluster_itr != _buffer.end(); cluster_itr++)
     {
-        if(now - _buffer_length < cluster_itr->point.header.stamp)
+        boost::shared_ptr<cluster_data> cluster_ptr = *cluster_itr;
+        if(now - _buffer_length < cluster_ptr->point.header.stamp)
         {
             new_buffer.push_back(*cluster_itr);
         }
     }
-    //_buffer = new_buffer;
+    _buffer = new_buffer;
     _mtx.unlock();
     return;
 }

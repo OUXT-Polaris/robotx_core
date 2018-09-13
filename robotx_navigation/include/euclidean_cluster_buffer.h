@@ -12,6 +12,9 @@
 #include <vector>
 #include <mutex>
 
+//headers in boos
+#include <boost/shared_ptr.hpp>
+
 struct cluster_data
 {
     const geometry_msgs::PointStamped point;
@@ -28,7 +31,7 @@ public:
     void add_cluster_data(cluster_data data);
 private:
     std::mutex _mtx;
-    std::vector<cluster_data> _buffer;
+    std::vector<boost::shared_ptr<cluster_data> > _buffer;
     tf2_ros::Buffer _tf_buffer;
     tf2_ros::TransformListener _tf_listener;
     ros::Duration _buffer_length;
