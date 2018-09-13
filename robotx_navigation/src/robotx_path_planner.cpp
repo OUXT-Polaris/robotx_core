@@ -96,15 +96,15 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
             double vx = _goal_pose.pose.position.x - pose.pose.position.x;
             double vy = _goal_pose.pose.position.y - pose.pose.position.y;
             geometry_msgs::Point p1,p2;
-            p1.x = sorted_clusters[i].point.point.x - (sorted_clusters[i].radius+_inflation_radius+_robot_radius)*vy/(vx*vx+vy*vy);
-            p1.y = sorted_clusters[i].point.point.y + (sorted_clusters[i].radius+_inflation_radius+_robot_radius)*vx/(vx*vx+vy*vy);
+            p1.x = sorted_clusters[i].point.point.x - (sorted_clusters[i].radius+_inflation_radius+_robot_radius)*vy/std::sqrt(vx*vx+vy*vy);
+            p1.y = sorted_clusters[i].point.point.y + (sorted_clusters[i].radius+_inflation_radius+_robot_radius)*vx/std::sqrt(vx*vx+vy*vy);
             p1.z = 0;
-            p2.x = sorted_clusters[i].point.point.x + (sorted_clusters[i].radius+_inflation_radius+_robot_radius)*vy/(vx*vx+vy*vy);
-            p2.y = sorted_clusters[i].point.point.y - (sorted_clusters[i].radius+_inflation_radius+_robot_radius)*vx/(vx*vx+vy*vy);
+            p2.x = sorted_clusters[i].point.point.x + (sorted_clusters[i].radius+_inflation_radius+_robot_radius)*vy/std::sqrt(vx*vx+vy*vy);
+            p2.y = sorted_clusters[i].point.point.y - (sorted_clusters[i].radius+_inflation_radius+_robot_radius)*vx/std::sqrt(vx*vx+vy*vy);
             p2.z = 0;
             double r1 = std::sqrt((p1.x-X[i])*(p1.x-X[i])+(p1.y-Y[i])*(p1.y-Y[i]));
             double r2 = std::sqrt((p2.x-X[i])*(p2.x-X[i])+(p2.y-Y[i])*(p2.y-Y[i]));
-            if(r1 > r2)
+            if(r1 < r2)
             {
                 X[i+1] = p2.x;
                 Y[i+1] = p2.y;
