@@ -8,9 +8,11 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <robotx_msgs/SplinePath.h>
 
 //headers in this package
 #include <euclidean_cluster_buffer.h>
+#include <spline.h>
 
 //headers in boost
 #include <boost/shared_ptr.hpp>
@@ -33,6 +35,7 @@ private:
     void _euclidean_cluster_callback(const jsk_recognition_msgs::BoundingBoxArrayConstPtr msg);
     void _pose_callback(const geometry_msgs::PoseStampedConstPtr msg);
     void _goal_pose_callback(const geometry_msgs::PoseStampedConstPtr msg);
+    double _get_range(geometry_msgs::Point start_point, geometry_msgs::Point end_point, geometry_msgs::Point circle_center);
     visualization_msgs::MarkerArray _generate_markers(std::vector<cluster_data> data);
     boost::shared_ptr<euclidean_cluster_buffer> _buffer;
     double _max_cluster_length;

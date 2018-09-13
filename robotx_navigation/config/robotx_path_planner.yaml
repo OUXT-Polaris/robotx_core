@@ -3,4 +3,5 @@ buffer_length : 1
 inflation_radius : 0.5
 max_cluster_length : 5.0
 min_cluster_length : 0.3
-map_frame: world
+map_frame : world
+robot_radius : 3.0

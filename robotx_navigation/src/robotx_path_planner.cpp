@@ -64,10 +64,38 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
             return;
         }
     }
-    //ROS_ERROR_STREAM(clusters.size());
     visualization_msgs::MarkerArray marker_array = _generate_markers(clusters);
     _marker_pub.publish(marker_array);
+    
+    /*
+    tk::spline s;
+    std::vector<double> X(5), Y(5);
+    X[0]=0.1; X[1]=0.4; X[2]=1.2; X[3]=1.8; X[4]=2.0;
+    Y[0]=0.1; Y[1]=0.7; Y[2]=0.6; Y[3]=1.1; Y[4]=0.9;
+    s.set_points(X,Y);
+    */
     return;
+}
+
+// See also https://qiita.com/yellow_73/items/bcd4e150e7caa0210ee6
+double robotx_path_planner::_get_range(geometry_msgs::Point circle_center, geometry_msgs::Point start_point, geometry_msgs::Point end_point)
+{
+    double a = end_point.x - start_point.x;
+    double b = end_point.y - start_point.y;
+    double a2 = a*a;
+    double b2 = b*b;
+    double r2 = a2 + b2;
+    double tt = -(a*(start_point.x-circle_center.x)+b*(start_point.y-circle_center.y));
+    if(tt < 0)
+    {
+        return (start_point.x-circle_center.x)*(start_point.x-circle_center.x)+(start_point.y-circle_center.y)*(start_point.y-circle_center.y);
+    }
+    if(tt > r2)
+    {
+        return (end_point.x-circle_center.x)*(end_point.x-circle_center.x)+(end_point.y-circle_center.y)*(end_point.y-circle_center.y);
+    }
+    double f1 = a*(start_point.y-circle_center.y) - b*(start_point.x-circle_center.x);
+    return (f1*f1)/r2;
 }
 
 visualization_msgs::MarkerArray robotx_path_planner::_generate_markers(std::vector<cluster_data> data)
