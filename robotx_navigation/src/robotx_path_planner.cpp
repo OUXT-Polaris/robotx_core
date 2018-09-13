@@ -1,6 +1,6 @@
 #include <robotx_path_planner.h>
 
-robotx_path_planner::robotx_path_planner()
+robotx_path_planner::robotx_path_planner() : _tf_listener(_tf_buffer)
 {
     double buffer_length;
     _nh.param<double>(ros::this_node::getName()+"/buffer_length", buffer_length, 1.0);
@@ -21,7 +21,17 @@ robotx_path_planner::~robotx_path_planner()
 void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPtr msg)
 {
     std::vector<cluster_data> clusters = _buffer->get_cluster_data();
-    //ROS_ERROR_STREAM(clusters.size());
+    geometry_msgs::TransformStamped transform_stamped;
+    try
+    {
+        transform_stamped = _tf_buffer.lookupTransform("world", msg->header.frame_id, msg->header.stamp);
+        geometry_msgs::PoseStamped pose;
+        tf2::doTransform(pose, pose, transform_stamped);
+    }
+    catch (tf2::TransformException &ex)
+    {
+        ROS_WARN("%s",ex.what());
+    }
     return;
 }
 
