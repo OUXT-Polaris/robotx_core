@@ -82,6 +82,7 @@ add_dependencies(robotx_path_planner_node robotx_msgs_generate_messages_cpp)
 #############
 # CPP codes
 set(NODE_FILES 
+  robotx_path_planner_node
   twist_from_fix_velocity_node 
   geographic_map_server_node 
   obstacle_map_server_node 
