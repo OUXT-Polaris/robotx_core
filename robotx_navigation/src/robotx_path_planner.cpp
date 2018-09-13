@@ -18,6 +18,26 @@ robotx_path_planner::~robotx_path_planner()
     
 }
 
+void robotx_path_planner::_goal_pose_callback(const geometry_msgs::PoseStampedConstPtr msg)
+{
+    geometry_msgs::TransformStamped transform_stamped;
+    geometry_msgs::PoseStamped pose;
+    try
+    {
+        transform_stamped = _tf_buffer.lookupTransform("world", msg->header.frame_id, msg->header.stamp);
+        tf2::doTransform(pose, pose, transform_stamped);
+    }
+    catch (tf2::TransformException &ex)
+    {
+        ROS_WARN("%s",ex.what());
+        return;
+    }
+    _mtx.lock();
+    _goal_pose = pose;
+    _mtx.unlock();
+    return;
+}
+
 void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPtr msg)
 {
     std::vector<cluster_data> clusters = _buffer->get_cluster_data();
@@ -31,8 +51,15 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
     catch (tf2::TransformException &ex)
     {
         ROS_WARN("%s",ex.what());
+        return;
     }
     return;
+}
+
+visualization_msgs::MarkerArray robotx_path_planner::_generate_markers()
+{
+    visualization_msgs::MarkerArray ret;
+    return ret;
 }
 
 void robotx_path_planner::_euclidean_cluster_callback(const jsk_recognition_msgs::BoundingBoxArrayConstPtr msg)

@@ -28,7 +28,7 @@ std::vector<cluster_data> euclidean_cluster_buffer::get_cluster_data()
     }
     _buffer = new_buffer;
     _mtx.unlock();
-    return ret;;
+    return ret;
 }
 
 void euclidean_cluster_buffer::add_cluster_data(cluster_data data)
