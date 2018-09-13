@@ -16,8 +16,8 @@ void euclidean_cluster_buffer::add_cluster_data(cluster_data data)
     try
     {
         transform_stamped = _tf_buffer.lookupTransform("world", data.point.header.frame_id, data.point.header.stamp);
-        //ROS_ERROR_STREAM(transform_stamped);
-        //ROS_ERROR(transform_stamped);
+        geometry_msgs::PointStamped point = data.point;
+        tf2::doTransform(point, point, transform_stamped);
     }
     catch (tf2::TransformException &ex)
     {
