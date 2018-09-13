@@ -28,8 +28,8 @@ public:
 private:
     std::mutex _mtx;
     ros::NodeHandle _nh;
-    ros::Subscriber _euclidean_cluster_sub,_robot_pose_sub,_goal_pose_pub;
-    ros::Publisher _marker_pub;
+    ros::Subscriber _euclidean_cluster_sub,_robot_pose_sub,_goal_pose_sub;
+    ros::Publisher _marker_pub, _path_pub;
     tf2_ros::Buffer _tf_buffer;
     tf2_ros::TransformListener _tf_listener;
     void _euclidean_cluster_callback(const jsk_recognition_msgs::BoundingBoxArrayConstPtr msg);
@@ -45,5 +45,6 @@ private:
     double _robot_radius;
     std::string _map_frame;
     geometry_msgs::PoseStamped _goal_pose;
+    volatile bool _goal_recieved;
 };
 #endif  //ROBOTX_PATH_PLANNER_H_INCLUDED

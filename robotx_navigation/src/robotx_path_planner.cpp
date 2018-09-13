@@ -2,6 +2,7 @@
 
 robotx_path_planner::robotx_path_planner() : _tf_listener(_tf_buffer)
 {
+    _goal_recieved = false;
     double buffer_length;
     _nh.param<double>(ros::this_node::getName()+"/buffer_length", buffer_length, 1.0);
     _nh.param<double>(ros::this_node::getName()+"/max_cluster_length", _max_cluster_length, 5.0);
@@ -10,7 +11,9 @@ robotx_path_planner::robotx_path_planner() : _tf_listener(_tf_buffer)
     _nh.param<double>(ros::this_node::getName()+"/robot_radius", _robot_radius, 3.0);
     _nh.param<std::string>(ros::this_node::getName()+"/map_frame", _map_frame, "world");
     _marker_pub = _nh.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker", 1);
+    _path_pub = _nh.advertise<robotx_msgs::SplinePath>(ros::this_node::getName()+"/path", 1);
     _buffer = boost::make_shared<euclidean_cluster_buffer>(buffer_length, _map_frame);
+    _goal_pose_sub = _nh.subscribe("/move_base_simple/goal", 1, &robotx_path_planner::_goal_pose_callback, this);
     _robot_pose_sub = _nh.subscribe("/robot_pose", 1, &robotx_path_planner::_pose_callback, this);
     _euclidean_cluster_sub = _nh.subscribe(ros::this_node::getName()+"/euclidean_cluster", 1, &robotx_path_planner::_euclidean_cluster_callback, this);
 }
@@ -41,6 +44,7 @@ void robotx_path_planner::_goal_pose_callback(const geometry_msgs::PoseStampedCo
     }
     _mtx.lock();
     _goal_pose = pose;
+    _goal_recieved = true;
     _mtx.unlock();
     return;
 }
@@ -65,17 +69,26 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
             return;
         }
     }
+    if(_goal_recieved == false)
+    {
+        return;
+    }
+    _mtx.lock();
     std::vector<cluster_data> filtered_clusters = _filter_clusters(clusters, pose.pose.position, _goal_pose.pose.position);
+    robotx_msgs::SplinePath path_msg;
+    path_msg.header.frame_id = _map_frame;
+    path_msg.header.stamp = ros::Time::now();
+    if(filtered_clusters.size() == 0)
+    {
+        path_msg.waypoints.push_back(pose.pose.position);
+        path_msg.waypoints.push_back( _goal_pose.pose.position);
+        path_msg.waypoints[0].z = 0;
+        path_msg.waypoints[1].z = 0;
+    }
     visualization_msgs::MarkerArray marker_array = _generate_markers(clusters);
     _marker_pub.publish(marker_array);
-    
-    /*
-    tk::spline s;
-    std::vector<double> X(5), Y(5);
-    X[0]=0.1; X[1]=0.4; X[2]=1.2; X[3]=1.8; X[4]=2.0;
-    Y[0]=0.1; Y[1]=0.7; Y[2]=0.6; Y[3]=1.1; Y[4]=0.9;
-    s.set_points(X,Y);
-    */
+    _path_pub.publish(path_msg);
+    _mtx.unlock();
     return;
 }
 

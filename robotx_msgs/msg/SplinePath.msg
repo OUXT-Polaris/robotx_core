@@ -1,2 +1,2 @@
 Header header
-float64[] spline_coefficient
+geometry_msgs/Point[] waypoints
