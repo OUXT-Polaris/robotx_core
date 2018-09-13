@@ -73,7 +73,7 @@ add_dependencies(ndt_mapping_node robotx_msgs_generate_messages_cpp)
 #add_document(ndt_mapping_node)
 #clang_format(ndt_mapping_node)
 
-add_executable(robotx_path_planner_node src/robotx_path_planner_node.cpp src/robotx_path_planner.cpp)
+add_executable(robotx_path_planner_node src/robotx_path_planner_node.cpp src/robotx_path_planner.cpp src/euclidean_cluster_buffer.cpp)
 target_link_libraries(robotx_path_planner_node ${catkin_LIBRARIES})
 add_dependencies(robotx_path_planner_node robotx_msgs_generate_messages_cpp)
 
