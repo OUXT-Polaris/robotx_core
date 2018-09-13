@@ -7,6 +7,7 @@ robotx_path_planner::robotx_path_planner() : _tf_listener(_tf_buffer)
     _nh.param<double>(ros::this_node::getName()+"/max_cluster_length", _max_cluster_length, 5.0);
     _nh.param<double>(ros::this_node::getName()+"/min_cluster_length", _min_cluster_length, 0.3);
     _nh.param<double>(ros::this_node::getName()+"/inflation_radius", _inflation_radius, 0.5);
+    _nh.param<double>(ros::this_node::getName()+"/robot_radius", _robot_radius, 3.0);
     _nh.param<std::string>(ros::this_node::getName()+"/map_frame", _map_frame, "world");
     _marker_pub = _nh.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker", 1);
     _buffer = boost::make_shared<euclidean_cluster_buffer>(buffer_length, _map_frame);
@@ -64,6 +65,7 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
             return;
         }
     }
+    std::vector<cluster_data> filtered_clusters = _filter_clusters(clusters, pose.pose.position, _goal_pose.pose.position);
     visualization_msgs::MarkerArray marker_array = _generate_markers(clusters);
     _marker_pub.publish(marker_array);
     
@@ -75,6 +77,19 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
     s.set_points(X,Y);
     */
     return;
+}
+
+std::vector<cluster_data> robotx_path_planner::_filter_clusters(std::vector<cluster_data> clusters, geometry_msgs::Point start_point, geometry_msgs::Point end_point)
+{
+    std::vector<cluster_data> ret;
+    for(int i=0; i<clusters.size(); i++)
+    {
+        if(_get_range(clusters[i].point.point,start_point,end_point) < (clusters[i].radius+_robot_radius))
+        {
+            ret.push_back(clusters[i]);
+        }
+    }
+    return ret;
 }
 
 // See also https://qiita.com/yellow_73/items/bcd4e150e7caa0210ee6
