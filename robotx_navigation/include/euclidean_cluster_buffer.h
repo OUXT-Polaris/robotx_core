@@ -2,6 +2,7 @@
 #define EUCLIDEAN_CLUSTER_BUFFER_H_INCLUDED
 
 //headers in ROS
+#include <ros/ros.h>
 #include <geometry_msgs/PointStamped.h>
 #include <tf2_ros/transform_listener.h>
 #include <geometry_msgs/TransformStamped.h>
@@ -9,9 +10,6 @@
 //headers in STL
 #include <vector>
 #include <mutex>
-
-//headers in boost
-#include <boost/shared_ptr.hpp>
 
 struct cluster_data
 {
@@ -25,12 +23,11 @@ class euclidean_cluster_buffer
 public:
     euclidean_cluster_buffer(double buffer_length);
     ~euclidean_cluster_buffer();
-    std::vector<boost::shared_ptr<cluster_data> > get_cluster_data();
-    void add_cluster_data(boost::shared_ptr<cluster_data> data);
+    std::vector<cluster_data> get_cluster_data();
+    void add_cluster_data(cluster_data data);
 private:
-    void _update_buffer();
     std::mutex _mtx;
-    std::vector<boost::shared_ptr<cluster_data> > _buffer;
+    std::vector<cluster_data> _buffer;
     tf2_ros::Buffer _tf_buffer;
     tf2_ros::TransformListener _tf_listener;
     ros::Duration _buffer_length;

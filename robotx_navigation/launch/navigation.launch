@@ -11,6 +11,7 @@
 
   <rosparam command="load" file="$(find robotx_navigation)/config/robotx_path_planner.yaml" ns="robotx_path_planner_node"/>
   <node name="robotx_path_planner_node" pkg="robotx_navigation" type="robotx_path_planner_node" args="" output="screen" respawn="true">
+    <remap from="/robotx_path_planner_node/euclidean_cluster" to="/euclidean_clustering_node/bbox"/>
   </node>
 
   <rosparam command="load" file="$(find robotx_navigation)/config/robotx_localization.yaml" ns="robotx_localization_node"/>
