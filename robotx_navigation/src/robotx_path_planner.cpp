@@ -85,6 +85,8 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
         path_msg.waypoints[0].z = 0;
         path_msg.waypoints[1].z = 0;
     }
+    visualization_msgs::MarkerArray empty_marker_array;
+    _marker_pub.publish(empty_marker_array);
     visualization_msgs::MarkerArray marker_array = _generate_markers(clusters, path_msg);
     _marker_pub.publish(marker_array);
     _path_pub.publish(path_msg);
@@ -92,12 +94,17 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
     return;
 }
 
+std::vector<cluster_data> robotx_path_planner::_sort_clusters(std::vector<cluster_data> clusters, geometry_msgs::Point start_point)
+{
+
+}
+
 std::vector<cluster_data> robotx_path_planner::_filter_clusters(std::vector<cluster_data> clusters, geometry_msgs::Point start_point, geometry_msgs::Point end_point)
 {
     std::vector<cluster_data> ret;
     for(int i=0; i<clusters.size(); i++)
     {
-        if(_get_range(clusters[i].point.point,start_point,end_point) < (clusters[i].radius+_robot_radius))
+        if(_get_range(clusters[i].point.point,start_point,end_point) < (clusters[i].radius+_robot_radius+_inflation_radius))
         {
             ret.push_back(clusters[i]);
         }
@@ -129,7 +136,6 @@ double robotx_path_planner::_get_range(geometry_msgs::Point circle_center, geome
 visualization_msgs::MarkerArray robotx_path_planner::_generate_markers(std::vector<cluster_data> data, robotx_msgs::SplinePath path)
 {
     visualization_msgs::MarkerArray ret;
-    int id = 0;
     for(int i=0; i<data.size() ; i++)
     {
         visualization_msgs::Marker marker_msg;
@@ -150,15 +156,15 @@ visualization_msgs::MarkerArray robotx_path_planner::_generate_markers(std::vect
         marker_msg.color.b = 1;
         marker_msg.color.a = 1;
         marker_msg.frame_locked = true;
-        marker_msg.id = id;
+        marker_msg.id = i;
+        //marker_msg.lifetime = ros::Duration(0.1);
         ret.markers.push_back(marker_msg);
-        id = id + 1;
     }
     visualization_msgs::Marker way_marker;
     way_marker.header.stamp = ros::Time::now();
     way_marker.header.frame_id = _map_frame;
     way_marker.type = way_marker.LINE_STRIP;
-    way_marker.action = way_marker.MODIFY;
+    way_marker.action = way_marker.ADD;
     way_marker.scale.x = 0.1;
     way_marker.scale.y = 0.1;
     way_marker.scale.z = 0.1;
@@ -167,8 +173,10 @@ visualization_msgs::MarkerArray robotx_path_planner::_generate_markers(std::vect
     way_marker.color.b = 0;
     way_marker.color.a = 1;
     way_marker.frame_locked = true;
-    way_marker.id = id;
+    way_marker.id = 0;
     way_marker.points = path.waypoints;
+    //way_marker.lifetime = ros::Duration(0.1);
+    way_marker.ns = "path";
     ret.markers.push_back(way_marker);
     return ret;
 }

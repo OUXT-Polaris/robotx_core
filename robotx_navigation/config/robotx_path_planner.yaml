@@ -1,7 +1,7 @@
 # length of euclidean cluster buffer length
-buffer_length : 1
-inflation_radius : 0.5
+buffer_length : 3
+inflation_radius : 1.0
 max_cluster_length : 5.0
 min_cluster_length : 0.3
 map_frame : world
-robot_radius : 3.0
+robot_radius : 4.0
