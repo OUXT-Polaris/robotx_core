@@ -23,15 +23,20 @@ void robotx_path_planner::_goal_pose_callback(const geometry_msgs::PoseStampedCo
 {
     geometry_msgs::TransformStamped transform_stamped;
     geometry_msgs::PoseStamped pose;
-    try
+    pose.header = msg->header;
+    pose.pose = msg->pose;
+    if(_map_frame != msg->header.frame_id)
     {
-        transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg->header.frame_id, msg->header.stamp);
-        tf2::doTransform(pose, pose, transform_stamped);
-    }
-    catch (tf2::TransformException &ex)
-    {
-        ROS_WARN("%s",ex.what());
-        return;
+        try
+        {
+            transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg->header.frame_id, msg->header.stamp);
+            tf2::doTransform(pose, pose, transform_stamped);
+        }
+        catch (tf2::TransformException &ex)
+        {
+            ROS_WARN("%s",ex.what());
+            return;
+        }
     }
     _mtx.lock();
     _goal_pose = pose;
@@ -43,16 +48,21 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
 {
     std::vector<cluster_data> clusters = _buffer->get_cluster_data();
     geometry_msgs::TransformStamped transform_stamped;
-    try
+    geometry_msgs::PoseStamped pose;
+    pose.header = msg->header;
+    pose.pose = msg->pose;
+    if(_map_frame != msg->header.frame_id)
     {
-        transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg->header.frame_id, msg->header.stamp);
-        geometry_msgs::PoseStamped pose;
-        tf2::doTransform(pose, pose, transform_stamped);
-    }
-    catch (tf2::TransformException &ex)
-    {
-        ROS_WARN("%s",ex.what());
-        return;
+        try
+        {
+            transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg->header.frame_id, msg->header.stamp);
+            tf2::doTransform(pose, pose, transform_stamped);
+        }
+        catch (tf2::TransformException &ex)
+        {
+            ROS_WARN("%s",ex.what());
+            return;
+        }
     }
     //ROS_ERROR_STREAM(clusters.size());
     visualization_msgs::MarkerArray marker_array = _generate_markers(clusters);
@@ -83,6 +93,7 @@ visualization_msgs::MarkerArray robotx_path_planner::_generate_markers(std::vect
         marker_msg.color.b = 1;
         marker_msg.color.a = 1;
         marker_msg.frame_locked = true;
+        marker_msg.id = i;
         ret.markers.push_back(marker_msg);
     }
     return ret;

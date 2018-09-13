@@ -35,10 +35,10 @@ void euclidean_cluster_buffer::add_cluster_data(cluster_data data)
 {
     _mtx.lock();
     geometry_msgs::TransformStamped transform_stamped;
+    geometry_msgs::PointStamped point = data.point;
     try
     {
         transform_stamped = _tf_buffer.lookupTransform(_map_frame, data.point.header.frame_id, data.point.header.stamp);
-        geometry_msgs::PointStamped point = data.point;
         tf2::doTransform(point, point, transform_stamped);
     }
     catch (tf2::TransformException &ex)
@@ -47,7 +47,7 @@ void euclidean_cluster_buffer::add_cluster_data(cluster_data data)
     }
     ros::Time now = ros::Time::now();
     std::vector<boost::shared_ptr<cluster_data> > new_buffer;
-    new_buffer.push_back(boost::make_shared<cluster_data>(data.point,data.radius));
+    new_buffer.push_back(boost::make_shared<cluster_data>(point,data.radius));
     for(auto cluster_itr = _buffer.begin(); cluster_itr != _buffer.end(); cluster_itr++)
     {
         boost::shared_ptr<cluster_data> cluster_ptr = *cluster_itr;
