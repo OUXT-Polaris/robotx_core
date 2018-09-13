@@ -54,18 +54,36 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
         ROS_WARN("%s",ex.what());
         return;
     }
+    ROS_ERROR_STREAM(clusters.size());
     visualization_msgs::MarkerArray marker_array = _generate_markers(clusters);
+    _marker_pub.publish(marker_array);
     return;
 }
 
 visualization_msgs::MarkerArray robotx_path_planner::_generate_markers(std::vector<cluster_data> data)
 {
     visualization_msgs::MarkerArray ret;
-    for(auto data_itr = data.begin(); data_itr != data.end(); data_itr++)
+    for(int i=0; i<data.size() ; i++)
     {
         visualization_msgs::Marker marker_msg;
         marker_msg.header.stamp = ros::Time::now();
         marker_msg.header.frame_id = _map_frame;
+        marker_msg.type = marker_msg.CYLINDER;
+        marker_msg.action = marker_msg.ADD;
+        marker_msg.pose.position = data[i].point.point;
+        marker_msg.pose.orientation.x = 0;
+        marker_msg.pose.orientation.y = 0;
+        marker_msg.pose.orientation.z = 0;
+        marker_msg.pose.orientation.w = 1;
+        marker_msg.scale.x = data[i].radius;
+        marker_msg.scale.y = data[i].radius;
+        marker_msg.scale.z = 1;
+        marker_msg.color.r = 0;
+        marker_msg.color.g = 1;
+        marker_msg.color.b = 1;
+        marker_msg.color.a = 1;
+        marker_msg.frame_locked = true;
+        ret.markers.push_back(marker_msg);
     }
     return ret;
 }
