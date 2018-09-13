@@ -32,6 +32,8 @@ add_message_files(
   GeographicPoint.msg
   GeographicLine.msg
   GeographicMap.msg
+  FieldMap.msg
+  FieldObject.msg
 )
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
@@ -41,6 +43,7 @@ generate_messages(
   std_msgs
   jsk_recognition_msgs
   geographic_msgs
+  robotx_msgs
 )
 
 ###################################
