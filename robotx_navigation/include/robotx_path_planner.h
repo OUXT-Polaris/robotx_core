@@ -13,5 +13,6 @@ public:
 private:
     ros::NodeHandle _nh;
     ros::Subscriber _euclidean_cluster_sub;
+    void _euclidean_cluster_callback(const jsk_recognition_msgs::BoundingBoxArrayConstPtr msg);
 };
 #endif  //ROBOTX_PATH_PLANNER_H_INCLUDED

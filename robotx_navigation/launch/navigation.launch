@@ -9,7 +9,8 @@
   </node>
 -->
 
-  <node name="robotx_path_plannner_node" pkg="robotx_navigation" type="robotx_path_plannner_node" args="" output="screen" respawn="true">
+  <rosparam command="load" file="$(find robotx_navigation)/config/robotx_path_planner.yaml" ns="robotx_path_planner_node"/>
+  <node name="robotx_path_planner_node" pkg="robotx_navigation" type="robotx_path_planner_node" args="" output="screen" respawn="true">
   </node>
 
   <rosparam command="load" file="$(find robotx_navigation)/config/robotx_localization.yaml" ns="robotx_localization_node"/>
