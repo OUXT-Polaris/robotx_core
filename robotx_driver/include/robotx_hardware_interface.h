@@ -179,20 +179,26 @@ class robotx_hardware_interface {
    */
   ros::Subscriber current_task_number_sub_;
   /**
-   * @brief ROS publisher for /cmd_drive topic.(message type :
-   * robotx_msgs/UsvDrive)
+   * @brief ROS publisher for /left_threster_cmd topic.(message type :
+   * std_msgs/Float32)
    *
    */
-  ros::Publisher usv_drive_cmd_pub_;
+  ros::Publisher left_thrust_cmd_pub_;
+  /**
+   * @brief ROS publisher for /right_threster_cmd topic.(message type :
+   * std_msgs/Float32)
+   *
+   */
+  ros::Publisher right_thrust_cmd_pub_;
   /**
    * @brief ROS publisher for /left_thruster_position_controller/command
-   * topic.(message type : std_msgs/Float32)
+   * topic.(message type : std_msgs/Float64)
    *
    */
   ros::Publisher left_thrust_joint_pub_;
   /**
    * @brief ROS publisher for /right_thruster_position_controller/command
-   * topic.(message type : std_msgs/Float32)
+   * topic.(message type : std_msgs/Float64)
    *
    */
   ros::Publisher right_thrust_joint_pub_;
