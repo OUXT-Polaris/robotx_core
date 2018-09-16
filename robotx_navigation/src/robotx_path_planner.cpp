@@ -79,6 +79,7 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
     robotx_msgs::SplinePath path_msg;
     path_msg.header.frame_id = _map_frame;
     path_msg.header.stamp = ros::Time::now();
+    /*
     if(filtered_clusters.size() == 0)
     {
         path_msg.waypoints.push_back(pose.pose.position);
@@ -125,7 +126,6 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
             p.z = 0;
             path_msg.waypoints.push_back(p);
         }
-        /*
         tk::spline spline_solver;
         std::vector<double> X(sorted_clusters.size()+2), Y(sorted_clusters.size()+2);
         X[0] = pose.pose.position.x;
@@ -157,13 +157,12 @@ void robotx_path_planner::_pose_callback(const geometry_msgs::PoseStampedConstPt
         X[sorted_clusters.size()+1] = _goal_pose.pose.position.x;
         Y[sorted_clusters.size()+1] = _goal_pose.pose.position.y;
         spline_solver.set_points(X,Y);
-        */
-    }
+    }*/
     visualization_msgs::MarkerArray empty_marker_array;
     _marker_pub.publish(empty_marker_array);
     visualization_msgs::MarkerArray marker_array = _generate_markers(clusters, path_msg);
     _marker_pub.publish(marker_array);
-    _path_pub.publish(path_msg);
+    //_path_pub.publish(path_msg);
     _mtx.unlock();
     return;
 }

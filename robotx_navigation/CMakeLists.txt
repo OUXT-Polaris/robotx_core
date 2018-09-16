@@ -27,6 +27,8 @@ find_package(catkin REQUIRED COMPONENTS
   message_filters
 )
 
+find_package(Eigen3 REQUIRED)
+
 catkin_package()
 
 ###########
@@ -73,7 +75,8 @@ add_dependencies(ndt_mapping_node robotx_msgs_generate_messages_cpp)
 #add_document(ndt_mapping_node)
 #clang_format(ndt_mapping_node)
 
-add_executable(robotx_path_planner_node src/robotx_path_planner_node.cpp src/robotx_path_planner.cpp src/euclidean_cluster_buffer.cpp)
+add_executable(robotx_path_planner_node src/robotx_path_planner_node.cpp src/robotx_path_planner.cpp 
+  src/euclidean_cluster_buffer.cpp src/xmeans_solver.cpp src/kmeans_solver.cpp)
 target_link_libraries(robotx_path_planner_node ${catkin_LIBRARIES})
 add_dependencies(robotx_path_planner_node robotx_msgs_generate_messages_cpp)
 
