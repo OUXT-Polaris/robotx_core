@@ -75,7 +75,7 @@ target_link_libraries(ndt_mapping_node ${catkin_LIBRARIES})
 
 add_executable(simple_navigator_node src/simple_navigator_node.cpp src/simple_navigator.cpp 
   src/euclidean_cluster_buffer.cpp)
-target_link_libraries(simple_navigator_node ${catkin_LIBRARIES})
+target_link_libraries(simple_navigator_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
 add_dependencies(simple_navigator_node robotx_msgs_generate_messages_cpp)
 
 #############
