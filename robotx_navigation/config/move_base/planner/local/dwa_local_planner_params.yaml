@@ -2,19 +2,19 @@ base_local_planner: dwa_local_planner/DWAPlannerROS
 DWAPlannerROS:
   global_frame_id: world
   # Robot configuration parameters  
-  acc_lim_x: 0.75
+  acc_lim_x: 5.0
   acc_lim_y: 0
-  acc_lim_th: 0.2
+  acc_lim_th: 2.5
 
-  max_vel_x: 0.2
-  min_vel_x: -0.1
+  max_vel_x: 10.0
+  min_vel_x: 0.0
   max_vel_y: 0
   min_vel_y: 0
 
-  max_trans_vel: 1.1
-  min_trans_vel: -0.25
-  max_rot_vel: 0.3
-  min_rot_vel: -0.3
+  max_trans_vel: 10.0
+  min_trans_vel: 0.0
+  max_rot_vel: 10.0
+  min_rot_vel: -10.0
 
   # Goal Tolerance Parameters
   yaw_goal_tolerance: 0.3
@@ -37,7 +37,7 @@ DWAPlannerROS:
   # The weighting for how much the controller should attempt to avoid obstacles
   occdist_scale: 0.2
   # The distance from the center point of the robot to place an additional scoring point, in meters
-  forward_point_distance: 0.5
+  forward_point_distance: 2.0
   # The amount of time that the robot must stThe absolute value of the veolicty at which to start scaling the robot's footprint, in m/sop before a collision in order for a trajectory to be considered valid in seconds
   stop_time_buffer: 3.0
   # The absolute value of the veolicty at which to start scaling the robot's footprint, in m/s

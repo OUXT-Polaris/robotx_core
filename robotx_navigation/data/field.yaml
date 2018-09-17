@@ -1,4 +1,4 @@
-image: field.png
+image: field.pgm
 resolution: 1
 origin: [200.0, 200.0, 0.0]
 occupied_thresh: 0.65
