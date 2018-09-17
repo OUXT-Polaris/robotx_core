@@ -7,15 +7,13 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   geometry_msgs
   std_msgs
-  nav_msgs
-  sensor_msgs
-)
+ )
 
 ###################################
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-CATKIN_DEPENDS roscpp std_msgs geometry_msgs nav_msgs sensor_msgs
+CATKIN_DEPENDS roscpp std_msgs geometry_msgs
 )
 
 ###########
