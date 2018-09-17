@@ -6,8 +6,8 @@
 
 // messages to use
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Vector3Stamped.h>
 #include <std_msgs/Float32.h>
-#include <nav_msgs/Odometry.h>
 
 // for std lib
 #include <iostream>
@@ -23,7 +23,7 @@ namespace robotx {
 
     private:
       void CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg);
-      void CurStateCallback(const nav_msgs::Odometry::ConstPtr &msg);
+      void CurStateCallback(const geometry_msgs::Vector3Stamped::ConstPtr &msg);
 
       // node handler
       ros::NodeHandle nh_;
@@ -37,7 +37,7 @@ namespace robotx {
 
       // tmp_messages
       geometry_msgs::Twist cmd_vel_;
-      nav_msgs::Odometry current_state_;
+      geometry_msgs::Vector3Stamped current_state_;
 
       // subscribe message mutex
       std::mutex cmd_vel_mtx_;

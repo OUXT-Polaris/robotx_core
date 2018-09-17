@@ -26,7 +26,7 @@ rc::Twist::Twist()
   right_control_msg_pub_ = nh_.advertise<std_msgs::Float32>("/right_thrust_cmd", 1);
 
   cmd_vel_sub_ = nh_.subscribe("/cmd_vel", 1, &rc::Twist::CmdVelCallback, this);
-  current_state_sub_ = nh_.subscribe("/base_pose_ground_truth", 1,
+  current_state_sub_ = nh_.subscribe("/fix_velocity", 1,
                                      &rc::Twist::CurStateCallback, this);
 
   // publish to stop
@@ -47,7 +47,7 @@ void rc::Twist::CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg) {
   cmd_vel_mtx_.unlock();
 }
 
-void rc::Twist::CurStateCallback(const nav_msgs::Odometry::ConstPtr &msg) {
+void rc::Twist::CurStateCallback(const geometry_msgs::Vector3Stamped::ConstPtr &msg) {
   current_state_mtx_.lock();
   current_state_ = *msg;
   current_state_mtx_.unlock();
@@ -65,9 +65,11 @@ void rc::Twist::CtrlUpdate() {
     double current_vel = 0;
     double current_ang_vel = 0;
     current_state_mtx_.lock();
-    current_vel = sqrt(pow(current_state_.twist.twist.linear.x, 2) +
-                       pow(current_state_.twist.twist.linear.y, 2));
-    current_ang_vel= current_state_.twist.twist.angular.z;
+    current_vel = current_state_.vector.x;
+    current_ang_vel = current_state_.vector.z;
+    // current_vel = sqrt(pow(current_state_.twist.twist.linear.x, 2) +
+    //                    pow(current_state_.twist.twist.linear.y, 2));
+    // current_ang_vel= current_state_.twist.twist.angular.z;
     current_state_mtx_.unlock();
 
     // get objective velocity
