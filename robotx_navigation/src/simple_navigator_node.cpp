@@ -5,8 +5,7 @@
 
 int main(int argc, char *argv[]) {
   ros::init(argc, argv, "simple_navigator_node");
-  
-  //simple_navigator nav;
+  simple_navigator nav;
   ros::spin();
   return 0;
 }

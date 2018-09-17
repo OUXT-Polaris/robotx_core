@@ -8,6 +8,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/TwistStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <ros/ros.h>
 #include <sensor_msgs/NavSatFix.h>
@@ -67,6 +68,7 @@ class robotx_localization {
   boost::thread thread_update_frame_;
   ros::Subscriber fix_sub_;
   ros::Subscriber twist_sub_;
+  ros::Publisher twist_stamped_pub_;
   ros::Publisher init_fix_pub_;
   ros::Publisher robot_pose_pub_;
   ros::Publisher odom_pub_;

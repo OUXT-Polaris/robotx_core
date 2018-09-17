@@ -13,6 +13,7 @@ robotx_localization::robotx_localization() : params_() {
   robot_pose_pub_ = nh_.advertise<geometry_msgs::PoseStamped>("/robot_pose", 1);
   odom_pub_ = nh_.advertise<nav_msgs::Odometry>("/odom", 1);
   init_fix_pub_ = nh_.advertise<sensor_msgs::NavSatFix>("/origin/fix", 1);
+  twist_stamped_pub_ = nh_.advertise<geometry_msgs::TwistStamped>("/vel_stamped", 1);
   fix_sub_ = nh_.subscribe(params_.fix_topic, 1, &robotx_localization::fix_callback_, this);
   twist_sub_ = nh_.subscribe(params_.twist_topic, 1, &robotx_localization::twist_callback_, this);
   thread_update_frame_ = boost::thread(boost::bind(&robotx_localization::update_frame_, this));
@@ -101,6 +102,7 @@ void robotx_localization::update_frame_() {
     twist_mutex_.unlock();
     rate.sleep();
   }
+  return;
 }
 
 void robotx_localization::fix_callback_(sensor_msgs::NavSatFix msg) {
@@ -110,10 +112,17 @@ void robotx_localization::fix_callback_(sensor_msgs::NavSatFix msg) {
   }
   last_fix_message_ = msg;
   fix_recieved_ = true;
+  return;
 }
 
 void robotx_localization::twist_callback_(geometry_msgs::Twist msg) {
   std::lock_guard<std::mutex> lock(twist_mutex_);
   last_twist_message_ = msg;
   twist_received_ = true;
+  geometry_msgs::TwistStamped twist_stamped_msg;
+  twist_stamped_msg.twist = msg;
+  twist_stamped_msg.header.frame_id = params_.robot_frame;
+  twist_stamped_msg.header.stamp = ros::Time::now();
+  twist_stamped_pub_.publish(twist_stamped_msg);
+  return;
 }
