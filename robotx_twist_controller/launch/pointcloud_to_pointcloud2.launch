@@ -1,6 +1,0 @@
-<launch>
-  <node name="point_cloud_to_point_cloud2_node" pkg="prius_msg_converter" type="point_cloud_to_point_cloud2" output="screen">
-    <remap from="/prius/center_laser/scan2" to="points_raw"/>
-    <!-- <param name="frame_name" value="velodyne" type="string"/> -->
-  </node>
-</launch>
