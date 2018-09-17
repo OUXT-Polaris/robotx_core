@@ -44,10 +44,18 @@ public:
         std::lock_guard<std::mutex> lock(_mtx);
         _goal_pose = pose;
     }
-    robot_state_info get_robot_state()
+    boost::optional<robot_state_info> get_robot_state()
     {
+        std::lock_guard<std::mutex> lock(_mtx);
         robot_state_info ret(_current_twist,_current_pose,_goal_pose);
-        return ret;
+        if(ret.current_twist && ret.current_pose && ret.goal_pose)
+        {
+            return ret;
+        }
+        else
+        {
+            return boost::none;
+        }
     }
 private:
     std::mutex _mtx;

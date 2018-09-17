@@ -15,17 +15,8 @@
 //headers in ceres
 #include <ceres/ceres.h>
 
-struct cost_function
-{
-    template <typename T>
-    bool operator()(
-        const T* const radius,
-        const T* const rot,
-        T* residual
-    ) const {
-        residual[0] = 0;
-    };
-};
+//headers in boost
+#include <boost/optional.hpp>
 
 class simple_navigator
 {
@@ -42,14 +33,25 @@ private:
     message_filters::Subscriber<geometry_msgs::PoseStamped> _robot_pose_sub;
     message_filters::Subscriber<geometry_msgs::TwistStamped> _twist_sub;
     message_filters::Synchronizer<_sync_policy> _pose_twist_sync;
-    void _pose_callback(const geometry_msgs::PoseStampedConstPtr robot_pose,const geometry_msgs::TwistStampedConstPtr twist_msg);
-    //ros::Subscriber _robot_pose_sub;
-    //void _robot_pose_callback(const geometry_msgs::PoseStampedConstPtr msg);
+    void _pose_callback(const geometry_msgs::PoseStampedConstPtr robot_pose_msg,const geometry_msgs::TwistStampedConstPtr twist_msg);
+    robot_state _robot_state;
     double _publish_rate;
-    double _min_search_radius;
     double _max_search_radius;
     double _max_rotation_speed;
     double _max_speed;
+    double _target_duration;
+    boost::optional<double> _get_search_radius(robot_state_info state_info);
     ceres::Problem _problem;
+    struct cost_function
+    {
+        template <typename T>
+        bool operator()(
+            const T* const radius,
+            const T* const rot,
+            T* residual
+        ) const {
+            residual[0] = 0;
+        };
+    };
 };
 #endif  //SIMPLE_NAVIGATOR_H_INCLUDED
