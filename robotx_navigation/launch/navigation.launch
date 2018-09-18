@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
+<!--
   <include file="$(find robotx_navigation)/launch/move_base.launch">
   </include>
 
-<!--
   <rosparam command="load" file="$(find robotx_navigation)/config/obstacle_map_server.yaml" ns="obstacle_map_server_node"/>
   <node name="obstacle_map_server_node" pkg="robotx_navigation" type="obstacle_map_server_node" args="" output="screen" respawn="true">
   </node>
@@ -15,6 +15,10 @@
   
   <rosparam command="load" file="$(find robotx_navigation)/config/geographic_map_server.yaml" ns="geographic_map_server_node"/>
   <node name="geographic_map_server_node" pkg="robotx_navigation" type="geographic_map_server_node" args="" output="screen" respawn="true">
+  </node>
+
+  <rosparam command="load" file="$(find robotx_navigation)/config/simple_navigator.yaml" ns="simple_navigator_node"/>
+  <node name="simple_navigator_node" pkg="robotx_navigation" type="simple_navigator_node" args="" output="screen" respawn="true">
   </node>
   
 <!--
