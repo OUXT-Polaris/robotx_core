@@ -30,6 +30,12 @@ target_link_libraries(robotx_twist_controller ${catkin_LIBRARIES})
 #############
 ## Install ##
 #############
+foreach(programs robotx_twist_controller)
+  install(TARGETS ${programs}
+    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+endforeach(nodes)
+
 install(DIRECTORY include
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   )
