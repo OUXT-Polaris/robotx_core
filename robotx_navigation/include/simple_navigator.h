@@ -1,8 +1,8 @@
 #ifndef SIMPLE_NAVIGATOR_H_INCLUDED
 #define SIMPLE_NAVIGATOR_H_INCLUDED
 
-//headers in robotx_debag_tools
-#include <robotx_debag_tools/robotx_glog_tools.h>
+//headers in robotx_debug_tools
+#include <robotx_debug_tools/robotx_glog_tools.h>
 
 //headers in this package
 #include <robot_state.h>
@@ -61,8 +61,8 @@ private:
     std::string _map_frame;
     boost::shared_ptr<euclidean_cluster_buffer> _buffer;
     double _get_search_radius(robot_state_info state_info);
-    // debagger
-    robotx_glog_tool debag_tools;
+    // debugger
+    robotx_glog_tool debug_tools;
     // ceres params
     ceres::Problem _problem;
     struct cost_function

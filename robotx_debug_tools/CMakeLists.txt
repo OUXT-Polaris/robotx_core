@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robotx_debag_tools)
+project(robotx_debug_tools)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
@@ -67,7 +67,7 @@ install(DIRECTORY include/
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_robotx_debag_tools.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_robotx_debug_tools.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

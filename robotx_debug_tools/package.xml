@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>robotx_debag_tools</name>
+  <name>robotx_debug_tools</name>
   <version>0.0.0</version>
-  <description>The robotx_debag_tools package</description>
+  <description>The robotx_debug_tools package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->

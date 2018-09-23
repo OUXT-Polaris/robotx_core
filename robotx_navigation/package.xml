@@ -31,7 +31,7 @@
   <build_depend>python-bloom</build_depend>
   <build_depend>fakeroot</build_depend>
   <build_depend>libceres-dev</build_depend>
-  <build_depend>robotx_debag_tools</build_depend>
+  <build_depend>robotx_debug_tools</build_depend>
 
   <run_depend>geometry_msgs</run_depend>
   <run_depend>roscpp</run_depend>
@@ -60,5 +60,5 @@
   <run_depend>message_filters</run_depend>
   <run_depend>cog_publisher</run_depend>
   <run_depend>libceres-dev</run_depend>
-  <run_depend>robotx_debag_tools</run_depend>
+  <run_depend>robotx_debug_tools</run_depend>
 </package>
