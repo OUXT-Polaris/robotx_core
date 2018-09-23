@@ -7,3 +7,4 @@ buffer_length: 10.0
 max_cluster_length: 5.0
 min_cluster_length: 0.3
 map_frame: world
+robot_frame: base_link

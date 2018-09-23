@@ -29,6 +29,7 @@ public:
     euclidean_cluster_buffer(double buffer_length, std::string map_frame);
     ~euclidean_cluster_buffer();
     std::vector<cluster_data> get_cluster_data();
+    std::vector<cluster_data> get_cluster_data(std::string frame_name);
     void add_cluster_data(cluster_data data);
 private:
     std::mutex _mtx;

@@ -32,6 +32,7 @@ class simple_navigator
 public:
     simple_navigator();
     ~simple_navigator();
+    void run();
 private:
     typedef message_filters::sync_policies::ApproximateTime<geometry_msgs::PoseStamped, geometry_msgs::TwistStamped> _sync_policy;
     ros::NodeHandle _nh;
@@ -47,7 +48,7 @@ private:
     void _pose_callback(const geometry_msgs::PoseStampedConstPtr robot_pose_msg,const geometry_msgs::TwistStampedConstPtr twist_msg);
     void _publish_twist_cmd();
     void _publish_marker(double search_radius);
-    //double _get_distance(double r, double theta, );
+    double _get_distance(double r, double theta, cluster_data euclidean_cluster);
     robot_state _robot_state;
     double _publish_rate;
     double _max_search_radius;
@@ -57,8 +58,8 @@ private:
     double _min_cluster_length;
     double _max_cluster_length;
     double _buffer_length;
-    double _get_total_distance();
     std::string _map_frame;
+    std::string _robot_frame;
     boost::shared_ptr<euclidean_cluster_buffer> _buffer;
     double _get_search_radius(robot_state_info state_info);
     // debugger

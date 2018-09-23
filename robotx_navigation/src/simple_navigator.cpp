@@ -14,13 +14,13 @@ simple_navigator::simple_navigator() :
     _nh.param<double>(ros::this_node::getName()+"/max_cluster_length", _max_cluster_length, 5.0);
     _nh.param<double>(ros::this_node::getName()+"/min_cluster_length", _min_cluster_length, 0.3);
     _nh.param<std::string>(ros::this_node::getName()+"/map_frame", _map_frame, "map");
+    _nh.param<std::string>(ros::this_node::getName()+"/robot_frame", _robot_frame, "base_link");
     _marker_pub = _nh.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker", 1);
     _twist_cmd_pub = _nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
     _euclidean_cluster_sub = _nh.subscribe(ros::this_node::getName()+"/euclidean_cluster", 1, &simple_navigator::_euclidean_cluster_callback, this);
     _buffer = boost::make_shared<euclidean_cluster_buffer>(_buffer_length, _map_frame);
     _goal_pose_sub = _nh.subscribe("/move_base_simple/goal", 1, &simple_navigator::_goal_pose_callback, this);
     _pose_twist_sync.registerCallback(boost::bind(&simple_navigator::_pose_callback, this, _1, _2));
-    boost::thread pub_thread(boost::bind(&simple_navigator::_publish_twist_cmd, this));
 }
 
 simple_navigator::~simple_navigator()
@@ -28,12 +28,18 @@ simple_navigator::~simple_navigator()
 
 }
 
+void simple_navigator::run()
+{
+    boost::thread pub_thread(boost::bind(&simple_navigator::_publish_twist_cmd, this));
+}
+
 void simple_navigator::_publish_marker(double search_radius)
 {
     visualization_msgs::MarkerArray msg;
-    ros::Time now = ros::Time::now();
+    //ros::Time now = ros::Time::now();
     visualization_msgs::Marker circle_marker;
-    circle_marker.header.stamp = now;
+    circle_marker.header.stamp = ros::Time::now();
+    circle_marker.header.frame_id = "base_footprint";
     circle_marker.id = 0;
     circle_marker.type = circle_marker.CYLINDER;
     circle_marker.action = circle_marker.ADD;
@@ -44,8 +50,8 @@ void simple_navigator::_publish_marker(double search_radius)
     circle_marker.pose.orientation.y = 0;
     circle_marker.pose.orientation.z = 0;
     circle_marker.pose.orientation.w = 1;
-    circle_marker.scale.x = search_radius;
-    circle_marker.scale.y = search_radius;
+    circle_marker.scale.x = search_radius*2;
+    circle_marker.scale.y = search_radius*2;
     circle_marker.scale.z = 0.3;
     circle_marker.color.r = 0;
     circle_marker.color.g = 1;
@@ -74,6 +80,18 @@ void simple_navigator::_publish_twist_cmd()
     return;
 }
 
+double simple_navigator::_get_distance(double r, double theta, cluster_data euclidean_cluster)
+{
+    double distance = 0;
+    double phi = std::atan2(euclidean_cluster.point.point.y,euclidean_cluster.point.point.x);
+    if(0 < phi && phi < theta)
+    {
+        double l = std::sqrt(std::pow(euclidean_cluster.point.point.x-r,2)+std::pow(euclidean_cluster.point.point.y,2));
+        distance = l - r;
+    }
+    return distance;
+}
+
 double simple_navigator::_get_search_radius(robot_state_info state_info)
 {
     double radius;
@@ -86,7 +104,9 @@ double simple_navigator::_get_search_radius(robot_state_info state_info)
             std::sqrt(std::pow(state_info.current_pose->pose.position.x - state_info.goal_pose->pose.position.x,2) + 
                 std::pow(state_info.current_pose->pose.position.y - state_info.goal_pose->pose.position.y,2));
         if(radius > target_range)
+        {
             radius = target_range;
+        }
         //return radius;
     }
     if(radius > _max_search_radius)
