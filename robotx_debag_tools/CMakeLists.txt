@@ -25,7 +25,7 @@ include(glog-toolchain.cmake)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES robotx_glog_tools
-  CATKIN_DEPENDS libgoogle-glog-dev roscpp
+  #CATKIN_DEPENDS libgoogle-glog-dev roscpp
   DEPENDS system_lib
 )
 
@@ -41,8 +41,8 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(robotx_glog_tools src/robotx_glog_tools.cpp)
-target_link_libraries(robotx_glog_tools ${GLOG_LIBRARIES})
+add_library(robotx_glog_tools SHARED src/robotx_glog_tools.cpp)
+target_link_libraries(robotx_glog_tools ${catkin_LIBRARIES} ${GLOG_LIBRARIES})
 
 #############
 ## Install ##
@@ -56,6 +56,10 @@ install(TARGETS robotx_glog_tools
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY include/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
 #############

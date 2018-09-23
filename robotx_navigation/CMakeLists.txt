@@ -27,6 +27,7 @@ find_package(catkin REQUIRED COMPONENTS
   yaml_cpp_0_3
   pcl_ros
   message_filters
+  robotx_debag_tools
 )
 
 catkin_package()
