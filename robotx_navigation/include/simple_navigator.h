@@ -10,6 +10,8 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PointStamped.h>
 #include <geometry_msgs/TwistStamped.h>
+#include <geometry_msgs/Twist.h>
+#include <visualization_msgs/MarkerArray.h>
 #include <jsk_recognition_msgs/BoundingBoxArray.h>
 #include <message_filters/subscriber.h>
 #include <message_filters/sync_policies/approximate_time.h>
@@ -19,6 +21,8 @@
 
 //headers in boost
 #include <boost/optional.hpp>
+#include <boost/thread.hpp>
+#include <boost/bind.hpp>
 
 class simple_navigator
 {
@@ -29,6 +33,7 @@ private:
     typedef message_filters::sync_policies::ApproximateTime<geometry_msgs::PoseStamped, geometry_msgs::TwistStamped> _sync_policy;
     ros::NodeHandle _nh;
     ros::Publisher _marker_pub;
+    ros::Publisher _twist_cmd_pub;
     ros::Subscriber _euclidean_cluster_sub;
     void _euclidean_cluster_callback(const jsk_recognition_msgs::BoundingBoxArrayConstPtr msg);
     ros::Subscriber _goal_pose_sub;
@@ -37,6 +42,8 @@ private:
     message_filters::Subscriber<geometry_msgs::TwistStamped> _twist_sub;
     message_filters::Synchronizer<_sync_policy> _pose_twist_sync;
     void _pose_callback(const geometry_msgs::PoseStampedConstPtr robot_pose_msg,const geometry_msgs::TwistStampedConstPtr twist_msg);
+    void _publish_twist_cmd();
+    void _publish_marker(double search_radius);
     //double _get_distance(double r, double theta, );
     robot_state _robot_state;
     double _publish_rate;
@@ -47,9 +54,10 @@ private:
     double _min_cluster_length;
     double _max_cluster_length;
     double _buffer_length;
+    double _get_total_distance();
     std::string _map_frame;
     boost::shared_ptr<euclidean_cluster_buffer> _buffer;
-    boost::optional<double> _get_search_radius(robot_state_info state_info);
+    double _get_search_radius(robot_state_info state_info);
     ceres::Problem _problem;
     struct cost_function
     {

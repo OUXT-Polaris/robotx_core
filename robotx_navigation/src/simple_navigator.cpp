@@ -14,10 +14,13 @@ simple_navigator::simple_navigator() :
     _nh.param<double>(ros::this_node::getName()+"/max_cluster_length", _max_cluster_length, 5.0);
     _nh.param<double>(ros::this_node::getName()+"/min_cluster_length", _min_cluster_length, 0.3);
     _nh.param<std::string>(ros::this_node::getName()+"/map_frame", _map_frame, "map");
+    _marker_pub = _nh.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker", 1);
+    _twist_cmd_pub = _nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
     _euclidean_cluster_sub = _nh.subscribe(ros::this_node::getName()+"/euclidean_cluster", 1, &simple_navigator::_euclidean_cluster_callback, this);
     _buffer = boost::make_shared<euclidean_cluster_buffer>(_buffer_length, _map_frame);
     _goal_pose_sub = _nh.subscribe("/move_base_simple/goal", 1, &simple_navigator::_goal_pose_callback, this);
     _pose_twist_sync.registerCallback(boost::bind(&simple_navigator::_pose_callback, this, _1, _2));
+    boost::thread pub_thread(boost::bind(&simple_navigator::_publish_twist_cmd, this));
 }
 
 simple_navigator::~simple_navigator()
@@ -25,30 +28,72 @@ simple_navigator::~simple_navigator()
 
 }
 
-boost::optional<double> simple_navigator::_get_search_radius(robot_state_info state_info)
+void simple_navigator::_publish_marker(double search_radius)
 {
-    if(state_info.current_twist)
+    visualization_msgs::MarkerArray msg;
+    ros::Time now = ros::Time::now();
+    visualization_msgs::Marker circle_marker;
+    circle_marker.header.stamp = now;
+    circle_marker.id = 0;
+    circle_marker.type = circle_marker.CYLINDER;
+    circle_marker.action = circle_marker.ADD;
+    circle_marker.pose.position.x = 0;
+    circle_marker.pose.position.y = 0;
+    circle_marker.pose.position.z = 0;
+    circle_marker.pose.orientation.x = 0;
+    circle_marker.pose.orientation.y = 0;
+    circle_marker.pose.orientation.z = 0;
+    circle_marker.pose.orientation.w = 1;
+    circle_marker.scale.x = search_radius;
+    circle_marker.scale.y = search_radius;
+    circle_marker.scale.z = 0.3;
+    circle_marker.color.r = 0;
+    circle_marker.color.g = 1;
+    circle_marker.color.b = 0;
+    circle_marker.color.a = 0.5;
+    msg.markers.push_back(circle_marker);
+    _marker_pub.publish(msg);
+    return;
+}
+
+void simple_navigator::_publish_twist_cmd()
+{
+    ros::Rate rate(_publish_rate);
+    while(ros::ok())
     {
-        double radius;
-        double linear_vel = state_info.current_twist->twist.linear.x;
-        //double rot_vel = state_info.current_twist->twist.angular.z;
-        radius = std::fabs(linear_vel) * _target_duration;
-        if(state_info.current_pose && state_info.goal_pose)
+        boost::optional<robot_state_info> state_info = _robot_state.get_robot_state();
+        if(!state_info)
         {
-            double target_range = 
-                std::sqrt(std::pow(state_info.current_pose->pose.position.x - state_info.goal_pose->pose.position.x,2) + 
-                    std::pow(state_info.current_pose->pose.position.y - state_info.goal_pose->pose.position.y,2));
-            if(radius > target_range)
-                radius = target_range;
-            //return radius;
+            rate.sleep();
+            continue;
         }
-        if(radius > _max_search_radius)
-        {
-            radius = _max_search_radius;
-            return radius;
-        }
+        double search_radius = _get_search_radius(*state_info);
+        _publish_marker(search_radius);
+        rate.sleep();
     }
-    return boost::none;
+    return;
+}
+
+double simple_navigator::_get_search_radius(robot_state_info state_info)
+{
+    double radius;
+    double linear_vel = state_info.current_twist->twist.linear.x;
+    //double rot_vel = state_info.current_twist->twist.angular.z;
+    radius = std::fabs(linear_vel) * _target_duration;
+    if(state_info.current_pose && state_info.goal_pose)
+    {
+        double target_range = 
+            std::sqrt(std::pow(state_info.current_pose->pose.position.x - state_info.goal_pose->pose.position.x,2) + 
+                std::pow(state_info.current_pose->pose.position.y - state_info.goal_pose->pose.position.y,2));
+        if(radius > target_range)
+            radius = target_range;
+        //return radius;
+    }
+    if(radius > _max_search_radius)
+    {
+        radius = _max_search_radius;
+    }
+    return radius;
 }
 
 void simple_navigator::_goal_pose_callback(const geometry_msgs::PoseStampedConstPtr msg)
