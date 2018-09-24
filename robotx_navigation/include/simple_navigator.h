@@ -27,6 +27,9 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 
+//headers in STL
+#include <algorithm>
+
 class simple_navigator
 {
 public:
@@ -49,6 +52,7 @@ private:
     void _publish_twist_cmd();
     void _publish_marker(double search_radius);
     double _get_distance(double r, double theta, cluster_data euclidean_cluster);
+    boost::optional<double> _get_min_distance(double r, double theta, std::vector<cluster_data> euclidean_cluster);
     robot_state _robot_state;
     double _publish_rate;
     double _max_search_radius;

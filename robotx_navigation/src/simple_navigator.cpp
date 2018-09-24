@@ -73,6 +73,7 @@ void simple_navigator::_publish_twist_cmd()
             rate.sleep();
             continue;
         }
+        std::vector<cluster_data> cluster_data = _buffer->get_cluster_data(_robot_frame);
         double search_radius = _get_search_radius(*state_info);
         _publish_marker(search_radius);
         rate.sleep();
@@ -90,6 +91,20 @@ double simple_navigator::_get_distance(double r, double theta, cluster_data eucl
         distance = l - r;
     }
     return distance;
+}
+
+boost::optional<double> simple_navigator::_get_min_distance(double r, double theta, std::vector<cluster_data> euclidean_cluster)
+{
+    std::vector<double> dists(euclidean_cluster.size());
+    if(euclidean_cluster.size() == 0)
+    {
+        return boost::none;
+    }
+    for(int i =0; i<euclidean_cluster.size(); i++)
+    {
+        dists[i] = _get_distance(r,theta,euclidean_cluster[i]);
+    }
+    return *std::min_element(dists.begin(), dists.end());
 }
 
 double simple_navigator::_get_search_radius(robot_state_info state_info)
