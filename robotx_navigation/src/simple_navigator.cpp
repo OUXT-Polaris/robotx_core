@@ -60,7 +60,7 @@ void simple_navigator::_publish_marker(double search_radius)
     circle_marker.color.a = 0.5;
     msg.markers.push_back(circle_marker);
     _marker_pub.publish(msg);
-    return;
+    //return;
 }
 
 void simple_navigator::_publish_twist_cmd()
@@ -74,13 +74,23 @@ void simple_navigator::_publish_twist_cmd()
             rate.sleep();
             continue;
         }
-        std::vector<cluster_data> cluster_data = _buffer->get_cluster_data(_robot_frame);
+        std::vector<cluster_data> cluster_data;
+        try
+        {
+            cluster_data = _buffer->get_cluster_data(_robot_frame);
+        }
+        catch(...)
+        {
+            rate.sleep();
+            continue;
+        }
         double search_radius = _get_search_radius(*state_info);
         _publish_marker(search_radius);
         geometry_msgs::TransformStamped transform_stamped;
         geometry_msgs::PoseStamped transformed_goal_pose;
         try
         {
+            ROS_ERROR_STREAM(transform_stamped);
             transform_stamped = _tf_buffer.lookupTransform(_map_frame, _robot_frame, ros::Time(0));
             tf2::doTransform(*state_info->goal_pose, transformed_goal_pose, transform_stamped);
         }
@@ -89,11 +99,26 @@ void simple_navigator::_publish_twist_cmd()
             ROS_WARN("%s",ex.what());
             continue;
         }
+        /*
         if(cluster_data.size() == 0)
         {
+            double yaw;
+            yaw = M_PI-2*std::atan2(transformed_goal_pose.pose.position.y,transformed_goal_pose.pose.position.x);
+            double r = transformed_goal_pose.pose.position.y/std::sin(yaw);
+            double dt = r/
+            //double r,p,y;
+            //_getRPY(transformed_goal_pose.pose.orientation,r,p,y);
             rate.sleep();
             continue;
         }
+        double yaw;
+        yaw = M_PI-2*std::atan2(transformed_goal_pose.pose.position.y,transformed_goal_pose.pose.position.x);
+        double r = transformed_goal_pose.pose.position.y/std::sin(yaw);
+        geometry_msgs::TwistStamped twist_stamped = *state_info->current_twist;
+        double dt = r/twist_stamped.twist.linear.x;
+        */
+        geometry_msgs::Twist twist_cmd;
+        _twist_cmd_pub.publish(twist_cmd);
         rate.sleep();
     }
     return;
