@@ -13,32 +13,22 @@ euclidean_cluster_buffer::~euclidean_cluster_buffer()
 std::vector<cluster_data> euclidean_cluster_buffer::get_cluster_data(std::string frame_name)
 {
     std::vector<cluster_data> ret;
+    geometry_msgs::TransformStamped transform_stamped;
     _mtx.lock();
-    ros::Time now = ros::Time::now();
-    std::vector<boost::shared_ptr<cluster_data> > new_buffer;
-    for(auto cluster_itr = _buffer.begin(); cluster_itr != _buffer.end(); cluster_itr++)
+    for(int i=0; i<_buffer.size(); i++)
     {
-        boost::shared_ptr<cluster_data> cluster_ptr = *cluster_itr;
-        if(now - _buffer_length < cluster_ptr->point.header.stamp)
+        try
         {
             geometry_msgs::PointStamped transformed_point;
-            geometry_msgs::TransformStamped transform_stamped;
-            try
-            {
-                transform_stamped = _tf_buffer.lookupTransform(frame_name, cluster_ptr->point.header.frame_id, cluster_ptr->point.header.stamp);
-                tf2::doTransform(cluster_ptr->point, transformed_point, transform_stamped);
-            }
-            catch (tf2::TransformException &ex)
-            {
-                ROS_WARN("%s",ex.what());
-                continue;
-            }
-            new_buffer.push_back(*cluster_itr);
-            cluster_data data(transformed_point, cluster_ptr->radius);
-            ret.push_back(data);
+            transform_stamped = _tf_buffer.lookupTransform(_map_frame, frame_name, _buffer[i]->point.header.stamp);
+            tf2::doTransform(_buffer[i]->point, transformed_point, transform_stamped);
+            ret.push_back(cluster_data(transformed_point,_buffer[i]->radius));
+        }
+        catch (tf2::TransformException &ex)
+        {
+            ROS_WARN("%s",ex.what());
         }
     }
-    _buffer = new_buffer;
     _mtx.unlock();
     return ret;
 }
@@ -47,19 +37,10 @@ std::vector<cluster_data> euclidean_cluster_buffer::get_cluster_data()
 {
     std::vector<cluster_data> ret;
     _mtx.lock();
-    ros::Time now = ros::Time::now();
-    std::vector<boost::shared_ptr<cluster_data> > new_buffer;
-    for(auto cluster_itr = _buffer.begin(); cluster_itr != _buffer.end(); cluster_itr++)
+    for(int i=0; i<_buffer.size(); i++)
     {
-        boost::shared_ptr<cluster_data> cluster_ptr = *cluster_itr;
-        if(now - _buffer_length < cluster_ptr->point.header.stamp)
-        {
-            new_buffer.push_back(*cluster_itr);
-            cluster_data data(cluster_ptr->point, cluster_ptr->radius);
-            ret.push_back(data);
-        }
+        ret.push_back(*_buffer[i]);
     }
-    _buffer = new_buffer;
     _mtx.unlock();
     return ret;
 }
@@ -78,13 +59,12 @@ void euclidean_cluster_buffer::add_cluster_data(cluster_data data)
     {
         ROS_WARN("%s",ex.what());
     }
-    ros::Time now = ros::Time::now();
     std::vector<boost::shared_ptr<cluster_data> > new_buffer;
     new_buffer.push_back(boost::make_shared<cluster_data>(point,data.radius));
     for(auto cluster_itr = _buffer.begin(); cluster_itr != _buffer.end(); cluster_itr++)
     {
         boost::shared_ptr<cluster_data> cluster_ptr = *cluster_itr;
-        if(now - _buffer_length < cluster_ptr->point.header.stamp)
+        if(ros::Time::now() - _buffer_length < cluster_ptr->point.header.stamp)
         {
             new_buffer.push_back(*cluster_itr);
         }
