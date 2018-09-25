@@ -18,6 +18,10 @@
 #include <jsk_recognition_msgs/BoundingBoxArray.h>
 #include <message_filters/subscriber.h>
 #include <message_filters/sync_policies/approximate_time.h>
+#include <tf/LinearMath/Quaternion.h>
+#include <tf/LinearMath/Matrix3x3.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 //headers in ceres
 #include <ceres/ceres.h>
@@ -66,6 +70,9 @@ private:
     std::string _robot_frame;
     boost::shared_ptr<euclidean_cluster_buffer> _buffer;
     double _get_search_radius(robot_state_info state_info);
+    void _getRPY(const geometry_msgs::Quaternion &q,double &roll,double &pitch,double &yaw);
+    tf2_ros::Buffer _tf_buffer;
+    tf2_ros::TransformListener _tf_listener;
     // debugger
     robotx_glog_tool debug_tools;
     // ceres params
@@ -74,7 +81,6 @@ private:
     {
         template <typename T>
         bool operator()(
-            const T* const radius,
             const T* const rot,
             T* residual
         ) const {

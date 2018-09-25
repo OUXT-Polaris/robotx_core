@@ -3,7 +3,8 @@
 simple_navigator::simple_navigator() : 
     _twist_sub(_nh, "/vel_stamped", 1),
     _robot_pose_sub(_nh, "/robot_pose", 1),
-    _pose_twist_sync(_sync_policy(10), _robot_pose_sub, _twist_sub)
+    _pose_twist_sync(_sync_policy(10), _robot_pose_sub, _twist_sub),
+    _tf_listener(_tf_buffer)
 {
     _nh.param<double>(ros::this_node::getName()+"/max_search_radius", _max_search_radius, 20.0);
     _nh.param<double>(ros::this_node::getName()+"/max_rotation_speed", _max_rotation_speed, 0.3);
@@ -76,8 +77,32 @@ void simple_navigator::_publish_twist_cmd()
         std::vector<cluster_data> cluster_data = _buffer->get_cluster_data(_robot_frame);
         double search_radius = _get_search_radius(*state_info);
         _publish_marker(search_radius);
+        geometry_msgs::TransformStamped transform_stamped;
+        geometry_msgs::PoseStamped transformed_goal_pose;
+        try
+        {
+            transform_stamped = _tf_buffer.lookupTransform(_map_frame, _robot_frame, ros::Time(0));
+            tf2::doTransform(*state_info->goal_pose, transformed_goal_pose, transform_stamped);
+        }
+        catch (tf2::TransformException &ex)
+        {
+            ROS_WARN("%s",ex.what());
+            continue;
+        }
+        if(cluster_data.size() == 0)
+        {
+            rate.sleep();
+            continue;
+        }
         rate.sleep();
     }
+    return;
+}
+
+void simple_navigator::_getRPY(const geometry_msgs::Quaternion &q,double &roll,double &pitch,double &yaw)
+{
+    tf::Quaternion quat(q.x,q.y,q.z,q.w);
+    tf::Matrix3x3(quat).getRPY(roll, pitch, yaw);
     return;
 }
 
