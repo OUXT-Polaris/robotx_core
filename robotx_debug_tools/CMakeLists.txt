@@ -58,6 +58,10 @@ install(TARGETS robotx_glog_tools
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
+install(DIRECTORY include/robotx_debug_tools
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+
 #############
 ## Testing ##
 #############
