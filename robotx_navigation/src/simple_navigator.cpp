@@ -60,7 +60,7 @@ void simple_navigator::_publish_marker(double search_radius)
     circle_marker.color.a = 0.5;
     msg.markers.push_back(circle_marker);
     _marker_pub.publish(msg);
-    //return;
+    return;
 }
 
 void simple_navigator::_publish_twist_cmd()
@@ -75,6 +75,21 @@ void simple_navigator::_publish_twist_cmd()
             continue;
         }
         std::vector<cluster_data> cluster_data = _buffer->get_cluster_data(_robot_frame);
+        geometry_msgs::TransformStamped transform_stamped;
+        geometry_msgs::PoseStamped goal_pose = *state_info->goal_pose;
+        try
+        {
+            transform_stamped = _tf_buffer.lookupTransform(goal_pose.header.frame_id, _robot_frame, ros::Time(0));
+            tf2::doTransform(goal_pose, goal_pose, transform_stamped);
+        }
+        catch(tf2::TransformException &ex)
+        {
+            ROS_WARN("%s",ex.what());
+            rate.sleep();
+            continue;
+        }
+        double search_radius = _get_search_radius(*state_info);
+        _publish_marker(search_radius);
         geometry_msgs::Twist twist_cmd;
         _twist_cmd_pub.publish(twist_cmd);
         rate.sleep();
