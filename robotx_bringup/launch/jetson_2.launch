@@ -1,0 +1,4 @@
+<launch>
+  <!-- Launch camera -->
+  <include file="$(find robotx_bringup)/launch/uvc_camera.launch"/>
+</launch>
