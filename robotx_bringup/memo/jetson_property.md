@@ -1,5 +1,6 @@
 # jetson_0
 - IP : 192.168.10.100
+- ROS MASTER
 
 ### Description
 - 制御（操舵・スラスタ制御）
@@ -13,6 +14,7 @@
 
 # jetson_1
 - IP : 192.168.10.101
+- ROS CLIENT
 
 ### Desctiption
 - velodyne (AI_Pilot), velodyne（front）
@@ -26,6 +28,7 @@
 
 # jetson_2
 - IP : 192.168.10.102
+- ROS CLIENT
 
 ### Description
 - usb_cam
