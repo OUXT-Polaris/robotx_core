@@ -13,6 +13,7 @@
   <author email="groadpg@gmail.com">Ryodo Tanaka</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>robotx_debug_tools</exec_depend>
   <exec_depend>robotx_driver</exec_depend>
   <exec_depend>robotx_msgs</exec_depend>
   <exec_depend>robotx_navigation</exec_depend>
