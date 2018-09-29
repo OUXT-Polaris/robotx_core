@@ -16,11 +16,13 @@ simple_navigator::simple_navigator() :
     _nh.param<double>(ros::this_node::getName()+"/min_cluster_length", _min_cluster_length, 0.3);
     _nh.param<std::string>(ros::this_node::getName()+"/map_frame", _map_frame, "map");
     _nh.param<std::string>(ros::this_node::getName()+"/robot_frame", _robot_frame, "base_link");
+    _nh.param<std::string>(ros::this_node::getName()+"/goal_pose_topic", _goal_pose_topic, ros::this_node::getName()+"/goal_pose");
+    _nh.param<std::string>(ros::this_node::getName()+"/euclidean_cluster_topic", _euclidean_cluster_topic, ros::this_node::getName()+"/euclidean_clusters");
     _marker_pub = _nh.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker", 1);
     _twist_cmd_pub = _nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
-    _euclidean_cluster_sub = _nh.subscribe(ros::this_node::getName()+"/euclidean_cluster", 1, &simple_navigator::_euclidean_cluster_callback, this);
+    _euclidean_cluster_sub = _nh.subscribe(_euclidean_cluster_topic, 1, &simple_navigator::_euclidean_cluster_callback, this);
     _buffer = boost::make_shared<euclidean_cluster_buffer>(_buffer_length, _map_frame);
-    _goal_pose_sub = _nh.subscribe("/move_base_simple/goal", 1, &simple_navigator::_goal_pose_callback, this);
+    _goal_pose_sub = _nh.subscribe(_goal_pose_topic, 1, &simple_navigator::_goal_pose_callback, this);
     _pose_twist_sync.registerCallback(boost::bind(&simple_navigator::_pose_callback, this, _1, _2));
 }
 

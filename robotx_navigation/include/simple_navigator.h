@@ -68,6 +68,8 @@ private:
     double _buffer_length;
     std::string _map_frame;
     std::string _robot_frame;
+    std::string _goal_pose_topic;
+    std::string _euclidean_cluster_topic;
     boost::shared_ptr<euclidean_cluster_buffer> _buffer;
     double _get_search_radius(robot_state_info state_info);
     void _getRPY(const geometry_msgs::Quaternion &q,double &roll,double &pitch,double &yaw);

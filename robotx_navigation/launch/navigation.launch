@@ -19,7 +19,6 @@
 
   <rosparam command="load" file="$(find robotx_navigation)/config/simple_navigator.yaml" ns="simple_navigator_node"/>
   <node name="simple_navigator_node" pkg="robotx_navigation" type="simple_navigator_node" args="" output="screen" respawn="true">
-    <remap from="/simple_navigator_node/euclidean_cluster" to="/euclidean_clustering_node/bbox"/>
   </node>
   
 <!--
