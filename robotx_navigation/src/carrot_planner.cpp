@@ -7,9 +7,14 @@ carrot_planner::carrot_planner() : _tf_listener(_tf_buffer)
     _nh.param<std::string>(ros::this_node::getName()+"/goal_topic", _goal_topic, ros::this_node::getName()+"/goal_pose");
     _nh.param<std::string>(ros::this_node::getName()+"/tolerance_topic", _tolerance_topic, ros::this_node::getName()+"/tolerance");
     _nh.param<std::string>(ros::this_node::getName()+"/map_frame", _map_frame, "map");
-    _nh.param<double>(ros::this_node::getName()+"/default_torelancee", _torelance, 1.0);
+    _nh.param<std::string>(ros::this_node::getName()+"/linear_velocity_topic", _linear_velocity_topic, ros::this_node::getName()+"/linear_velocity");
+    _nh.param<double>(ros::this_node::getName()+"/default_linear_velocity", _linear_velocity, 0.1);
+    _nh.param<double>(ros::this_node::getName()+"/default_torelance", _torelance, 1.0);
     _nh.param<double>(ros::this_node::getName()+"/publish_rate", _publish_rate, 10);
+    _nh.param<double>(ros::this_node::getName()+"/linear_velocity", _linear_velocity, 0.1);
     _nh.param<std::string>(ros::this_node::getName()+"/robot_frame", _robot_frame,"base_link");
+    _nh.param<std::string>(ros::this_node::getName()+"/twist_topic", _twist_topic, ros::this_node::getName()+"/twist_cmd");
+    _twist_pub = _nh.advertise<geometry_msgs::Twist>(_twist_topic,1);
     _tolerance_sub = _nh.subscribe(_tolerance_topic,1,&carrot_planner::_torelance_callback,this);
     _goal_pose_sub = _nh.subscribe(_goal_topic,1,&carrot_planner::_goal_pose_callback,this);
 }
@@ -17,6 +22,14 @@ carrot_planner::carrot_planner() : _tf_listener(_tf_buffer)
 carrot_planner::~carrot_planner()
 {
 
+}
+
+void carrot_planner::_linear_velocity_callback(const std_msgs::Float64::ConstPtr msg)
+{
+    std::unique_lock<std::mutex> lock(_mtx);
+    _linear_velocity = msg->data;
+    lock.unlock();
+    return;
 }
 
 void carrot_planner::_torelance_callback(const std_msgs::Float64::ConstPtr msg)
@@ -57,17 +70,18 @@ void carrot_planner::run()
     while(ros::ok())
     {
         std::unique_lock<std::mutex> lock(_mtx);
+        geometry_msgs::Twist twist_cmd;
         if(!_goal_recieved)
         {
             lock.unlock();
             rate.sleep();
             continue;
         }
-        if(_goal_pose.header.frame_id != _robot_frame)
+        if(_map_frame != _robot_frame)
         {
             try
             {
-                transform_stamped = _tf_buffer.lookupTransform(_robot_frame, _goal_pose.header.frame_id,ros::Time(0));
+                transform_stamped = _tf_buffer.lookupTransform(_robot_frame, _map_frame,ros::Time(0));
             }
             catch(tf2::TransformException &ex)
             {
@@ -77,6 +91,36 @@ void carrot_planner::run()
                 continue;
             }
         }
+        geometry_msgs::PoseStamped transformed_pose;
+        tf2::doTransform(_goal_pose, transformed_pose, transform_stamped);
+        double radius = std::sqrt(std::pow(transformed_pose.pose.position.x,2)+std::pow(transformed_pose.pose.position.y,2));
+        tf::Quaternion q(transformed_pose.pose.orientation.x, transformed_pose.pose.orientation.y, transformed_pose.pose.orientation.z, transformed_pose.pose.orientation.w);
+        tf::Matrix3x3 m(q);
+        double roll, pitch, yaw;
+        m.getRPY(roll, pitch, yaw);
+        if(radius < _torelance)
+        {
+            if(yaw < 0)
+            {
+                twist_cmd.linear.x = 0;
+                twist_cmd.linear.y = 0;
+                twist_cmd.angular.z = 0.1;
+            }
+            if(yaw > 0)
+            {
+                twist_cmd.linear.x = 0;
+                twist_cmd.linear.y = 0;
+                twist_cmd.angular.z = -0.1;
+            }
+        }
+        else
+        {
+            double dt = (radius*yaw)/(_linear_velocity*std::sin(yaw));
+            twist_cmd.linear.x = _linear_velocity;
+            twist_cmd.linear.y = 0;
+            twist_cmd.angular.z = yaw/dt;
+        }
+        _twist_pub.publish(twist_cmd);
         lock.unlock();
         rate.sleep();
     }

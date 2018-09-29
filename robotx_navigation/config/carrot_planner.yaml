@@ -1,5 +1,8 @@
 goal_topic: /move_base_simple/goal
-tolerance_radius: 1.0
+linear_velocity_topic: /carrot_planner_node/linear_velocity
+twist_topic: /cmd_vel
+default_torelance: 1.0
+default_linear_velocity: 0.3
 robot_frame: base_link
 map_frame: world
 publish_rate: 30
