@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>robotx_bringup</name>
+  <version>0.0.0</version>
+  <description>The robotx_bringup package</description>
+
+  <maintainer email="groadpg@gmail.common">RyodoTanaka</maintainer>
+  <author>Ryodo Tanaka</author>
+  <license>GPL</license>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>velodyne_pointcloud</exec_depend>
+  <exec_depend>uvc_camera</exec_depend>
+  <exec_depend>nmea_navsat_driver</exec_depend>
+  <exec_depend>dynamixel_workbench</exec_depend>
+  <exec_depend>robotx_hardware_interface</exec_depend>
+
+</package>
