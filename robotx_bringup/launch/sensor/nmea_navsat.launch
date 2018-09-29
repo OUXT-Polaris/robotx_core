@@ -1,0 +1,14 @@
+<launch>
+  <!-- Necessary arguments for using the GPS device on a vehicle -->
+    <arg name="port" default="/dev/ttyUSB0" />
+    <arg name="baud" default="19200" />
+    <arg name="frame_id" default="gps" />
+
+    <!-- Launch navsat driver node -->
+    <node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="nmea_gps" >
+        <param name="port" value="$(arg port)"/>
+        <param name="baud" value="$(arg baud)"/>
+        <param name="frame_id" value="$(arg frame_id)"/>
+</node>
+  
+</launch>
