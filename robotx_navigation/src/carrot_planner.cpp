@@ -104,12 +104,12 @@ void carrot_planner::_publish_twist_cmd()
         geometry_msgs::PoseStamped transformed_pose;
         tf2::doTransform(_goal_pose, transformed_pose, transform_stamped);
         double radius = std::sqrt(std::pow(transformed_pose.pose.position.x,2)+std::pow(transformed_pose.pose.position.y,2));
-        tf::Quaternion q(transformed_pose.pose.orientation.x, transformed_pose.pose.orientation.y, transformed_pose.pose.orientation.z, transformed_pose.pose.orientation.w);
-        tf::Matrix3x3 m(q);
-        double roll, pitch, yaw;
-        m.getRPY(roll, pitch, yaw);
         if(radius < _torelance)
         {
+            tf::Quaternion q(transformed_pose.pose.orientation.x, transformed_pose.pose.orientation.y, transformed_pose.pose.orientation.z, transformed_pose.pose.orientation.w);
+            tf::Matrix3x3 m(q);
+            double roll, pitch, yaw;
+            m.getRPY(roll, pitch, yaw);
             if(yaw < 0)
             {
                 twist_cmd.linear.x = 0;
@@ -125,10 +125,11 @@ void carrot_planner::_publish_twist_cmd()
         }
         else
         {
-            double dt = (radius*yaw)/(_linear_velocity*std::sin(yaw));
+            double theta = std::atan2(transformed_pose.pose.position.y,transformed_pose.pose.position.x);
+            double dt = std::fabs((radius*theta)/(_linear_velocity*std::sin(theta)));
             twist_cmd.linear.x = _linear_velocity;
             twist_cmd.linear.y = 0;
-            twist_cmd.angular.z = yaw/dt;
+            twist_cmd.angular.z = theta/dt;
         }
         _twist_pub.publish(twist_cmd);
         lock.unlock();
