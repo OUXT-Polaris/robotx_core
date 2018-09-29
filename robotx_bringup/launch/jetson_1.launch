@@ -1,0 +1,7 @@
+<launch>
+  <!-- Launch Velodynes -->
+  <include file="$(find robotx_bringup)/launch/sensor/velodyne.launch"/>
+
+  <!-- Launch euclidean_cluster -->
+  <include file="$(find robotx_recognition)/launch/recognition.launch"/>
+</launch>
