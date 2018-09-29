@@ -14,6 +14,7 @@ carrot_planner::carrot_planner() : _tf_listener(_tf_buffer)
     _nh.param<std::string>(ros::this_node::getName()+"/robot_frame", _robot_frame,"base_link");
     _nh.param<std::string>(ros::this_node::getName()+"/twist_topic", _twist_topic, ros::this_node::getName()+"/twist_cmd");
     _twist_pub = _nh.advertise<geometry_msgs::Twist>(_twist_topic,1);
+    _status_pub = _nh.advertise<jsk_rviz_plugins::OverlayText>(ros::this_node::getName()+"/status",1);
     _tolerance_sub = _nh.subscribe(_tolerance_topic,1,&carrot_planner::_torelance_callback,this);
     _goal_pose_sub = _nh.subscribe(_goal_topic,1,&carrot_planner::_goal_pose_callback,this);
     _linear_velocity_sub = _nh.subscribe(_linear_velocity_topic,1,&carrot_planner::_linear_velocity_callback,this);
@@ -77,12 +78,30 @@ void carrot_planner::_publish_twist_cmd()
 {
     ros::Rate rate(_publish_rate);
     geometry_msgs::TransformStamped transform_stamped;
+    jsk_rviz_plugins::OverlayText text;
+    text.action = text.ADD;
+    text.width = 320;
+    text.height = 50;
+    text.left = 0;
+    text.top = 0;
+    text.bg_color.r = 0;
+    text.bg_color.g = 0;
+    text.bg_color.b = 0;
+    text.bg_color.a = 0.5;
+    text.line_width = 20;
+    text.text_size = 20;
+    text.fg_color.r = 0;
+    text.fg_color.g = 1.0;
+    text.fg_color.b = 1.0;
+    text.fg_color.a = 1.0;
     while(ros::ok())
     {
         std::unique_lock<std::mutex> lock(_mtx);
         geometry_msgs::Twist twist_cmd;
         if(_goal_recieved == false)
         {
+            text.text = "no goal pose";
+            _status_pub.publish(text);
             lock.unlock();
             rate.sleep();
             continue;
@@ -96,6 +115,8 @@ void carrot_planner::_publish_twist_cmd()
             catch(tf2::TransformException &ex)
             {
                 ROS_ERROR("%s",ex.what());
+                text.text = "failed to transform goal pose";
+                _status_pub.publish(text);
                 lock.unlock();
                 rate.sleep();
                 continue;
@@ -112,12 +133,16 @@ void carrot_planner::_publish_twist_cmd()
             m.getRPY(roll, pitch, yaw);
             if(yaw < 0)
             {
+                text.text = "align to goal pose";
+                _status_pub.publish(text);
                 twist_cmd.linear.x = 0;
                 twist_cmd.linear.y = 0;
                 twist_cmd.angular.z = 0.1;
             }
-            if(yaw > 0)
+            else
             {
+                text.text = "align to goal pose";
+                _status_pub.publish(text);
                 twist_cmd.linear.x = 0;
                 twist_cmd.linear.y = 0;
                 twist_cmd.angular.z = -0.1;
@@ -126,10 +151,46 @@ void carrot_planner::_publish_twist_cmd()
         else
         {
             double theta = std::atan2(transformed_pose.pose.position.y,transformed_pose.pose.position.x);
-            double dt = std::fabs((radius*theta)/(_linear_velocity*std::sin(theta)));
-            twist_cmd.linear.x = _linear_velocity;
-            twist_cmd.linear.y = 0;
-            twist_cmd.angular.z = theta/dt;
+            if(-0.5*M_PI < theta && theta < 0.5*M_PI)
+            {
+                if(fabs(theta) < 0.2)
+                {
+                    text.text = "moveing to goal pose";
+                    _status_pub.publish(text);
+                    double dt = std::fabs((radius*theta)/(_linear_velocity*std::sin(theta)));
+                    twist_cmd.linear.x = _linear_velocity;
+                    twist_cmd.linear.y = 0;
+                    twist_cmd.angular.z = theta/dt;
+                }
+                else
+                {
+                    text.text = "heading to goal pose";
+                    _status_pub.publish(text);
+                    twist_cmd.linear.x = 0;
+                    twist_cmd.linear.y = 0;
+                    twist_cmd.angular.z = 0.3;                    
+                }
+            }
+            else
+            {
+                if(theta > M_PI-0.2 || theta < -M_PI+0.2)
+                {
+                    text.text = "moveing to goal pose";
+                    _status_pub.publish(text);
+                    double dt = std::fabs((radius*theta)/(_linear_velocity*std::sin(theta)));
+                    twist_cmd.linear.x = -1*_linear_velocity;
+                    twist_cmd.linear.y = 0;
+                    twist_cmd.angular.z = -theta/dt;
+                }
+                else
+                {
+                    text.text = "heading to goal pose";
+                    _status_pub.publish(text);
+                    twist_cmd.linear.x = 0;
+                    twist_cmd.linear.y = 0;
+                    twist_cmd.angular.z = -0.3;                    
+                }
+            }
         }
         _twist_pub.publish(twist_cmd);
         lock.unlock();

@@ -14,6 +14,7 @@
 #include <std_msgs/Float64.h>
 #include <visualization_msgs/Marker.h>
 #include <tf/transform_datatypes.h>
+#include <jsk_rviz_plugins/OverlayText.h>
 
 //headers in Boost
 #include <boost/thread.hpp>
@@ -46,6 +47,7 @@ private:
     ros::Subscriber _goal_pose_sub;
     ros::Subscriber _linear_velocity_sub;
     ros::Publisher _twist_pub;
+    ros::Publisher _status_pub;
     geometry_msgs::PoseStamped _goal_pose;
     tf2_ros::Buffer _tf_buffer;
     tf2_ros::TransformListener _tf_listener;
