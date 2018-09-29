@@ -11,12 +11,12 @@ carrot_planner::carrot_planner() : _tf_listener(_tf_buffer)
     _nh.param<double>(ros::this_node::getName()+"/default_linear_velocity", _linear_velocity, 0.1);
     _nh.param<double>(ros::this_node::getName()+"/default_torelance", _torelance, 1.0);
     _nh.param<double>(ros::this_node::getName()+"/publish_rate", _publish_rate, 10);
-    _nh.param<double>(ros::this_node::getName()+"/linear_velocity", _linear_velocity, 0.1);
     _nh.param<std::string>(ros::this_node::getName()+"/robot_frame", _robot_frame,"base_link");
     _nh.param<std::string>(ros::this_node::getName()+"/twist_topic", _twist_topic, ros::this_node::getName()+"/twist_cmd");
     _twist_pub = _nh.advertise<geometry_msgs::Twist>(_twist_topic,1);
     _tolerance_sub = _nh.subscribe(_tolerance_topic,1,&carrot_planner::_torelance_callback,this);
     _goal_pose_sub = _nh.subscribe(_goal_topic,1,&carrot_planner::_goal_pose_callback,this);
+    _linear_velocity_sub = _nh.subscribe(_linear_velocity_topic,1,&carrot_planner::_linear_velocity_callback,this);
 }
 
 carrot_planner::~carrot_planner()
@@ -48,16 +48,20 @@ void carrot_planner::_goal_pose_callback(geometry_msgs::PoseStamped msg)
     {
         try
         {
-            transform_stamped = _tf_buffer.lookupTransform(_map_frame, _goal_pose.header.frame_id,ros::Time(0));
+            transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg.header.frame_id,ros::Time(0));
+            tf2::doTransform(msg, _goal_pose, transform_stamped);
         }
         catch(tf2::TransformException &ex)
         {
-            ROS_WARN("%s",ex.what());
+            ROS_ERROR("%s",ex.what());
             lock.unlock();
             return;
         }
     }
-    tf2::doTransform(msg, _goal_pose, transform_stamped);
+    else
+    {
+        _goal_pose = msg;
+    }
     _goal_recieved = true;
     lock.unlock();
     return;
@@ -65,13 +69,19 @@ void carrot_planner::_goal_pose_callback(geometry_msgs::PoseStamped msg)
 
 void carrot_planner::run()
 {
+    boost::thread cmd_publish_thread(boost::bind(&carrot_planner::_publish_twist_cmd,this));
+    return;
+}
+
+void carrot_planner::_publish_twist_cmd()
+{
     ros::Rate rate(_publish_rate);
     geometry_msgs::TransformStamped transform_stamped;
     while(ros::ok())
     {
         std::unique_lock<std::mutex> lock(_mtx);
         geometry_msgs::Twist twist_cmd;
-        if(!_goal_recieved)
+        if(_goal_recieved == false)
         {
             lock.unlock();
             rate.sleep();
@@ -85,7 +95,7 @@ void carrot_planner::run()
             }
             catch(tf2::TransformException &ex)
             {
-                ROS_WARN("%s",ex.what());
+                ROS_ERROR("%s",ex.what());
                 lock.unlock();
                 rate.sleep();
                 continue;

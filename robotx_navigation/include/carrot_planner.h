@@ -15,6 +15,10 @@
 #include <visualization_msgs/Marker.h>
 #include <tf/transform_datatypes.h>
 
+//headers in Boost
+#include <boost/thread.hpp>
+#include <boost/bind.hpp>
+
 class carrot_planner
 {
 public:
@@ -25,6 +29,7 @@ private:
     void _linear_velocity_callback(const std_msgs::Float64::ConstPtr msg);
     void _torelance_callback(const std_msgs::Float64::ConstPtr msg);
     void _goal_pose_callback(geometry_msgs::PoseStamped msg);
+    void _publish_twist_cmd();
     std::string _goal_topic;
     std::string _tolerance_topic;
     std::string _robot_frame;
@@ -39,6 +44,7 @@ private:
     ros::NodeHandle _nh;
     ros::Subscriber _tolerance_sub;
     ros::Subscriber _goal_pose_sub;
+    ros::Subscriber _linear_velocity_sub;
     ros::Publisher _twist_pub;
     geometry_msgs::PoseStamped _goal_pose;
     tf2_ros::Buffer _tf_buffer;
