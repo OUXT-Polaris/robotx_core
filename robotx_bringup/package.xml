@@ -13,6 +13,6 @@
   <exec_depend>uvc_camera</exec_depend>
   <exec_depend>nmea_navsat_driver</exec_depend>
   <exec_depend>dynamixel_workbench</exec_depend>
-  <exec_depend>robotx_hardware_interface</exec_depend>
+  <exec_depend>robotx_driver</exec_depend>
 
 </package>
