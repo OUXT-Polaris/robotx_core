@@ -4,14 +4,14 @@
 
   <xacro:macro name="velodyne_v0">
     <!-- Velodyne Link+Joint+Plugin -->
-    <xacro:VLP-16 parent="base_link" name="velodyne"
-                  topic="/velodyne_points"
+    <xacro:VLP-16 parent="base_link" name="front_velodyne"
+                  topic="/front_velodyne_points"
                   hz="10" samples="440">
       <origin xyz="0.6 0 1.8" rpy="0 0 0" />
     </xacro:VLP-16>
     <!-- Velodyne Link+Joint+Plugin -->
-    <xacro:VLP-16 parent="base_link" name="velodyne2"
-                  topic="/velodyne2_points"
+    <xacro:VLP-16 parent="base_link" name="ai_pilot_velodyne"
+                  topic="/ai_pilot_velodyne_points"
                   hz="10" samples="440">
       <origin xyz="1.5 0 0.8" rpy="0 0 0" />
     </xacro:VLP-16>

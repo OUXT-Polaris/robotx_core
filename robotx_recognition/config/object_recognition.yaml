@@ -1,4 +1,4 @@
-input_cloud: /velodyne_points
+input_cloud: /front_velodyne_points
 target_objects:
   buoy:
     stl_filename: BUOY.stl

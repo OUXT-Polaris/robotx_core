@@ -1,2 +1,2 @@
-pointcloud1_topic: /velodyne_points
-pointcloud2_topic: /velodyne2_points/filterd
+pointcloud1_topic: /front_velodyne_points
+pointcloud2_topic: /ai_pilot_velodyne_points/filterd

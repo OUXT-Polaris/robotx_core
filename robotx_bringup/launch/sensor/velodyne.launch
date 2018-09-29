@@ -1,0 +1,24 @@
+<launch>
+
+  <!-- IP address -->
+  <arg name="ai_pilot_ip" default="192.168.10.10"/>
+  <arg name="front_ip" default="192.168.10.11"/>
+  <!-- Pcap file -->
+  <arg name="ai_pilot_pcap" default=""/>
+  <arg name="front_pcap" default=""/>
+  
+  <!-- AI Pilot -->
+  <include file="$(find velodyne_pontcloud)/VLP_points.launch">
+    <arg name="device_ip" value="$(arg ai_pilot_ip)"/>
+    <arg name="frame_id" value="ai_pilot_velodyne"/>
+    <arg name="pcap" value="$(arg ai_pilot_pcap)"/>
+  </include>
+  
+  <!-- Front -->
+  <include file="$(find velodyne_pontcloud)/VLP_points.launch">
+    <arg name="device_ip" value="$(arg front_ip)"/>
+    <arg name="frame_id" value="front_velodyne"/>
+    <arg name="pcap" value="$(arg front_pcap)"/>
+  </include>
+  
+</launch>
