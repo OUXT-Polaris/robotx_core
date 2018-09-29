@@ -1,0 +1,13 @@
+<launch>
+  <!-- Load hardware devices -->
+  <include file="$(find robotx_driver)/hardware.launch"/>
+  <!-- Load GPS, Speed sensor -->
+  <include file="$(find robotx_bringup)/launch/sensor/nmea_navsat.launch"/>
+
+  <!-- Load Twist controller -->
+  <include file="$(find robotx_twist_controller)/launch/twist_controller.launch"/>
+
+  <!-- Load Localization -->
+  <include file="$(find robotx_navigation)/launch/localization.launch"/>
+  
+</launch>
