@@ -1,1 +1,5 @@
-map_topic: obstacle_map
+goal_topic: /move_base_simple/goal
+tolerance_radius: 1.0
+robot_frame: base_link
+map_frame: world
+publish_rate: 30

@@ -16,6 +16,10 @@
   <rosparam command="load" file="$(find robotx_navigation)/config/geographic_map_server.yaml" ns="geographic_map_server_node"/>
   <node name="geographic_map_server_node" pkg="robotx_navigation" type="geographic_map_server_node" args="" output="screen" respawn="true">
   </node>
+
+  <rosparam command="load" file="$(find robotx_navigation)/config/carrot_planner.yaml" ns="carrot_planner_node"/>
+  <node name="carrot_planner_node" pkg="robotx_navigation" type="carrot_planner_node" args="" output="screen" respawn="true">
+  </node>
   
 <!--
   <rosparam command="load" file="$(find robotx_navigation)/config/ndt_mapping.yaml" ns="ndt_mapping_node"/>
