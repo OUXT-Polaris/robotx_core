@@ -20,6 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_geometry_msgs
   nav_msgs
   jsk_recognition_msgs
+  jsk_rviz_plugins
   dwa_local_planner
   global_planner
   yaml_cpp_0_3

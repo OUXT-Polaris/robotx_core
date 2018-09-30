@@ -150,46 +150,42 @@ void carrot_planner::_publish_twist_cmd()
         }
         else
         {
-            double theta = std::atan2(transformed_pose.pose.position.y,transformed_pose.pose.position.x);
-            if(-0.5*M_PI < theta && theta < 0.5*M_PI)
+            double phi = std::atan2(transformed_pose.pose.position.y,transformed_pose.pose.position.x);
+            if(-0.5*M_PI < phi && phi < 0.5*M_PI)
             {
-                if(fabs(theta) < 0.2)
+                double dt = std::fabs((radius*phi)/(_linear_velocity*std::sin(phi)));
+                if(radius<3.0)
                 {
-                    text.text = "moveing to goal pose";
+                    text.text = "approach to goal pose";
                     _status_pub.publish(text);
-                    double dt = std::fabs((radius*theta)/(_linear_velocity*std::sin(theta)));
-                    twist_cmd.linear.x = _linear_velocity;
-                    twist_cmd.linear.y = 0;
-                    twist_cmd.angular.z = theta/dt;
+                    twist_cmd.linear.x = 0.5;
                 }
                 else
                 {
-                    text.text = "heading to goal pose";
+                    text.text = "move to goal pose";
                     _status_pub.publish(text);
-                    twist_cmd.linear.x = 0;
-                    twist_cmd.linear.y = 0;
-                    twist_cmd.angular.z = 0.3;                    
+                    twist_cmd.linear.x = _linear_velocity;
                 }
+                twist_cmd.linear.y = 0;
+                twist_cmd.angular.z = phi/dt;
             }
             else
             {
-                if(theta > M_PI-0.2 || theta < -M_PI+0.2)
+                double dt = std::fabs((radius*phi)/(_linear_velocity*std::sin(phi)));
+                if(radius<3.0)
                 {
-                    text.text = "moveing to goal pose";
+                    text.text = "approach to goal pose";
                     _status_pub.publish(text);
-                    double dt = std::fabs((radius*theta)/(_linear_velocity*std::sin(theta)));
-                    twist_cmd.linear.x = -1*_linear_velocity;
-                    twist_cmd.linear.y = 0;
-                    twist_cmd.angular.z = -theta/dt;
+                    twist_cmd.linear.x = -0.5;
                 }
                 else
                 {
-                    text.text = "heading to goal pose";
+                    text.text = "move to goal pose";
                     _status_pub.publish(text);
-                    twist_cmd.linear.x = 0;
-                    twist_cmd.linear.y = 0;
-                    twist_cmd.angular.z = -0.3;                    
+                    twist_cmd.linear.x = -1*_linear_velocity;
                 }
+                twist_cmd.linear.y = 0;
+                twist_cmd.angular.z = -phi/dt;
             }
         }
         _twist_pub.publish(twist_cmd);
