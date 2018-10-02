@@ -70,6 +70,7 @@ class robotx_localization {
   void fix_callback_(sensor_msgs::NavSatFix msg);
   void twist_callback_(geometry_msgs::Twist msg);
   void update_frame_();
+  bool is_sensor_ready_();
   boost::thread thread_update_frame_;
   ros::Subscriber fix_sub_;
   ros::Subscriber twist_sub_;
@@ -88,6 +89,7 @@ class robotx_localization {
   tf2_ros::TransformBroadcaster broadcaster_;
   std::mutex fix_mutex_;
   std::mutex twist_mutex_;
+  std::mutex imu_mutex_;
   double init_yaw_;
 };
 #endif  // ROBOTX_LOCALIZATION_H_INCLUDED

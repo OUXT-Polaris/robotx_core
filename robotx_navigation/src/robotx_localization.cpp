@@ -24,11 +24,11 @@ robotx_localization::~robotx_localization() { thread_update_frame_.join(); }
 
 void robotx_localization::update_frame_() {
   ros::Rate rate(params_.publish_rate);
-  while (fix_recieved_ == false) {
+  while (is_sensor_ready_() == false) {
     rate.sleep();
   }
   while (ros::ok()) {
-    std::lock(fix_mutex_, twist_mutex_);
+    std::lock(fix_mutex_, twist_mutex_, imu_mutex_);
     // critical section start
     pfilter_ptr_->resample(params_.ess_threshold);
     Eigen::VectorXd control_input(3);
@@ -101,9 +101,19 @@ void robotx_localization::update_frame_() {
     // critical section end
     fix_mutex_.unlock();
     twist_mutex_.unlock();
+    imu_mutex_.unlock();
     rate.sleep();
   }
   return;
+}
+
+bool robotx_localization::is_sensor_ready_(){
+  if(fix_recieved_ == true && twist_received_ == true && imu_recieved_ == true){
+    return true;
+  }
+  else{
+    return false;
+  }
 }
 
 void robotx_localization::fix_callback_(sensor_msgs::NavSatFix msg) {
@@ -124,6 +134,7 @@ void robotx_localization::twist_callback_(geometry_msgs::Twist msg) {
 }
 
 void robotx_localization::imu_callback_(sensor_msgs::Imu msg){
+  std::lock_guard<std::mutex> lock(imu_mutex_);
   double roll;
   double pitch;
   double yaw;
