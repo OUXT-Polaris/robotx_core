@@ -1,6 +1,7 @@
 #include <robotx_localization.h>
 
 robotx_localization::robotx_localization() : params_() {
+  yaw_ = 0;
   Eigen::VectorXd init_value = Eigen::VectorXd::Ones(3);
   init_value = init_value * 0.5;
   std::vector<bool> is_circular(3);
@@ -10,11 +11,13 @@ robotx_localization::robotx_localization() : params_() {
   pfilter_ptr_ = new particle_filter(3, params_.num_particles, init_value, is_circular);
   fix_recieved_ = false;
   twist_received_ = false;
+  imu_recieved_ = false;
   robot_pose_pub_ = nh_.advertise<geometry_msgs::PoseStamped>("/robot_pose", 1);
   odom_pub_ = nh_.advertise<nav_msgs::Odometry>("/odom", 1);
   init_fix_pub_ = nh_.advertise<sensor_msgs::NavSatFix>("/origin/fix", 1);
   fix_sub_ = nh_.subscribe(params_.fix_topic, 1, &robotx_localization::fix_callback_, this);
   twist_sub_ = nh_.subscribe(params_.twist_topic, 1, &robotx_localization::twist_callback_, this);
+  imu_sub_ = nh_.subscribe(params_.imu_topic, 1, &robotx_localization::imu_callback_, this);
   thread_update_frame_ = boost::thread(boost::bind(&robotx_localization::update_frame_, this));
 }
 
@@ -22,11 +25,11 @@ robotx_localization::~robotx_localization() { thread_update_frame_.join(); }
 
 void robotx_localization::update_frame_() {
   ros::Rate rate(params_.publish_rate);
-  while (fix_recieved_ == false) {
+  while (is_sensor_ready_() == false) {
     rate.sleep();
   }
   while (ros::ok()) {
-    std::lock(fix_mutex_, twist_mutex_);
+    std::lock(fix_mutex_, twist_mutex_, imu_mutex_);
     // critical section start
     pfilter_ptr_->resample(params_.ess_threshold);
     Eigen::VectorXd control_input(3);
@@ -55,7 +58,7 @@ void robotx_localization::update_frame_() {
     Eigen::VectorXd weights(params_.num_particles);
     for (int i = 0; i < params_.num_particles; i++) {
       double error =
-          std::sqrt(std::pow(states(0, i) - measurement_x, 2) + std::pow(states(1, i) - measurement_y, 2));
+          std::sqrt(std::pow(states(0, i) - measurement_x, 2) + std::pow(states(1, i) - measurement_y, 2) + std::pow(states(2, i) - yaw_, 2));
       double threashold = 0.01;
       // avoid zero division
       if (std::fabs(error) < threashold) error = threashold;
@@ -99,7 +102,18 @@ void robotx_localization::update_frame_() {
     // critical section end
     fix_mutex_.unlock();
     twist_mutex_.unlock();
+    imu_mutex_.unlock();
     rate.sleep();
+  }
+  return;
+}
+
+bool robotx_localization::is_sensor_ready_(){
+  if(fix_recieved_ == true && twist_received_ == true && imu_recieved_ == true){
+    return true;
+  }
+  else{
+    return false;
   }
 }
 
@@ -110,10 +124,27 @@ void robotx_localization::fix_callback_(sensor_msgs::NavSatFix msg) {
   }
   last_fix_message_ = msg;
   fix_recieved_ = true;
+  return;
 }
 
 void robotx_localization::twist_callback_(geometry_msgs::Twist msg) {
   std::lock_guard<std::mutex> lock(twist_mutex_);
   last_twist_message_ = msg;
   twist_received_ = true;
+  return;
+}
+
+void robotx_localization::imu_callback_(sensor_msgs::Imu msg){
+  std::lock_guard<std::mutex> lock(imu_mutex_);
+  double roll;
+  double pitch;
+  double yaw;
+  tf2::Quaternion quat(msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w);
+  tf2::Matrix3x3(quat).getRPY(roll, pitch, yaw);
+  if(imu_recieved_ == false){
+    init_yaw_ = yaw;
+  }
+  yaw_ = yaw - init_yaw_;
+  imu_recieved_ = true;
+  return;
 }
