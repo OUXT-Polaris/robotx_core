@@ -91,5 +91,6 @@ class robotx_localization {
   std::mutex twist_mutex_;
   std::mutex imu_mutex_;
   double init_yaw_;
+  double yaw_;
 };
 #endif  // ROBOTX_LOCALIZATION_H_INCLUDED

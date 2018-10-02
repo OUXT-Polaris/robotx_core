@@ -1,6 +1,7 @@
 #include <robotx_localization.h>
 
 robotx_localization::robotx_localization() : params_() {
+  yaw_ = 0;
   Eigen::VectorXd init_value = Eigen::VectorXd::Ones(3);
   init_value = init_value * 0.5;
   std::vector<bool> is_circular(3);
@@ -57,7 +58,7 @@ void robotx_localization::update_frame_() {
     Eigen::VectorXd weights(params_.num_particles);
     for (int i = 0; i < params_.num_particles; i++) {
       double error =
-          std::sqrt(std::pow(states(0, i) - measurement_x, 2) + std::pow(states(1, i) - measurement_y, 2));
+          std::sqrt(std::pow(states(0, i) - measurement_x, 2) + std::pow(states(1, i) - measurement_y, 2) + std::pow(states(2, i) - yaw_, 2));
       double threashold = 0.01;
       // avoid zero division
       if (std::fabs(error) < threashold) error = threashold;
@@ -140,6 +141,10 @@ void robotx_localization::imu_callback_(sensor_msgs::Imu msg){
   double yaw;
   tf2::Quaternion quat(msg.orientation.x,msg.orientation.y,msg.orientation.z,msg.orientation.w);
   tf2::Matrix3x3(quat).getRPY(roll, pitch, yaw);
+  if(imu_recieved_ == false){
+    init_yaw_ = yaw;
+  }
+  yaw_ = yaw - init_yaw_;
   imu_recieved_ = true;
   return;
 }
