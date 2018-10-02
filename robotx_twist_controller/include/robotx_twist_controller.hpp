@@ -7,7 +7,7 @@
 // messages to use
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Vector3Stamped.h>
-#include <std_msgs/Float32.h>
+#include <std_msgs/Float64MultiArray.h>
 
 // for std lib
 #include <iostream>
@@ -32,8 +32,7 @@ namespace robotx {
       ros::Subscriber cmd_vel_sub_;
       ros::Subscriber current_state_sub_;
       // publisher
-      ros::Publisher left_control_msg_pub_;
-      ros::Publisher right_control_msg_pub_;
+      ros::Publisher motor_command_pub_;
 
       // tmp_messages
       geometry_msgs::Twist cmd_vel_;
