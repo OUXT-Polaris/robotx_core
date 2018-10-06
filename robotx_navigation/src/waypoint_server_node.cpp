@@ -6,6 +6,7 @@
 
 int main(int argc, char *argv[]) {
   ros::init(argc, argv, "waypoint_server_node");
+  waypoint_server server;
   ros::spin();
   return 0;
 }
