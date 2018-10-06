@@ -24,6 +24,10 @@
   <node name="waypoint_logger_node" pkg="robotx_navigation" type="waypoint_logger_node" args="" output="screen" respawn="true">
     <rosparam command="load" file="$(find robotx_navigation)/config/waypoint_logger.yaml"/>
   </node>
+
+  <node name="waypoint_server_node" pkg="robotx_navigation" type="waypoint_server_node" args="" output="screen" respawn="true">
+    <rosparam command="load" file="$(find robotx_navigation)/config/waypoint_server.yaml"/>
+  </node>
   
 <!--
   <rosparam command="load" file="$(find robotx_navigation)/config/ndt_mapping.yaml" ns="ndt_mapping_node"/>

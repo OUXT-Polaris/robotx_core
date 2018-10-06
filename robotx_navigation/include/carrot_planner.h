@@ -20,6 +20,9 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 
+//headers in robotx_package
+#include <robotx_msgs/NavigationStatus.h>
+
 class carrot_planner
 {
 public:
@@ -47,6 +50,7 @@ private:
     ros::Subscriber _goal_pose_sub;
     ros::Subscriber _linear_velocity_sub;
     ros::Publisher _twist_pub;
+    ros::Publisher _status_text_pub;
     ros::Publisher _status_pub;
     geometry_msgs::PoseStamped _goal_pose;
     tf2_ros::Buffer _tf_buffer;

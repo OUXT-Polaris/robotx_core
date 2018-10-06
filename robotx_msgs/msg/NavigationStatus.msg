@@ -1,0 +1,5 @@
+uint8 status
+uint8 NO_GOAL_POSE = 0
+uint8 MOVE_TO_GOAL_POSE = 1
+uint8 APPROACH_TO_GOAL_POSE = 2
+uint8 ALLIGN_TO_GOAL_POSE = 3

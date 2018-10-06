@@ -14,7 +14,8 @@ carrot_planner::carrot_planner() : _tf_listener(_tf_buffer)
     _nh.param<std::string>(ros::this_node::getName()+"/robot_frame", _robot_frame,"base_link");
     _nh.param<std::string>(ros::this_node::getName()+"/twist_topic", _twist_topic, ros::this_node::getName()+"/twist_cmd");
     _twist_pub = _nh.advertise<geometry_msgs::Twist>(_twist_topic,1);
-    _status_pub = _nh.advertise<jsk_rviz_plugins::OverlayText>(ros::this_node::getName()+"/status",1);
+    _status_text_pub = _nh.advertise<jsk_rviz_plugins::OverlayText>(ros::this_node::getName()+"/status/text",1);
+    _status_pub = _nh.advertise<robotx_msgs::NavigationStatus>(ros::this_node::getName()+"/status",1);
     _tolerance_sub = _nh.subscribe(_tolerance_topic,1,&carrot_planner::_torelance_callback,this);
     _goal_pose_sub = _nh.subscribe(_goal_topic,1,&carrot_planner::_goal_pose_callback,this);
     _linear_velocity_sub = _nh.subscribe(_linear_velocity_topic,1,&carrot_planner::_linear_velocity_callback,this);
@@ -98,10 +99,13 @@ void carrot_planner::_publish_twist_cmd()
     {
         std::unique_lock<std::mutex> lock(_mtx);
         geometry_msgs::Twist twist_cmd;
+        robotx_msgs::NavigationStatus status_msg;
         if(_goal_recieved == false)
         {
+            status_msg.status = status_msg.NO_GOAL_POSE;
+            _status_pub.publish(status_msg);
             text.text = "no goal pose";
-            _status_pub.publish(text);
+            _status_text_pub.publish(text);
             lock.unlock();
             rate.sleep();
             continue;
@@ -116,7 +120,7 @@ void carrot_planner::_publish_twist_cmd()
             {
                 ROS_ERROR("%s",ex.what());
                 text.text = "failed to transform goal pose";
-                _status_pub.publish(text);
+                _status_text_pub.publish(text);
                 lock.unlock();
                 rate.sleep();
                 continue;
@@ -133,16 +137,20 @@ void carrot_planner::_publish_twist_cmd()
             m.getRPY(roll, pitch, yaw);
             if(yaw < 0)
             {
+                status_msg.status = status_msg.ALLIGN_TO_GOAL_POSE;
+                _status_pub.publish(status_msg);
                 text.text = "align to goal pose";
-                _status_pub.publish(text);
+                _status_text_pub.publish(text);
                 twist_cmd.linear.x = 0;
                 twist_cmd.linear.y = 0;
                 twist_cmd.angular.z = 0.1;
             }
             else
             {
+                status_msg.status = status_msg.NO_GOAL_POSE;
+                _status_pub.publish(status_msg);
                 text.text = "align to goal pose";
-                _status_pub.publish(text);
+                _status_text_pub.publish(text);
                 twist_cmd.linear.x = 0;
                 twist_cmd.linear.y = 0;
                 twist_cmd.angular.z = -0.1;
@@ -156,14 +164,18 @@ void carrot_planner::_publish_twist_cmd()
                 double dt = std::fabs((radius*phi)/(_linear_velocity*std::sin(phi)));
                 if(radius<3.0)
                 {
+                    status_msg.status = status_msg.APPROACH_TO_GOAL_POSE;
+                    _status_pub.publish(status_msg);
                     text.text = "approach to goal pose";
-                    _status_pub.publish(text);
+                    _status_text_pub.publish(text);
                     twist_cmd.linear.x = 0.5;
                 }
                 else
                 {
+                    status_msg.status = status_msg.MOVE_TO_GOAL_POSE;
+                    _status_pub.publish(status_msg);
                     text.text = "move to goal pose";
-                    _status_pub.publish(text);
+                    _status_text_pub.publish(text);
                     twist_cmd.linear.x = _linear_velocity;
                 }
                 twist_cmd.linear.y = 0;
@@ -174,14 +186,18 @@ void carrot_planner::_publish_twist_cmd()
                 double dt = std::fabs((radius*phi)/(_linear_velocity*std::sin(phi)));
                 if(radius<3.0)
                 {
+                    status_msg.status = status_msg.APPROACH_TO_GOAL_POSE;
+                    _status_pub.publish(status_msg);
                     text.text = "approach to goal pose";
-                    _status_pub.publish(text);
+                    _status_text_pub.publish(text);
                     twist_cmd.linear.x = -0.5;
                 }
                 else
                 {
+                    status_msg.status = status_msg.MOVE_TO_GOAL_POSE;
+                    _status_pub.publish(status_msg);
                     text.text = "move to goal pose";
-                    _status_pub.publish(text);
+                    _status_text_pub.publish(text);
                     twist_cmd.linear.x = -1*_linear_velocity;
                 }
                 twist_cmd.linear.y = 0;
