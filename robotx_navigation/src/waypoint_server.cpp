@@ -2,8 +2,10 @@
 
 waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
 {
+    first_waypoint_finded_ = false;
     std::string waypoint_bag_filename;
     nh_.param<std::string>(ros::this_node::getName()+"/waypoint_bag_filename", waypoint_bag_filename, "waypoints.bag");
+    nh_.param<std::string>(ros::this_node::getName()+"/robot_frame", robot_frame_, "base_link");
     nh_.param<std::string>(ros::this_node::getName()+"/map_frame", map_frame_, "map");
     nh_.param<std::string>(ros::this_node::getName()+"/navigation_status_topic", navigation_status_topic_, ros::this_node::getName()+"/navigation_status");
     waypoint_bag_file_path_ = ros::package::getPath("robotx_navigation") + "/data/" + waypoint_bag_filename;
@@ -90,5 +92,41 @@ void waypoint_server::publish_marker_()
 
 void waypoint_server::robot_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg)
 {
+    boost::optional<int> nearest_wayppoint_index = get_nearest_wayppoint_(msg);
+    if(nearest_wayppoint_index)
+    {
+        first_waypoint_finded_ = true;
+    }
     return;
+}
+
+boost::optional<int> waypoint_server::get_nearest_wayppoint_(const geometry_msgs::PoseStamped::ConstPtr msg)
+{
+    boost::optional<int> nearest_wayppoint_index;
+
+    geometry_msgs::TransformStamped transform_stamped;
+    try
+    {
+        transform_stamped = tf_buffer_.lookupTransform(robot_frame_, map_frame_, ros::Time(0));
+    }
+    catch (tf2::TransformException &ex)
+    {
+        ROS_WARN("%s",ex.what());
+        return boost::none;
+    }
+    int num_waypoints = waypoints_.waypoints.size();
+    geometry_msgs::PoseStamped transformed_pose;
+    std::vector<double> directions(num_waypoints);
+    std::vector<double> ranges(num_waypoints);
+    for(int i=0; i<num_waypoints; i++)
+    {
+        tf2::doTransform(waypoints_.waypoints[i].pose, transformed_pose, transform_stamped);
+        geometry_msgs::Quaternion q = transformed_pose.pose.orientation;
+        double r,p,y;
+        tf2::Quaternion quat(q.x,q.y,q.z,q.w);
+        tf2::Matrix3x3(quat).getRPY(r,p,y);
+        directions[i] = y;
+        ranges[i] = std::sqrt(std::pow(transformed_pose.pose.position.x,2)+std::pow(transformed_pose.pose.position.y,2));
+    }
+    return nearest_wayppoint_index;
 }

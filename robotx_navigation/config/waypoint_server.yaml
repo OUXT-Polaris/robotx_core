@@ -1,4 +1,5 @@
 waypoint_bag_filename: waypoints.bag
+robot_frame: base_link
 map_frame: world
 navigation_status_topic: /carrot_planner_node/status
 search_angle: 1.57
