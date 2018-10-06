@@ -32,6 +32,7 @@ private:
     ros::NodeHandle nh_;
     std::string waypoint_bag_file_path_,robot_frame_,map_frame_,robot_pose_topic_;
     robotx_msgs::WayPointArray waypoints_;
+    ros::Subscriber navigation_status_sub_;
     ros::Subscriber robot_pose_sub_;
     ros::Publisher marker_pub_;
     ros::Publisher waypoint_pub_;

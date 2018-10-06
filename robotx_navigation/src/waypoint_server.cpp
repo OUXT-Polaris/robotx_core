@@ -26,6 +26,7 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker",1);
     waypoint_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(ros::this_node::getName()+"/next_waypoint",1);
     robot_pose_sub_ = nh_.subscribe(robot_pose_topic_, 1, &waypoint_server::robot_pose_callback_, this);
+    navigation_status_sub_ = nh_.subscribe(navigation_status_topic_, 1, &waypoint_server::navigation_status_callback_, this);
     boost::thread marker_thread(boost::bind(&waypoint_server::publish_marker_, this));
 }
 
@@ -107,6 +108,12 @@ void waypoint_server::navigation_status_callback_(robotx_msgs::NavigationStatus 
     if(msg.status == msg.NAVIGATION_COMPLETE)
     {
         update_waypoint_();
+    }
+    if(first_waypoint_finded_)
+    {
+        geometry_msgs::PoseStamped pose_msg;
+        pose_msg = waypoints_.waypoints[target_waypoint_index_].pose;
+        waypoint_pub_.publish(pose_msg);
     }
     return;
 }
