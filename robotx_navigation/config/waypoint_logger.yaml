@@ -1,2 +1,4 @@
 joy_topic: /joy
 pose_topic: /robot_pose
+map_frame: world
+fix_topic: /fix
