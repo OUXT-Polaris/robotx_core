@@ -5,6 +5,7 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     std::string waypoint_bag_filename;
     nh_.param<std::string>(ros::this_node::getName()+"/waypoint_bag_filename", waypoint_bag_filename, "waypoints.bag");
     nh_.param<std::string>(ros::this_node::getName()+"/map_frame", map_frame_, "map");
+    nh_.param<std::string>(ros::this_node::getName()+"/navigation_status_topic", navigation_status_topic_, ros::this_node::getName()+"/navigation_status");
     waypoint_bag_file_path_ = ros::package::getPath("robotx_navigation") + "/data/" + waypoint_bag_filename;
     rosbag::Bag bag;
     bag.open(waypoint_bag_file_path_);
@@ -19,6 +20,7 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     }
     bag.close();
     marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker",1);
+    robot_pose_sub_ = nh_.subscribe(navigation_status_topic_, 1, &waypoint_server::robot_pose_callback_, this);
     boost::thread marker_thread(boost::bind(&waypoint_server::publish_marker_, this));
 }
 
@@ -88,6 +90,5 @@ void waypoint_server::publish_marker_()
 
 void waypoint_server::robot_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg)
 {
-    
     return;
 }

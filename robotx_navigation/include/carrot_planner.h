@@ -32,6 +32,7 @@ public:
 private:
     void _linear_velocity_callback(const std_msgs::Float64::ConstPtr msg);
     void _torelance_callback(const std_msgs::Float64::ConstPtr msg);
+    void _angular_torelance_callback(const std_msgs::Float64::ConstPtr msg);
     void _goal_pose_callback(geometry_msgs::PoseStamped msg);
     void _publish_twist_cmd();
     std::string _goal_topic;
@@ -40,8 +41,10 @@ private:
     std::string _map_frame;
     std::string _linear_velocity_topic;
     std::string _twist_topic;
+    std::string _angular_tolerance_topic;
     double _linear_velocity;
     double _torelance;
+    double _angular_tolerance;
     double _publish_rate;
     volatile bool _torelance_recieved;
     volatile bool _goal_recieved;

@@ -6,10 +6,12 @@ carrot_planner::carrot_planner() : _tf_listener(_tf_buffer)
     _goal_recieved = false;
     _nh.param<std::string>(ros::this_node::getName()+"/goal_topic", _goal_topic, ros::this_node::getName()+"/goal_pose");
     _nh.param<std::string>(ros::this_node::getName()+"/tolerance_topic", _tolerance_topic, ros::this_node::getName()+"/tolerance");
+    _nh.param<std::string>(ros::this_node::getName()+"/angular_tolerance_topic", _angular_tolerance_topic, ros::this_node::getName()+"/angular_tolerance");
     _nh.param<std::string>(ros::this_node::getName()+"/map_frame", _map_frame, "map");
     _nh.param<std::string>(ros::this_node::getName()+"/linear_velocity_topic", _linear_velocity_topic, ros::this_node::getName()+"/linear_velocity");
     _nh.param<double>(ros::this_node::getName()+"/default_linear_velocity", _linear_velocity, 0.1);
     _nh.param<double>(ros::this_node::getName()+"/default_torelance", _torelance, 1.0);
+    _nh.param<double>(ros::this_node::getName()+"/default_angular_tolerance", _angular_tolerance, 1.57);
     _nh.param<double>(ros::this_node::getName()+"/publish_rate", _publish_rate, 10);
     _nh.param<std::string>(ros::this_node::getName()+"/robot_frame", _robot_frame,"base_link");
     _nh.param<std::string>(ros::this_node::getName()+"/twist_topic", _twist_topic, ros::this_node::getName()+"/twist_cmd");
@@ -38,6 +40,14 @@ void carrot_planner::_torelance_callback(const std_msgs::Float64::ConstPtr msg)
 {
     std::unique_lock<std::mutex> lock(_mtx);
     _torelance = msg->data;
+    lock.unlock();
+    return;
+}
+
+void carrot_planner::_angular_torelance_callback(const std_msgs::Float64::ConstPtr msg)
+{
+    std::unique_lock<std::mutex> lock(_mtx);
+    _angular_tolerance = msg->data;
     lock.unlock();
     return;
 }
@@ -135,25 +145,38 @@ void carrot_planner::_publish_twist_cmd()
             tf::Matrix3x3 m(q);
             double roll, pitch, yaw;
             m.getRPY(roll, pitch, yaw);
-            if(yaw < 0)
+            if(std::fabs(yaw) < _angular_tolerance)
             {
-                status_msg.status = status_msg.ALLIGN_TO_GOAL_POSE;
+                status_msg.status = status_msg.NAVIGATION_COMPLETE;
                 _status_pub.publish(status_msg);
-                text.text = "align to goal pose";
+                text.text = "navigation complete";
                 _status_text_pub.publish(text);
                 twist_cmd.linear.x = 0;
                 twist_cmd.linear.y = 0;
-                twist_cmd.angular.z = 0.1;
+                twist_cmd.angular.z = 0;
             }
             else
             {
-                status_msg.status = status_msg.NO_GOAL_POSE;
-                _status_pub.publish(status_msg);
-                text.text = "align to goal pose";
-                _status_text_pub.publish(text);
-                twist_cmd.linear.x = 0;
-                twist_cmd.linear.y = 0;
-                twist_cmd.angular.z = -0.1;
+                if(yaw < 0)
+                {
+                    status_msg.status = status_msg.ALLIGN_TO_GOAL_POSE;
+                    _status_pub.publish(status_msg);
+                    text.text = "align to goal pose";
+                    _status_text_pub.publish(text);
+                    twist_cmd.linear.x = 0;
+                    twist_cmd.linear.y = 0;
+                    twist_cmd.angular.z = 0.1;
+                }
+                else
+                {
+                    status_msg.status = status_msg.ALLIGN_TO_GOAL_POSE;
+                    _status_pub.publish(status_msg);
+                    text.text = "align to goal pose";
+                    _status_text_pub.publish(text);
+                    twist_cmd.linear.x = 0;
+                    twist_cmd.linear.y = 0;
+                    twist_cmd.angular.z = -0.1;
+                }
             }
         }
         else
