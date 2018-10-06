@@ -85,6 +85,7 @@ add_dependencies(waypoint_logger_node robotx_msgs_generate_messages_cpp)
 #############
 # CPP codes
 set(NODE_FILES 
+  waypoint_logger_node
   twist_from_fix_velocity_node 
   geographic_map_server_node 
   obstacle_map_server_node 

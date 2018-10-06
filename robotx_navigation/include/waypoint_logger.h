@@ -7,11 +7,13 @@
 
 //headers in ROS
 #include <ros/ros.h>
+#include <ros/package.h>
 #include <sensor_msgs/Joy.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <tf2_ros/transform_listener.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <rosbag/bag.h>
 #include <message_filters/subscriber.h>
 #include <message_filters/time_synchronizer.h>
@@ -42,10 +44,12 @@ private:
     robotx_msgs::WayPointArray waypoints_;
     std::string joy_topic_,pose_topic_,fix_topic_,map_frame_;
     int joy_button_index_;
+    uint8_t waypoint_id_;
     volatile bool button_pressed_;
+    volatile bool waypoint_recieved_;
     std::mutex mutex_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
-    boost::optional<robotx_msgs::WayPoint> last_waypoint_;
+    robotx_msgs::WayPoint last_waypoint_;
 };
 #endif  //WAYPOINT_LOGGER_H_INCLUDED

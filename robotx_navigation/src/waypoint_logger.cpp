@@ -2,8 +2,9 @@
 
 waypoint_logger::waypoint_logger() : tf_listener_(tf_buffer_)
 {
-    last_waypoint_ = boost::none;
+    waypoint_recieved_ = false;
     button_pressed_ = false;
+    waypoint_id_ = 0;
     nh_.param<std::string>(ros::this_node::getName()+"/joy_topic", joy_topic_, "/joy");
     nh_.param<std::string>(ros::this_node::getName()+"/pose_topic", pose_topic_, "/robot_pose");
     nh_.param<std::string>(ros::this_node::getName()+"/fix_topic", fix_topic_, "/fix_topic");
@@ -18,7 +19,11 @@ waypoint_logger::waypoint_logger() : tf_listener_(tf_buffer_)
 
 waypoint_logger::~waypoint_logger()
 {
-
+    std::string path = ros::package::getPath("robotx_navigation") + "/data/waypoints.bag";
+    rosbag::Bag bag;
+    bag.open(path, rosbag::bagmode::Write);
+    bag.write("waypoints", ros::Time::now(), waypoints_);
+    bag.close();
 }
 
 void waypoint_logger::joy_callback_(const sensor_msgs::Joy::ConstPtr msg)
@@ -27,7 +32,32 @@ void waypoint_logger::joy_callback_(const sensor_msgs::Joy::ConstPtr msg)
     if(msg->buttons[joy_button_index_] == 1 && button_pressed_ == false)
     {
         button_pressed_ = true;
-        waypoints_.waypoints.push_back(last_waypoint_.get());
+        if(waypoint_recieved_ == true)
+        {
+            if(last_waypoint_.pose.header.frame_id == map_frame_)
+            {
+                last_waypoint_.id = waypoint_id_;
+                waypoints_.waypoints.push_back(last_waypoint_);
+                waypoint_id_ = waypoint_id_ + 1;
+            }
+            else
+            {
+                geometry_msgs::TransformStamped transform_stamped_;
+                try
+                {
+                    last_waypoint_.id = waypoint_id_;
+                    transform_stamped_ = tf_buffer_.lookupTransform(map_frame_, last_waypoint_.pose.header.frame_id, ros::Time(0));
+                    tf2::doTransform(last_waypoint_.pose, last_waypoint_.pose, transform_stamped_);
+                    waypoints_.waypoints.push_back(last_waypoint_);
+                    waypoint_id_ = waypoint_id_ + 1;
+                }
+                catch (tf2::TransformException &ex)
+                {
+                    ROS_WARN("%s",ex.what());
+                    return;
+                }
+            }
+        }
     }
     else if(msg->buttons[joy_button_index_] == 0)
     {
@@ -40,8 +70,9 @@ void waypoint_logger::joy_callback_(const sensor_msgs::Joy::ConstPtr msg)
 void waypoint_logger::pose_fix_callback_(const geometry_msgs::PoseStampedConstPtr& pose_msg, const sensor_msgs::NavSatFixConstPtr& fix_msg)
 {
     mutex_.lock();
-    last_waypoint_->pose = *pose_msg;
-    last_waypoint_->fix = *fix_msg;
+    last_waypoint_.pose = *pose_msg;
+    last_waypoint_.fix = *fix_msg;
+    waypoint_recieved_ = true;
     mutex_.unlock();
     return;
 }
