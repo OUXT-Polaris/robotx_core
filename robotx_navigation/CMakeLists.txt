@@ -76,6 +76,10 @@ add_executable(carrot_planner_node src/carrot_planner_node.cpp src/carrot_planne
 target_link_libraries(carrot_planner_node ${catkin_LIBRARIES})
 add_dependencies(carrot_planner_node robotx_msgs_generate_messages_cpp)
 
+add_executable(waypoint_server_node src/waypoint_server_node.cpp src/waypoint_server_node.cpp)
+target_link_libraries(waypoint_server_node ${catkin_LIBRARIES})
+add_dependencies(waypoint_server_node robotx_msgs_generate_messages_cpp)
+
 #############
 ## Install ##
 #############
@@ -87,6 +91,7 @@ set(NODE_FILES
   robotx_localization_node 
   costmap_clear_request_sender_node 
   carrot_planner_node
+  waypoint_server_node
   ndt_mapping_node)
 foreach(nodes ${NODE_FILES})
   install(TARGETS ${nodes}
