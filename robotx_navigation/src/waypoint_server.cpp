@@ -24,6 +24,7 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     }
     bag.close();
     marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker",1);
+    waypoint_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(ros::this_node::getName()+"/next_waypoint",1);
     robot_pose_sub_ = nh_.subscribe(robot_pose_topic_, 1, &waypoint_server::robot_pose_callback_, this);
     boost::thread marker_thread(boost::bind(&waypoint_server::publish_marker_, this));
 }
@@ -50,9 +51,18 @@ void waypoint_server::publish_marker_()
             marker.type = marker.ARROW;
             marker.action = marker.MODIFY;
             marker.pose = waypoints_.waypoints[i].pose.pose;
-            marker.color.r = 0;
-            marker.color.g = 1;
-            marker.color.b = 0;
+            if(first_waypoint_finded_ && target_waypoint_index_ == i)
+            {
+                marker.color.r = 1;
+                marker.color.g = 0;
+                marker.color.b = 0;
+            }
+            else
+            {
+                marker.color.r = 0;
+                marker.color.g = 1;
+                marker.color.b = 0;
+            }
             marker.color.a = 1;
             marker.scale.x = 1;
             marker.scale.y = 0.3;
@@ -92,17 +102,34 @@ void waypoint_server::publish_marker_()
     return;
 }
 
-void waypoint_server::navigation_status_callback_(const robotx_msgs::NavigationStatus::ConstPtr msg)
+void waypoint_server::navigation_status_callback_(robotx_msgs::NavigationStatus msg)
 {
+    if(msg.status == msg.NAVIGATION_COMPLETE)
+    {
+        update_waypoint_();
+    }
+    return;
+}
+
+void waypoint_server::update_waypoint_()
+{
+    if(target_waypoint_index_ != (waypoints_.waypoints.size()-1))
+    {
+        target_waypoint_index_ = target_waypoint_index_ + 1;
+    }
     return;
 }
 
 void waypoint_server::robot_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg)
 {
-    boost::optional<int> nearest_wayppoint_index = get_nearest_wayppoint_(msg);
-    if(nearest_wayppoint_index)
+    if(first_waypoint_finded_ == false)
     {
-        first_waypoint_finded_ = true;
+        boost::optional<int> nearest_wayppoint_index = get_nearest_wayppoint_(msg);
+        if(nearest_wayppoint_index)
+        {
+            target_waypoint_index_ = nearest_wayppoint_index.get();
+            first_waypoint_finded_ = true;
+        }
     }
     return;
 }
