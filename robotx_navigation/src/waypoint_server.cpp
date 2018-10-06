@@ -8,6 +8,8 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     nh_.param<std::string>(ros::this_node::getName()+"/robot_frame", robot_frame_, "base_link");
     nh_.param<std::string>(ros::this_node::getName()+"/map_frame", map_frame_, "map");
     nh_.param<std::string>(ros::this_node::getName()+"/navigation_status_topic", navigation_status_topic_, ros::this_node::getName()+"/navigation_status");
+    nh_.param<std::string>(ros::this_node::getName()+"/robot_pose_topic", robot_pose_topic_, ros::this_node::getName()+"/robot_pose");
+    nh_.param<double>(ros::this_node::getName()+"search_angle", search_angle_, 1.57);
     waypoint_bag_file_path_ = ros::package::getPath("robotx_navigation") + "/data/" + waypoint_bag_filename;
     rosbag::Bag bag;
     bag.open(waypoint_bag_file_path_);
@@ -22,7 +24,7 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     }
     bag.close();
     marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker",1);
-    robot_pose_sub_ = nh_.subscribe(navigation_status_topic_, 1, &waypoint_server::robot_pose_callback_, this);
+    robot_pose_sub_ = nh_.subscribe(robot_pose_topic_, 1, &waypoint_server::robot_pose_callback_, this);
     boost::thread marker_thread(boost::bind(&waypoint_server::publish_marker_, this));
 }
 
@@ -90,6 +92,11 @@ void waypoint_server::publish_marker_()
     return;
 }
 
+void waypoint_server::navigation_status_callback_(const robotx_msgs::NavigationStatus::ConstPtr msg)
+{
+    return;
+}
+
 void waypoint_server::robot_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg)
 {
     boost::optional<int> nearest_wayppoint_index = get_nearest_wayppoint_(msg);
@@ -116,8 +123,9 @@ boost::optional<int> waypoint_server::get_nearest_wayppoint_(const geometry_msgs
     }
     int num_waypoints = waypoints_.waypoints.size();
     geometry_msgs::PoseStamped transformed_pose;
-    std::vector<double> directions(num_waypoints);
-    std::vector<double> ranges(num_waypoints);
+    //std::vector<double> directions;
+    std::vector<double> ranges;
+    std::vector<int> filtered_index;
     for(int i=0; i<num_waypoints; i++)
     {
         tf2::doTransform(waypoints_.waypoints[i].pose, transformed_pose, transform_stamped);
@@ -125,8 +133,19 @@ boost::optional<int> waypoint_server::get_nearest_wayppoint_(const geometry_msgs
         double r,p,y;
         tf2::Quaternion quat(q.x,q.y,q.z,q.w);
         tf2::Matrix3x3(quat).getRPY(r,p,y);
-        directions[i] = y;
-        ranges[i] = std::sqrt(std::pow(transformed_pose.pose.position.x,2)+std::pow(transformed_pose.pose.position.y,2));
+        if(std::fabs(y) < (search_angle_/2))
+        {
+            double r = std::sqrt(std::pow(transformed_pose.pose.position.x,2)+std::pow(transformed_pose.pose.position.y,2));
+            ranges.push_back(r);
+            filtered_index.push_back(i);
+        }
     }
+    if(ranges.size() == 0)
+    {
+        return boost::none;
+    }
+    std::vector<double>::iterator min_iter = std::min_element(ranges.begin(), ranges.end());
+    int index = std::distance(ranges.begin(), min_iter);
+    nearest_wayppoint_index = filtered_index[index];
     return nearest_wayppoint_index;
 }
