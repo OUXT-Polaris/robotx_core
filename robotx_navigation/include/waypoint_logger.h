@@ -3,6 +3,7 @@
 
 //headers in robotx_packages
 #include <robotx_msgs/WayPointArray.h>
+#include <robotx_msgs/WayPoint.h>
 
 //headers in ROS
 #include <ros/ros.h>
@@ -40,9 +41,11 @@ private:
     void pose_fix_callback_(const geometry_msgs::PoseStampedConstPtr& pose_msg, const sensor_msgs::NavSatFixConstPtr& fix_msg);
     robotx_msgs::WayPointArray waypoints_;
     std::string joy_topic_,pose_topic_,fix_topic_,map_frame_;
+    int joy_button_index_;
+    volatile bool button_pressed_;
     std::mutex mutex_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
-    boost::optional<robotx_msgs::WayPointArray> last_waypoints_;
+    boost::optional<robotx_msgs::WayPoint> last_waypoint_;
 };
 #endif  //WAYPOINT_LOGGER_H_INCLUDED

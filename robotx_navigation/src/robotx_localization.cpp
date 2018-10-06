@@ -1,6 +1,20 @@
 #include <robotx_localization.h>
 
 robotx_localization::robotx_localization() : params_() {
+  initiazlie_particle_filter_();
+  robot_pose_pub_ = nh_.advertise<geometry_msgs::PoseStamped>("/robot_pose", 1);
+  odom_pub_ = nh_.advertise<nav_msgs::Odometry>("/odom", 1);
+  init_fix_pub_ = nh_.advertise<sensor_msgs::NavSatFix>("/origin/fix", 1);
+  reset_sub_ = nh_.subscribe(params_.reset_topic, 1, &robotx_localization::reset_callback_, this);
+  fix_sub_ = nh_.subscribe(params_.fix_topic, 1, &robotx_localization::fix_callback_, this);
+  twist_sub_ = nh_.subscribe(params_.twist_topic, 1, &robotx_localization::twist_callback_, this);
+  imu_sub_ = nh_.subscribe(params_.imu_topic, 1, &robotx_localization::imu_callback_, this);
+  thread_update_frame_ = boost::thread(boost::bind(&robotx_localization::update_frame_, this));
+}
+
+robotx_localization::~robotx_localization() { thread_update_frame_.join(); }
+
+void robotx_localization::initiazlie_particle_filter_(){
   yaw_ = 0;
   Eigen::VectorXd init_value = Eigen::VectorXd::Ones(3);
   init_value = init_value * 0.5;
@@ -12,16 +26,8 @@ robotx_localization::robotx_localization() : params_() {
   fix_recieved_ = false;
   twist_received_ = false;
   imu_recieved_ = false;
-  robot_pose_pub_ = nh_.advertise<geometry_msgs::PoseStamped>("/robot_pose", 1);
-  odom_pub_ = nh_.advertise<nav_msgs::Odometry>("/odom", 1);
-  init_fix_pub_ = nh_.advertise<sensor_msgs::NavSatFix>("/origin/fix", 1);
-  fix_sub_ = nh_.subscribe(params_.fix_topic, 1, &robotx_localization::fix_callback_, this);
-  twist_sub_ = nh_.subscribe(params_.twist_topic, 1, &robotx_localization::twist_callback_, this);
-  imu_sub_ = nh_.subscribe(params_.imu_topic, 1, &robotx_localization::imu_callback_, this);
-  thread_update_frame_ = boost::thread(boost::bind(&robotx_localization::update_frame_, this));
+  return;
 }
-
-robotx_localization::~robotx_localization() { thread_update_frame_.join(); }
 
 void robotx_localization::update_frame_() {
   ros::Rate rate(params_.publish_rate);
@@ -105,6 +111,15 @@ void robotx_localization::update_frame_() {
     imu_mutex_.unlock();
     rate.sleep();
   }
+  return;
+}
+
+void robotx_localization::reset_callback_(std_msgs::Empty msg){
+  std::lock(fix_mutex_, twist_mutex_, imu_mutex_);
+  initiazlie_particle_filter_();
+  fix_mutex_.unlock();
+  twist_mutex_.unlock();
+  imu_mutex_.unlock();
   return;
 }
 

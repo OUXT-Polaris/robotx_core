@@ -2,3 +2,4 @@ joy_topic: /joy
 pose_topic: /robot_pose
 map_frame: world
 fix_topic: /fix
+joy_button_index: 2
