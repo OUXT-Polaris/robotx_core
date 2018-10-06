@@ -76,11 +76,16 @@ add_executable(carrot_planner_node src/carrot_planner_node.cpp src/carrot_planne
 target_link_libraries(carrot_planner_node ${catkin_LIBRARIES})
 add_dependencies(carrot_planner_node robotx_msgs_generate_messages_cpp)
 
+add_executable(waypoint_logger_node src/waypoint_logger_node.cpp src/waypoint_logger.cpp)
+target_link_libraries(waypoint_logger_node ${catkin_LIBRARIES})
+add_dependencies(waypoint_logger_node robotx_msgs_generate_messages_cpp)
+
 #############
 ## Install ##
 #############
 # CPP codes
 set(NODE_FILES 
+  waypoint_logger_node
   twist_from_fix_velocity_node 
   geographic_map_server_node 
   obstacle_map_server_node 

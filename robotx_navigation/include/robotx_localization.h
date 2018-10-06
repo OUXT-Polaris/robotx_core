@@ -10,6 +10,7 @@
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
 #include <ros/ros.h>
+#include <std_msgs/Empty.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <tf2/LinearMath/Quaternion.h>
@@ -34,6 +35,7 @@ class robotx_localization {
     std::string twist_topic;
     std::string fix_topic;
     std::string imu_topic;
+    std::string reset_topic;
     int num_particles;
     int publish_rate;
     double min_x;
@@ -47,6 +49,8 @@ class robotx_localization {
       ros::param::param<std::string>(ros::this_node::getName() + "/publish_frame", publish_frame, "map");
       ros::param::param<std::string>(ros::this_node::getName() + "/twist_topic", twist_topic,
                                      ros::this_node::getName() + "/twist");
+      ros::param::param<std::string>(ros::this_node::getName() + "/reset_topic", reset_topic,
+                                     ros::this_node::getName() + "/reset");
       ros::param::param<std::string>(ros::this_node::getName() + "/fix_topic", fix_topic,
                                      ros::this_node::getName() + "/fix");
       ros::param::param<std::string>(ros::this_node::getName() + "/imu_topic", imu_topic,
@@ -65,16 +69,19 @@ class robotx_localization {
   ~robotx_localization();
 
  private:
+  void initiazlie_particle_filter_();
   const parameters params_;
   void imu_callback_(sensor_msgs::Imu msg);
   void fix_callback_(sensor_msgs::NavSatFix msg);
   void twist_callback_(geometry_msgs::Twist msg);
+  void reset_callback_(std_msgs::Empty msg);
   void update_frame_();
   bool is_sensor_ready_();
   boost::thread thread_update_frame_;
   ros::Subscriber fix_sub_;
   ros::Subscriber twist_sub_;
   ros::Subscriber imu_sub_;
+  ros::Subscriber reset_sub_;
   ros::Publisher init_fix_pub_;
   ros::Publisher robot_pose_pub_;
   ros::Publisher odom_pub_;

@@ -45,7 +45,7 @@ void rc::Twist::CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg) {
   cmd_vel_mtx_.unlock();
 }
 
-void rc::Twist::CurStateCallback(const geometry_msgs::Vector3Stamped::ConstPtr &msg) {
+void rc::Twist::CurStateCallback(const geometry_msgs::Twist::ConstPtr &msg) {
   current_state_mtx_.lock();
   current_state_ = *msg;
   current_state_mtx_.unlock();
@@ -63,8 +63,8 @@ void rc::Twist::CtrlUpdate() {
     double current_vel = 0;
     double current_ang_vel = 0;
     current_state_mtx_.lock();
-    current_vel = current_state_.vector.x;
-    current_ang_vel = current_state_.vector.z;
+    current_vel = current_state_.linear.x;
+    current_ang_vel = current_state_.linear.z;
     // current_vel = sqrt(pow(current_state_.twist.twist.linear.x, 2) +
     //                    pow(current_state_.twist.twist.linear.y, 2));
     // current_ang_vel= current_state_.twist.twist.angular.z;
