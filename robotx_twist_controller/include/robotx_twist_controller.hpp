@@ -23,7 +23,7 @@ namespace robotx {
 
     private:
       void CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg);
-      void CurStateCallback(const geometry_msgs::Vector3Stamped::ConstPtr &msg);
+      void CurStateCallback(const geometry_msgs::Twist::ConstPtr &msg);
 
       // node handler
       ros::NodeHandle nh_;
@@ -36,7 +36,7 @@ namespace robotx {
 
       // tmp_messages
       geometry_msgs::Twist cmd_vel_;
-      geometry_msgs::Vector3Stamped current_state_;
+      geometry_msgs::Twist current_state_;
 
       // subscribe message mutex
       std::mutex cmd_vel_mtx_;

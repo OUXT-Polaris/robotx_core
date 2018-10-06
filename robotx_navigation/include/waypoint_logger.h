@@ -39,12 +39,13 @@ private:
     boost::shared_ptr<message_filters::Subscriber<sensor_msgs::NavSatFix> > fix_sub_;
     boost::shared_ptr<message_filters::Synchronizer<sync_polycy> > sync_;
     ros::Publisher marker_pub_;
+    void publish_marker_();
     void joy_callback_(const sensor_msgs::Joy::ConstPtr msg);
     void pose_fix_callback_(const geometry_msgs::PoseStampedConstPtr& pose_msg, const sensor_msgs::NavSatFixConstPtr& fix_msg);
     robotx_msgs::WayPointArray waypoints_;
     std::string joy_topic_,pose_topic_,fix_topic_,map_frame_;
     int joy_button_index_;
-    uint8_t waypoint_id_;
+    int waypoint_id_;
     volatile bool button_pressed_;
     volatile bool waypoint_recieved_;
     std::mutex mutex_;
