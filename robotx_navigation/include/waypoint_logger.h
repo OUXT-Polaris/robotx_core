@@ -39,11 +39,10 @@ private:
     void joy_callback_(const sensor_msgs::Joy::ConstPtr msg);
     void pose_fix_callback_(const geometry_msgs::PoseStampedConstPtr& pose_msg, const sensor_msgs::NavSatFixConstPtr& fix_msg);
     robotx_msgs::WayPointArray waypoints_;
-    geometry_msgs::PoseStamped last_pose_;
-    geometry_msgs::PoseStamped last_logged_pose_;
     std::string joy_topic_,pose_topic_,fix_topic_,map_frame_;
     std::mutex mutex_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
+    boost::optional<robotx_msgs::WayPointArray> last_waypoints_;
 };
 #endif  //WAYPOINT_LOGGER_H_INCLUDED
