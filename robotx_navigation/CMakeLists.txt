@@ -26,6 +26,9 @@ find_package(catkin REQUIRED COMPONENTS
   yaml_cpp_0_3
   pcl_ros
   message_filters
+  cartographer_ros
+  cartographer_ros_msgs
+  cartographer_rviz
 )
 
 catkin_package()

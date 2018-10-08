@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="cartographer_node" pkg="cartographer_ros"
+            type="cartographer_node" args="
+            -configuration_directory
+            $(find robotx_navigation)/cartographer_config
+            -configuration_basename wamv.lua"
+            output="screen">
+        <remap from="scan" to="/base_scan" />
+    </node>
+</launch>
