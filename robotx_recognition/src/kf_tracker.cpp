@@ -9,7 +9,8 @@ kf_tracker::kf_tracker() : tf_listener_(tf_buffer_)
     nh_.param<std::string>(ros::this_node::getName()+"/euclidean_cluster_topic", euclidean_cluster_topic_, ros::this_node::getName()+"/input_clusters");
     nh_.param<std::string>(ros::this_node::getName()+"/map_frame", map_frame_, "map");
     //tracking_targets_ = boost::circular_buffer<jsk_recognition_msgs::BoundingBoxArray>(num_tracking_frames_+1);
-    tracked_clusters_pub_ = nh_.advertise<jsk_recognition_msgs::BoundingBoxArray>(ros::this_node::getName()+"/tracked_clusters",1);
+    tracked_clusters_pub_ = nh_.advertise<robotx_msgs::TrackedClusterArray>(ros::this_node::getName()+"/tracked_clusters",1);
+    marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/tracked_clusters",1);
     euclidean_cluster_sub_ = nh_.subscribe(euclidean_cluster_topic_, 10, &kf_tracker::clusters_callback_, this);
 }
 

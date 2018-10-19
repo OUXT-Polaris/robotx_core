@@ -2,6 +2,6 @@ min_target_height : 0.0
 max_target_height : 3.0
 # num_tracking frames shoud be over 1
 num_tracking_frames : 3
-matching_distance_threashold : 1.0
+matching_distance_threashold : 1.5
 map_frame : "world"
 euclidean_cluster_topic : /euclidean_clustering_node/bbox

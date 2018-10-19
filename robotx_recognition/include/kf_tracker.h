@@ -4,6 +4,7 @@
 //headers in ROS
 #include <ros/ros.h>
 #include <jsk_recognition_msgs/BoundingBoxArray.h>
+#include <visualization_msgs/MarkerArray.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
 
@@ -35,6 +36,7 @@ private:
     ros::NodeHandle nh_;
     ros::Subscriber euclidean_cluster_sub_;
     ros::Publisher tracked_clusters_pub_;
+    ros::Publisher marker_pub_;
     //boost::circular_buffer<jsk_recognition_msgs::BoundingBoxArray> tracking_targets_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
