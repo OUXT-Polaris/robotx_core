@@ -15,6 +15,10 @@
   <rosparam command="load" file="$(find robotx_recognition)/config/object_bbox_extractor.yaml" ns="object_bbox_extractor_node"/>
   <node pkg="robotx_recognition" type="object_bbox_extractor_node" name="object_bbox_extractor_node" args="" output="screen" respawn="false">
   </node>
+
+  <!--<rosparam command="load" file="$(find robotx_recognition)/config/kf_tracker.yaml" ns="kf_tracker_node"/>-->
+  <node pkg="robotx_recognition" type="kf_tracker_node" name="kf_tracker_node" output="screen" respawn="true">
+  </node>
   
 <!--
   <node pkg="robotx_recognition" type="bing_object_detection_node" name="bing_object_detection_node" args="" output="screen" respawn="true">

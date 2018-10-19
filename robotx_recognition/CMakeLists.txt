@@ -123,13 +123,17 @@ add_dependencies(pointcloud_merger_nodelet robotx_msgs_generate_messages_cpp)
 target_link_libraries(pointcloud_merger_nodelet ${catkin_LIBRARIES})
 #clang_format(pointcloud_merger_nodelet)
 
+add_executable(kf_tracker_node src/kf_tracker_node.cpp src/kf_tracker.cpp)
+add_dependencies(kf_tracker_node robotx_msgs_generate_messages_cpp)
+target_link_libraries(kf_tracker_node ${catkin_LIBRARIES})
+
 #############
 ## Install ##
 #############
 # CPP Execution programs
 set(CPP_EXEC_NAMES 
   object_recognition_node euclidean_clustering_node passthrough_filter_node pointcloud_merger_node
-  hsv_buoy_detector_node bing_object_detection_node object_bbox_extractor_node)
+  hsv_buoy_detector_node bing_object_detection_node object_bbox_extractor_node kf_tracker_node)
 foreach(cpp_exec_names ${CPP_EXEC_NAMES})
   install(TARGETS ${cpp_exec_names}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
