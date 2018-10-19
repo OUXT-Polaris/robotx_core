@@ -14,6 +14,9 @@
 #include <boost/circular_buffer.hpp>
 #include <boost/optional.hpp>
 
+//headers in robotx_packages
+#include <robotx_msgs/TrackedClusterArray.h>
+
 class kf_tracker
 {
 public:
