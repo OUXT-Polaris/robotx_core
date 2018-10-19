@@ -125,7 +125,7 @@ target_link_libraries(pointcloud_merger_nodelet ${catkin_LIBRARIES})
 
 add_executable(kf_tracker_node src/kf_tracker_node.cpp src/kf_tracker.cpp)
 add_dependencies(kf_tracker_node robotx_msgs_generate_messages_cpp)
-target_link_libraries(kf_tracker_node ${catkin_LIBRARIES})
+target_link_libraries(kf_tracker_node ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 #############
 ## Install ##

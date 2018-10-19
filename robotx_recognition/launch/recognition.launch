@@ -16,7 +16,7 @@
   <node pkg="robotx_recognition" type="object_bbox_extractor_node" name="object_bbox_extractor_node" args="" output="screen" respawn="false">
   </node>
 
-  <!--<rosparam command="load" file="$(find robotx_recognition)/config/kf_tracker.yaml" ns="kf_tracker_node"/>-->
+  <rosparam command="load" file="$(find robotx_recognition)/config/kf_tracker.yaml" ns="kf_tracker_node"/>
   <node pkg="robotx_recognition" type="kf_tracker_node" name="kf_tracker_node" output="screen" respawn="true">
   </node>
   

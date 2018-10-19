@@ -12,6 +12,7 @@
 
 //headers in boost
 #include <boost/circular_buffer.hpp>
+#include <boost/optional.hpp>
 
 class kf_tracker
 {
@@ -20,6 +21,8 @@ public:
     ~kf_tracker();
 private:
     void clusters_callback_(const jsk_recognition_msgs::BoundingBoxArray::ConstPtr msg);
+    boost::optional<int> get_nearest_bbox_index_(jsk_recognition_msgs::BoundingBox target_bbox,jsk_recognition_msgs::BoundingBoxArray query_targets);
+    void track_clusters_();
     double min_target_height_;
     double max_target_height_;
     int num_tracking_frames_;
@@ -28,6 +31,7 @@ private:
     std::string map_frame_;
     ros::NodeHandle nh_;
     ros::Subscriber euclidean_cluster_sub_;
+    ros::Publisher tracked_clusters_pub_;
     boost::circular_buffer<jsk_recognition_msgs::BoundingBoxArray> tracking_targets_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
