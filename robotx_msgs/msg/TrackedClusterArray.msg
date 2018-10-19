@@ -1,0 +1,2 @@
+jsk_recognition_msgs/BoundingBox bbox
+uint32 tracking_id

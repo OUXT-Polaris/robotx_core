@@ -2,13 +2,13 @@
 
 kf_tracker::kf_tracker() : tf_listener_(tf_buffer_)
 {
-    nh_.param<int>(ros::this_node::getName()+"/num_tracking_frames", num_tracking_frames_, 3);
+    //nh_.param<int>(ros::this_node::getName()+"/num_tracking_frames", num_tracking_frames_, 3);
     nh_.param<double>(ros::this_node::getName()+"/matching_distance_threashold", matching_distance_threashold_, 1.0);
     nh_.param<double>(ros::this_node::getName()+"/max_target_height", max_target_height_, 3.0);
     nh_.param<double>(ros::this_node::getName()+"/min_target_height", min_target_height_, 0.0);
     nh_.param<std::string>(ros::this_node::getName()+"/euclidean_cluster_topic", euclidean_cluster_topic_, ros::this_node::getName()+"/input_clusters");
     nh_.param<std::string>(ros::this_node::getName()+"/map_frame", map_frame_, "map");
-    tracking_targets_ = boost::circular_buffer<jsk_recognition_msgs::BoundingBoxArray>(num_tracking_frames_+1);
+    //tracking_targets_ = boost::circular_buffer<jsk_recognition_msgs::BoundingBoxArray>(num_tracking_frames_+1);
     tracked_clusters_pub_ = nh_.advertise<jsk_recognition_msgs::BoundingBoxArray>(ros::this_node::getName()+"/tracked_clusters",1);
     euclidean_cluster_sub_ = nh_.subscribe(euclidean_cluster_topic_, 10, &kf_tracker::clusters_callback_, this);
 }
@@ -20,19 +20,23 @@ kf_tracker::~kf_tracker()
 
 void kf_tracker::track_clusters_()
 {
+    /*
     if(tracking_targets_.size() > 1)
     {
         for(int i=0; i<tracking_targets_.size()-1;i++)
         {
-
-            /*
+            jsk_recognition_msgs::BoundingBoxArray bbox_array;
+            for(auto target_bbox_itr = tracking_targets_[i].boxes.begin(); target_bbox_itr != tracking_targets_[i].boxes.end(); target_bbox_itr++)
+            {
+                boost::optional<int> idx = get_nearest_bbox_index_(*target_bbox_itr, tracking_targets_[i+1]);
+            }
             cv::KalmanFilter KF(2, 2, 0, CV_32F);
             cv::Mat state(2, 1, CV_32F);
             cv::Mat processNoise(2, 1, CV_32F);
             cv::Mat measurement = cv::Mat::zeros(1, 1, CV_32F);
-            */
         }
     }
+    */
     return;
 }
 
@@ -93,6 +97,6 @@ void kf_tracker::clusters_callback_(const jsk_recognition_msgs::BoundingBoxArray
             transformed_clusters.boxes.push_back(bbox);
         }
     }
-    tracking_targets_.push_back(transformed_clusters);
+    //tracking_targets_.push_back(transformed_clusters);
     return;
 }
