@@ -4,6 +4,6 @@
     <node pkg="robotx_driver" type="robotx_hardware_interface_node" name="robotx_hardware_interface_node" args="" output="screen" respawn="true">
     </node>
 
-    <include file="$(find robotx_driver)/launch/diagnostic.launch"/>
-    <include file="$(find robotx_driver)/launch/communication.launch"/>
+    <!--<include file="$(find robotx_driver)/launch/diagnostic.launch"/>-->
+    <!--<include file="$(find robotx_driver)/launch/communication.launch"/>-->
 </launch>
