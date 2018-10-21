@@ -1,9 +1,9 @@
-target: 1
+target: 2
 init_mode: 0
 timeout: 30
 frequency: 30
 # DUALSHOCK4_SIMPLE=0
 # DUALSHOCK4=1
 controller_type: 0
-left_motor_ip: 192.168.10.20
-right_motor_ip: 192.168.10.21
+left_motor_ip: 127.0.0.1 #192.168.10.20
+right_motor_ip: 127.0.0.1 # 192.168.10.21

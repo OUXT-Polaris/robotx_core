@@ -46,9 +46,13 @@ robotx_hardware_interface::robotx_hardware_interface()
   fix_sub_ = nh_.subscribe("/fix", 1, &robotx_hardware_interface::fix_callback_, this);
   motor_command_sub_ =
       nh_.subscribe("/wam_v/motor_command", 1, &robotx_hardware_interface::motor_command_callback_, this);
+}
+
+void robotx_hardware_interface::run(){
   send_command_thread_ = boost::thread(boost::bind(&robotx_hardware_interface::send_command_, this));
   publish_heartbeat_thread_ =
       boost::thread(boost::bind(&robotx_hardware_interface::publish_heartbeat_, this));
+  return;
 }
 
 robotx_hardware_interface::~robotx_hardware_interface() {
@@ -159,8 +163,8 @@ void robotx_hardware_interface::send_command_() {
       }
     }
     if (params_.target == params_.ALL || params_.target == params_.HARDWARE) {
-      left_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[0]);
-      right_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[2]);
+      //left_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[0]);
+      //right_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[2]);
     }
     mtx_.unlock();
     rate.sleep();

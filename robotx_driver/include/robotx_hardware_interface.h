@@ -104,6 +104,7 @@ class robotx_hardware_interface {
   };
   robotx_hardware_interface();
   ~robotx_hardware_interface();
+  void run();
   /**
    * @brief function for setting action mode.
    *
