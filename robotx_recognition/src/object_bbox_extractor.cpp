@@ -55,6 +55,7 @@ void object_bbox_extractor::image_callback_(const sensor_msgs::ImageConstPtr& ms
     sensor_msgs::ImagePtr msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", rect_image).toImageMsg();
     image_pub_.publish(msg);
   }
+  roi_array_msg.header = msg->header;
   roi_array_pub_.publish(roi_array_msg);
 }
 
