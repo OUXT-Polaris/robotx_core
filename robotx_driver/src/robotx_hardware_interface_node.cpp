@@ -20,6 +20,7 @@
 int main(int argc, char **argv) {
   ros::init(argc, argv, "robotx_hardware_interface_node");
   robotx_hardware_interface *interface = new robotx_hardware_interface();
+  interface->run();
   ros::spin();
   return 0;
 }

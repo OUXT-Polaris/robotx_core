@@ -1,7 +1,6 @@
 // headers in this package
 #include <robotx_hardware_interface.h>
 #include <robotx_msgs/Heartbeat.h>
-#include <robotx_msgs/UsvDrive.h>
 
 // headers in STL
 #include <time.h>
@@ -13,11 +12,12 @@ robotx_hardware_interface::robotx_hardware_interface()
           boost::bind(&robotx_hardware_interface::recieve_remote_oprated_motor_command, this, _1)) {
   heartbeat_pub_ = nh_.advertise<robotx_msgs::Heartbeat>("/heartbeat", 1);
   if (params_.target == params_.ALL || params_.target == params_.SIMULATION) {
-    usv_drive_cmd_pub_ = nh_.advertise<robotx_msgs::UsvDrive>("/cmd_drive", 1);
+    right_thrust_cmd_pub_ = nh_.advertise<std_msgs::Float32>("/right_thrust_cmd", 1);
+    left_thrust_cmd_pub_ = nh_.advertise<std_msgs::Float32>("/left_thrust_cmd", 1);
     left_thrust_joint_pub_ =
-        nh_.advertise<std_msgs::Float64>("/left_thruster_position_controller/command", 1);
+        nh_.advertise<std_msgs::Float64>("/left_engine_position_controller/command", 1);
     right_thrust_joint_pub_ =
-        nh_.advertise<std_msgs::Float64>("/right_thruster_position_controller/command", 1);
+        nh_.advertise<std_msgs::Float64>("/right_engine_position_controller/command", 1);
     last_motor_cmd_msg_.data.resize(4);
     last_motor_cmd_msg_.data[0] = 0;
     last_motor_cmd_msg_.data[1] = 0;
@@ -46,9 +46,13 @@ robotx_hardware_interface::robotx_hardware_interface()
   fix_sub_ = nh_.subscribe("/fix", 1, &robotx_hardware_interface::fix_callback_, this);
   motor_command_sub_ =
       nh_.subscribe("/wam_v/motor_command", 1, &robotx_hardware_interface::motor_command_callback_, this);
+}
+
+void robotx_hardware_interface::run(){
   send_command_thread_ = boost::thread(boost::bind(&robotx_hardware_interface::send_command_, this));
   publish_heartbeat_thread_ =
       boost::thread(boost::bind(&robotx_hardware_interface::publish_heartbeat_, this));
+  return;
 }
 
 robotx_hardware_interface::~robotx_hardware_interface() {
@@ -131,33 +135,36 @@ void robotx_hardware_interface::send_command_() {
     mtx_.lock();
     if (params_.target == params_.ALL || params_.target == params_.SIMULATION) {
       if (driving_mode_ == params_.REMOTE_OPERATED) {
-        robotx_msgs::UsvDrive usv_drive_msg;
-        usv_drive_msg.left = last_manual_motor_cmd_msg_.data[0];
-        usv_drive_msg.right = last_manual_motor_cmd_msg_.data[2];
+        //robotx_msgs::UsvDrive usv_drive_msg;
+        std_msgs::Float32 left_drive_cmd_,right_drive_cmd_;
+        left_drive_cmd_.data = last_manual_motor_cmd_msg_.data[0];
+        right_drive_cmd_.data = last_manual_motor_cmd_msg_.data[2];
         std_msgs::Float64 left_thrust_joint_cmd_;
         left_thrust_joint_cmd_.data = last_manual_motor_cmd_msg_.data[1];
         std_msgs::Float64 right_thrust_joint_cmd_;
         right_thrust_joint_cmd_.data = last_manual_motor_cmd_msg_.data[3];
-        usv_drive_cmd_pub_.publish(usv_drive_msg);
+        left_thrust_cmd_pub_.publish(left_drive_cmd_);
+        right_thrust_cmd_pub_.publish(right_drive_cmd_);
         left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
         right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
       }
       if (driving_mode_ == params_.AUTONOMOUS) {
-        robotx_msgs::UsvDrive usv_drive_msg;
-        usv_drive_msg.left = last_motor_cmd_msg_.data[0];
-        usv_drive_msg.right = last_motor_cmd_msg_.data[2];
+        std_msgs::Float32 left_drive_cmd_,right_drive_cmd_;
+        left_drive_cmd_.data = last_motor_cmd_msg_.data[0];
+        right_drive_cmd_.data = last_motor_cmd_msg_.data[2];
         std_msgs::Float64 left_thrust_joint_cmd_;
         left_thrust_joint_cmd_.data = last_motor_cmd_msg_.data[1];
         std_msgs::Float64 right_thrust_joint_cmd_;
         right_thrust_joint_cmd_.data = last_motor_cmd_msg_.data[3];
-        usv_drive_cmd_pub_.publish(usv_drive_msg);
+        left_thrust_cmd_pub_.publish(left_drive_cmd_);
+        right_thrust_cmd_pub_.publish(right_drive_cmd_);
         left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
         right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
       }
     }
     if (params_.target == params_.ALL || params_.target == params_.HARDWARE) {
-      left_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[0]);
-      right_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[2]);
+      //left_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[0]);
+      //right_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[2]);
     }
     mtx_.unlock();
     rate.sleep();

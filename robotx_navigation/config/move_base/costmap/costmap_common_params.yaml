@@ -15,7 +15,7 @@ resolution: 0.05
 #layer definitions
 static:
   map_topic: field_map
-  subscribe_to_updates: false
+  subscribe_to_updates: true
 
 obstacles_laser:
   enabled: true

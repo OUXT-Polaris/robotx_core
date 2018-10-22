@@ -32,6 +32,9 @@ add_message_files(
   GeographicPoint.msg
   GeographicLine.msg
   GeographicMap.msg
+  WayPointArray.msg
+  WayPoint.msg
+  NavigationStatus.msg
 )
 ## Generate added messages and services with any dependencies listed here
 generate_messages(

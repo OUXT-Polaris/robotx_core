@@ -1,0 +1,1 @@
+base_global_planner: simple_global_planner/SimpleGlobalPlanner

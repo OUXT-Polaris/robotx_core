@@ -8,4 +8,5 @@
     </node>
 
     <include file="$(find robotx_driver)/launch/diagnostic.launch"/>
+    <include file="$(find robotx_driver)/launch/communication.launch"/>
 </launch>

@@ -11,6 +11,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <std_msgs/Float64.h>
+#include <std_msgs/Float32.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/UInt8.h>
 
@@ -103,6 +104,7 @@ class robotx_hardware_interface {
   };
   robotx_hardware_interface();
   ~robotx_hardware_interface();
+  void run();
   /**
    * @brief function for setting action mode.
    *
@@ -178,11 +180,17 @@ class robotx_hardware_interface {
    */
   ros::Subscriber current_task_number_sub_;
   /**
-   * @brief ROS publisher for /cmd_drive topic.(message type :
-   * robotx_msgs/UsvDrive)
+   * @brief ROS publisher for /left_thrust_cmd topic.(message type :
+   * std_msgs/Float32)
    *
    */
-  ros::Publisher usv_drive_cmd_pub_;
+  ros::Publisher left_thrust_cmd_pub_;
+  /**
+   * @brief ROS publisher for /right_thrust_cmd topic.(message type :
+   * std_msgs/Float32)
+   *
+   */
+  ros::Publisher right_thrust_cmd_pub_;
   /**
    * @brief ROS publisher for /left_thruster_position_controller/command
    * topic.(message type : std_msgs/Float64)
