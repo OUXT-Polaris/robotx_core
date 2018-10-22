@@ -112,8 +112,6 @@ void destroy(void) {
 
 void infer(cv::Mat image, float* out) {
   // cvの画像からcnnを走らせる
-  ROS_INFO("get");
-
   // preprocessing
   cv::resize(image, image, cv::Size(inputWidth, inputHeight));
   cvImageToTensor(image, inputDataHost, inputDims);

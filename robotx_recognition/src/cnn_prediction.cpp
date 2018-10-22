@@ -53,7 +53,6 @@ void cnn_predictor::callback(
     const sensor_msgs::ImageConstPtr& image_msg,
     const robotx_msgs::ObjectRegionOfInterestArrayConstPtr& rois_msg) {
   // 両方のが揃った時
-  ROS_INFO("callbacked!");
 
   // 画像 image_msg
   cv::Mat image;
@@ -64,9 +63,6 @@ void cnn_predictor::callback(
     ROS_ERROR("cv_bridge exception: %s", e.what());
     return;
   }
-  ROS_INFO("got image %d, %d", image.rows, image.cols);
-  ROS_INFO("objectness: %f", rois_msg->object_rois[0].objectness);
-
   robotx_msgs::ObjectRegionOfInterestArray res = _image_recognition(*rois_msg, image);
   // 判定結果を送信する
   _roi_pub.publish(res);

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-  <arg name="CUDA_ENABLED" default="false"/>
-
+  <arg name="CUDA_ENABLED" default="true"/>
   <rosparam command="load" file="$(find robotx_recognition)/config/cnn_prediction.yaml" ns="cnn_prediction_node"/>
   <node pkg="robotx_recognition" name="cnn_prediction_node" type="cnn_prediction_node" if="$(eval CUDA_ENABLED==true)" output="screen">
   </node>
