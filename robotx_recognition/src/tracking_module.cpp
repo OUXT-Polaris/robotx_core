@@ -20,6 +20,10 @@ tracking_module::~tracking_module()
 
 jsk_recognition_msgs::BoundingBox tracking_module::input_measurement(boost::optional<jsk_recognition_msgs::BoundingBox> measurement, ros::Time stamp)
 {
+    if(predicted_bbox_.header.stamp == stamp)
+    {
+        return predicted_bbox_;
+    }
     if(measurement)
     {
         latest_measurement_ = *measurement;

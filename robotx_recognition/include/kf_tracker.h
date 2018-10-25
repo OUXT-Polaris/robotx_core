@@ -26,6 +26,8 @@ public:
     kf_tracker();
     ~kf_tracker();
 private:
+    void publish_marker_(ros::Time stamp);
+    void publish_clusters_(ros::Time stamp);
     void clusters_callback_(const jsk_recognition_msgs::BoundingBoxArray::ConstPtr msg);
     void reset_callback_(const std_msgs::Empty::ConstPtr msg);
     void track_clusters_();
@@ -33,6 +35,8 @@ private:
     boost::optional<int> get_tracker_index_(jsk_recognition_msgs::BoundingBox bbox);
     double min_target_height_;
     double max_target_height_;
+    double min_bbox_size_;
+    double max_bbox_size_;
     int num_tracking_frames_;
     double matching_distance_threashold_;
     volatile bool recieved_fast_time_;
