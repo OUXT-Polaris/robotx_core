@@ -16,14 +16,14 @@
 class tracking_module
 {
 public:
-    tracking_module(std::string map_frame);
+    tracking_module(std::string map_frame,int id);
     ~tracking_module();
     jsk_recognition_msgs::BoundingBox input_measurement(boost::optional<jsk_recognition_msgs::BoundingBox> measurement, ros::Time stamp);
+    const int target_id;
 private:
     std::shared_ptr<cv::KalmanFilter> kf_ptr_;
     cv::Mat state_;//x,y
     cv::Mat process_noise_;
-    cv::Mat transition_matrix_;
     std::string map_frame_;
     jsk_recognition_msgs::BoundingBox latest_measurement_;
 };
