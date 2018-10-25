@@ -28,13 +28,17 @@ jsk_recognition_msgs::BoundingBox tracking_module::input_measurement(boost::opti
     }
     cv::randn(process_noise_, cv::Scalar(0), cv::Scalar::all(std::sqrt(kf_ptr_->processNoiseCov.at<float>(0, 0))));
     state_ = kf_ptr_->transitionMatrix*state_ + process_noise_;
-    jsk_recognition_msgs::BoundingBox predicted_bbox;
-    predicted_bbox.header.stamp = stamp;
-    predicted_bbox.header.frame_id = map_frame_;
-    predicted_bbox.dimensions = latest_measurement_.dimensions;
-    predicted_bbox.pose.orientation = latest_measurement_.pose.orientation;
-    predicted_bbox.pose.position.x = state_.data[0];
-    predicted_bbox.pose.position.y = state_.data[1];
-    predicted_bbox.pose.position.z = latest_measurement_.pose.position.z;
-    return predicted_bbox;
+    predicted_bbox_.header.stamp = stamp;
+    predicted_bbox_.header.frame_id = map_frame_;
+    predicted_bbox_.dimensions = latest_measurement_.dimensions;
+    predicted_bbox_.pose.orientation = latest_measurement_.pose.orientation;
+    predicted_bbox_.pose.position.x = state_.data[0];
+    predicted_bbox_.pose.position.y = state_.data[1];
+    predicted_bbox_.pose.position.z = latest_measurement_.pose.position.z;
+    return predicted_bbox_;
+}
+
+jsk_recognition_msgs::BoundingBox tracking_module::get_predicted_bbox()
+{
+    return predicted_bbox_;
 }

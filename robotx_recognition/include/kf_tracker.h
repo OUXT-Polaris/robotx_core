@@ -30,6 +30,7 @@ private:
     void reset_callback_(const std_msgs::Empty::ConstPtr msg);
     void track_clusters_();
     void reset_();
+    boost::optional<int> get_tracker_index_(jsk_recognition_msgs::BoundingBox bbox);
     double min_target_height_;
     double max_target_height_;
     int num_tracking_frames_;
@@ -44,7 +45,7 @@ private:
     ros::Publisher marker_pub_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
-    std::vector<boost::shared_ptr<tracking_module> > tracklers_;
+    std::vector<boost::shared_ptr<tracking_module> > trackers_;
     jsk_recognition_msgs::BoundingBoxArray bbox_data_;
 };
 #endif  //KF_TRACKER_H_INCLUDED

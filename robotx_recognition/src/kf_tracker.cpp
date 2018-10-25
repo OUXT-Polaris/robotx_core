@@ -27,19 +27,44 @@ void kf_tracker::reset_callback_(const std_msgs::Empty::ConstPtr msg)
 
 void kf_tracker::reset_()
 {
-    tracklers_.clear();
-    recieved_fast_time_ = false;
+    trackers_.clear();
+    recieved_fast_time_ = true;
     return;
 }
 
 void kf_tracker::track_clusters_()
 {
-    for(auto bbox_itr = bbox_data_.boxes.begin(); bbox_itr != bbox_data_.boxes.end(); bbox_itr++)
+    if(recieved_fast_time_)
     {
-        boost::shared_ptr<tracking_module> module_ptr = boost::make_shared<tracking_module>(map_frame_, tracklers_.size());
-        module_ptr->input_measurement(*bbox_itr, bbox_data_.header.stamp);
+        for(auto bbox_itr = bbox_data_.boxes.begin(); bbox_itr != bbox_data_.boxes.end(); bbox_itr++)
+        {
+            boost::shared_ptr<tracking_module> module_ptr = boost::make_shared<tracking_module>(map_frame_, trackers_.size());
+            module_ptr->input_measurement(*bbox_itr, bbox_data_.header.stamp);
+            trackers_.push_back(module_ptr);
+        }
+        recieved_fast_time_ = false;
+    }
+    else
+    {
+        for(auto bbox_itr = bbox_data_.boxes.begin(); bbox_itr != bbox_data_.boxes.end(); bbox_itr++)
+        {
+            boost::optional<int> index = get_tracker_index_(*bbox_itr);
+            if(index)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
     }
     return;
+}
+
+boost::optional<int> kf_tracker::get_tracker_index_(jsk_recognition_msgs::BoundingBox bbox)
+{
+    return boost::none;
 }
 
 void kf_tracker::clusters_callback_(const jsk_recognition_msgs::BoundingBoxArray::ConstPtr msg)
