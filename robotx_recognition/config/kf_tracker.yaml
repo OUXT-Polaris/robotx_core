@@ -1,7 +1,7 @@
-min_target_height : 0.0
-max_target_height : 3.0
-min_bbox_size : 0.5
-max_bbox_size : 10.0
+#min_target_height : 0.0
+#max_target_height : 3.0
+#min_bbox_size : 0.5
+#max_bbox_size : 10.0
 # num_tracking frames shoud be over 1
 num_tracking_frames : 3
 matching_distance_threashold : 1.5

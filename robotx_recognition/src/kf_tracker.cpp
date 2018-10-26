@@ -3,10 +3,6 @@
 kf_tracker::kf_tracker() : tf_listener_(tf_buffer_)
 {
     nh_.param<double>(ros::this_node::getName()+"/matching_distance_threashold", matching_distance_threashold_, 1.0);
-    nh_.param<double>(ros::this_node::getName()+"/max_target_height", max_target_height_, 3.0);
-    nh_.param<double>(ros::this_node::getName()+"/min_target_height", min_target_height_, 0.0);
-    nh_.param<double>(ros::this_node::getName()+"/min_bbox_size", min_bbox_size_, 0.0);
-    nh_.param<double>(ros::this_node::getName()+"/max_bbox_size", max_bbox_size_, 10.0);
     nh_.param<std::string>(ros::this_node::getName()+"/euclidean_cluster_topic", euclidean_cluster_topic_, ros::this_node::getName()+"/input_clusters");
     nh_.param<std::string>(ros::this_node::getName()+"/map_frame", map_frame_, "map");
     reset_();
@@ -166,18 +162,11 @@ void kf_tracker::clusters_callback_(const jsk_recognition_msgs::BoundingBoxArray
         bbox.dimensions = cluster_itr->dimensions;
         bbox.label = cluster_itr->label;
         bbox.value = cluster_itr->value;
-        if(min_target_height_ < pose.pose.position.z && pose.pose.position.z < max_target_height_)
-        {
-            if(bbox.dimensions.x < max_bbox_size_ && min_bbox_size_ < bbox.dimensions.x)
-            {
-                if(bbox.dimensions.y < max_bbox_size_ && min_bbox_size_ < bbox.dimensions.y)
-                {
-                    transformed_clusters.boxes.push_back(bbox);
-                }
-            }
-        }
+        transformed_clusters.boxes.push_back(bbox);
     }
     bbox_data_ = transformed_clusters;
+    ROS_ERROR_STREAM(*msg);
+    ROS_WARN_STREAM(bbox_data_);
     track_clusters_();
     publish_clusters_(msg->header.stamp);
     publish_marker_(msg->header.stamp);

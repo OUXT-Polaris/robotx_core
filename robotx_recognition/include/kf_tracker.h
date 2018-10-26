@@ -33,10 +33,6 @@ private:
     void track_clusters_();
     void reset_();
     boost::optional<int> get_tracker_index_(jsk_recognition_msgs::BoundingBox bbox);
-    double min_target_height_;
-    double max_target_height_;
-    double min_bbox_size_;
-    double max_bbox_size_;
     int num_tracking_frames_;
     double matching_distance_threashold_;
     volatile bool recieved_first_time_;
