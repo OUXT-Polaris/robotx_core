@@ -30,12 +30,30 @@ void kf_tracker::reset_callback_(const std_msgs::Empty::ConstPtr msg)
 void kf_tracker::reset_()
 {
     trackers_.clear();
-    recieved_fast_time_ = true;
+    recieved_first_time_ = false;
     return;
 }
 
 void kf_tracker::publish_marker_(ros::Time stamp)
 {
+    visualization_msgs::MarkerArray msg;
+    for(int i=0; i<trackers_.size(); i++)
+    {
+        visualization_msgs::Marker marker;
+        jsk_recognition_msgs::BoundingBox bbox = trackers_[i]->get_predicted_bbox();
+        marker.header = bbox.header;
+        marker.ns = ros::this_node::getName();
+        marker.pose = bbox.pose;
+        marker.scale = bbox.dimensions;
+        marker.id = i;
+        marker.type = marker.CUBE;
+        marker.action = marker.ADD;
+        marker.color.r = 0;
+        marker.color.g = 1;
+        marker.color.b = 0;
+        marker.color.a = 0.5;
+        marker.frame_locked = true;
+    }
     return;
 }
 
@@ -57,15 +75,18 @@ void kf_tracker::publish_clusters_(ros::Time stamp)
 
 void kf_tracker::track_clusters_()
 {
-    if(recieved_fast_time_)
+    if(!recieved_first_time_)
     {
-        for(auto bbox_itr = bbox_data_.boxes.begin(); bbox_itr != bbox_data_.boxes.end(); bbox_itr++)
+        if(bbox_data_.boxes.size() != 0)
         {
-            boost::shared_ptr<tracking_module> module_ptr = boost::make_shared<tracking_module>(map_frame_, trackers_.size());
-            module_ptr->input_measurement(*bbox_itr, bbox_data_.header.stamp);
-            trackers_.push_back(module_ptr);
+            for(auto bbox_itr = bbox_data_.boxes.begin(); bbox_itr != bbox_data_.boxes.end(); bbox_itr++)
+            {
+                boost::shared_ptr<tracking_module> module_ptr = boost::make_shared<tracking_module>(map_frame_, trackers_.size());
+                module_ptr->input_measurement(*bbox_itr, bbox_data_.header.stamp);
+                trackers_.push_back(module_ptr);
+            }
+            recieved_first_time_ = true;
         }
-        recieved_fast_time_ = false;
     }
     else
     {

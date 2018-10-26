@@ -39,7 +39,7 @@ private:
     double max_bbox_size_;
     int num_tracking_frames_;
     double matching_distance_threashold_;
-    volatile bool recieved_fast_time_;
+    volatile bool recieved_first_time_;
     std::string euclidean_cluster_topic_;
     std::string map_frame_;
     ros::NodeHandle nh_;
