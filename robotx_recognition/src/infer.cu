@@ -1,19 +1,21 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <string>
 #include <vector>
-#include <NvInfer.h>
 #include <opencv2/opencv.hpp>
 #include <chrono>
 #include <ros/ros.h>
+
+// utils
 #include <cnn_utils.h>
 
-/*
-   TODO 4決め打ちをなんとかする
-   TODO 推論制度の改善
-   */
+// TensorRT
+#include <NvInfer.h>
+#include <NvUffParser.h>
 
 using namespace nvinfer1;
+using namespace nvuffparser;
 
 class Logger : public ILogger {
   void log(Severity severity, const char * msg) override {
@@ -40,12 +42,39 @@ size_t numInput, numOutput;
 float *inputDataHost, *outputDataHost;
 float *inputDataDevice, *outputDataDevice;
 
-void setup(std::string planFilename, std::string inputName, std::string outputName, bool _use_mappedMemory) {
+void convert(std::string uffFilename, std::string planFilename, std::string inputName, std::string outputName) {
+  IBuilder *builder = createInferBuilder(gLogger);
+  INetworkDefinition *network = builder->createNetwork();
+  IUffParser *parser = createUffParser();
+
+  parser->registerInput(inputName.c_str(), DimsCHW(3, 224, 224));
+  parser->registerOutput(outputName.c_str());
+  parser->parse(uffFilename.c_str(), *network, DataType::kFLOAT);  // or, kHALF
+
+  builder->setMaxBatchSize(1);
+  builder->setMaxWorkspaceSize(1<<20);
+  ICudaEngine *_engine = builder->buildCudaEngine(*network);
+
+  ofstream f;
+  f.open(planFilename.c_str());  // plan
+  IHostMemory *serializedEngine = _engine->serialize();
+  f.write((char *)serializedEngine->data(), serializedEngine->size());
+  f.close();
+
+  builder->destroy();
+  parser->destroy();
+  network->destroy();
+  _engine->destroy();
+  serializedEngine->destroy();
+}
+
+int setup(std::string planFilename, std::string inputName, std::string outputName, bool _use_mappedMemory) {
   ROS_INFO("setup");
   std::ifstream planFile(planFilename.c_str());
   if(!planFile.is_open()) {
     ROS_INFO("cannot get plan file");
     is_initialized = false;
+    return -1;
   } else {
     std::stringstream planBuffer;
     planBuffer << planFile.rdbuf();
@@ -89,6 +118,8 @@ void setup(std::string planFilename, std::string inputName, std::string outputNa
 
     is_initialized = true;
     ROS_INFO("initialize finished %d, %d", numInput, numOutput);
+
+    return (int)numOutput;
   }
 }
 

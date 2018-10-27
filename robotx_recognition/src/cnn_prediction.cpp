@@ -12,7 +12,7 @@
 #include <string>
 
 // infer.cu(CUDA使用時), infer.cpp(CUDA使わない時)の関数を呼び出す
-extern void setup(std::string planFilename, std::string inputName, std::string outputName, bool _use_mappedMemory);
+extern int setup(std::string planFilename, std::string inputName, std::string outputName, bool _use_mappedMemory);
 extern void destroy(void);
 extern void infer(cv::Mat image, float* out);
 extern void test(void);
@@ -38,7 +38,10 @@ cnn_predictor::cnn_predictor() :
   _sync.registerCallback(boost::bind(&cnn_predictor::callback, this, _1, _2));
 
   // tensorrt 初期化
-  setup(_params.model_filename, _params.model_inputName, _params.model_outputName, _params.use_mapped_memory);
+  int plan_outputNum = setup(_params.model_filename, _params.model_inputName, _params.model_outputName, _params.use_mapped_memory);
+  if (plan_outputNum <= 0) {
+    ROS_INFO("error while initializing tensorrt");
+  }
 
   ROS_INFO("detector initialized %d, %s", _params.model_outputNum, _params.image_topic.c_str());
 }
@@ -82,19 +85,17 @@ robotx_msgs::ObjectRegionOfInterestArray cnn_predictor::_image_recognition(const
         img_h = image.rows,
         img_w = image.cols;
     ROS_INFO("h:%d, w:%d, x:%d, y:%d, H:%d, W:%d", roi_h, roi_w, roi_x, roi_y, img_h, img_w);
-    
     if (roi_x >= 0 && roi_y >= 0 && roi_x + roi_w <= img_w && roi_y + roi_h <= img_h && roi_w > 0 && roi_h > 0) {
       // ROI is valid
       cv::Rect rect(cv::Point(roi_x, roi_y), cv::Size(roi_w, roi_h));
       cv::Mat subimage = image(rect);
       // 切り出した部分をCNNのinputサイズに合わせる
       // 切り出したところについてtensorrtで確率を計算
-      float result[4];
+      float result[_params.model_outputNum];
       infer(subimage, result);
-      ROS_INFO("probability %f,%f,%f,%f", result[0], result[1], result[2], result[3]);
       float max_prob = -1000;
       int index = -1;
-      for (int i = 0; i < 4; i++) {
+      for (int i = 0; i < _params.model_outputNum; i++) {
         if (max_prob < result[i]) {
           max_prob = result[i];
           index = i;
