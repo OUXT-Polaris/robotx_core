@@ -71,10 +71,9 @@ void cnn_predictor::callback(
 // 画像認識: 基本的にはroisのアップデートをする感じ (rois, image) -> (rois)
 robotx_msgs::ObjectRegionOfInterestArray cnn_predictor::_image_recognition(const robotx_msgs::ObjectRegionOfInterestArray rois, const cv::Mat image) {
   robotx_msgs::ObjectRegionOfInterestArray res;
+  res.header = rois.header;
   for (int i = 0; i < rois.object_rois.size(); i++) {
     robotx_msgs::ObjectRegionOfInterest roi = rois.object_rois[i];
-    robotx_msgs::ObjectRegionOfInterest roi_alt;
-    roi_alt.roi_2d = roi.roi_2d;  // TODO これでいける？
     // 矩形領域の切り出し
     int roi_h = roi.roi_2d.height,
         roi_w = roi.roi_2d.width,
@@ -83,50 +82,45 @@ robotx_msgs::ObjectRegionOfInterestArray cnn_predictor::_image_recognition(const
         img_h = image.rows,
         img_w = image.cols;
     ROS_INFO("h:%d, w:%d, x:%d, y:%d, H:%d, W:%d", roi_h, roi_w, roi_x, roi_y, img_h, img_w);
-    // TODO サイズがあってない時の例外処理
-    /* if (roi_x >= 0 && roi_y >= 0 && roi_x + roi_w <= img_w && roi_y + roi_h <= img_h) { */
-    /* } */
-    cv::Rect rect(cv::Point(roi_x, roi_y), cv::Size(roi_w, roi_h));
-    cv::Mat subimage = image(rect);
-    // 切り出した部分をCNNのinputサイズに合わせる
-    // 切り出したところについてtensorrtで確率を計算
-    float result[4];
-    infer(subimage, result);
-    ROS_INFO("probability %f,%f,%f,%f", result[0], result[1], result[2], result[3]);
-    float max_prob = -1000;
-    int index = -1;
-    for (int i = 0; i < 4; i++) {
-      if (max_prob < result[i]) {
-        max_prob = result[i];
-        index = i;
+    
+    if (roi_x >= 0 && roi_y >= 0 && roi_x + roi_w <= img_w && roi_y + roi_h <= img_h && roi_w > 0 && roi_h > 0) {
+      // ROI is valid
+      cv::Rect rect(cv::Point(roi_x, roi_y), cv::Size(roi_w, roi_h));
+      cv::Mat subimage = image(rect);
+      // 切り出した部分をCNNのinputサイズに合わせる
+      // 切り出したところについてtensorrtで確率を計算
+      float result[4];
+      infer(subimage, result);
+      ROS_INFO("probability %f,%f,%f,%f", result[0], result[1], result[2], result[3]);
+      float max_prob = -1000;
+      int index = -1;
+      for (int i = 0; i < 4; i++) {
+        if (max_prob < result[i]) {
+          max_prob = result[i];
+          index = i;
+        }
       }
+      switch(index) {
+        case 0:
+          roi.object_type.ID = roi.object_type.OTHER;
+          break;
+        case 1:
+          roi.object_type.ID = roi.object_type.GREEN_BUOY;
+          break;
+        case 2:
+          roi.object_type.ID = roi.object_type.RED_BUOY;
+          break;
+        case 3:
+          roi.object_type.ID = roi.object_type.WHITE_BUOY;
+          break;
+      }
+      roi.objectness = result[index];
+    } else {
+      // invalid ROI
+      roi.objectness = 0.0;
+      roi.object_type.ID = roi.object_type.OTHER;
     }
-    switch(index) {
-      case 0:
-        roi_alt.object_type.ID = roi_alt.object_type.OTHER;
-        break;
-      case 1:
-        roi_alt.object_type.ID = roi_alt.object_type.GREEN_BUOY;
-        break;
-      case 2:
-        roi_alt.object_type.ID = roi_alt.object_type.RED_BUOY;
-        break;
-      case 3:
-        roi_alt.object_type.ID = roi_alt.object_type.WHITE_BUOY;
-        break;
-    }
-    roi_alt.objectness = result[index];
-    res.object_rois.push_back(roi_alt);
+    res.object_rois.push_back(roi);
   }
   return res;
 }
-
-/* main */
-// http://blog-sk.com/ubuntu/ros_cvbridge/
-int main(int argc, char *argv[]) {
-  ros::init(argc, argv, "cnn_prediction_node");
-  cnn_predictor cnn_predictor;
-  ros::spin();
-  return 0;
-}
-
