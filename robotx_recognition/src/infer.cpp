@@ -5,6 +5,11 @@
 #include <opencv2/opencv.hpp>
 #include <ros/ros.h>
 
+int convert(std::string uffFilename, std::string planFilename, std::string inputName, std::string outputName) {
+  ROS_INFO("mock convert");
+  return 0;
+}
+
 int setup(std::string planFilename, std::string inputName, std::string outputName, bool _use_mappedMemory) {
   ROS_INFO("mock setup");
   return 4;

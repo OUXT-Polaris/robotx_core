@@ -42,7 +42,7 @@ size_t numInput, numOutput;
 float *inputDataHost, *outputDataHost;
 float *inputDataDevice, *outputDataDevice;
 
-void convert(std::string uffFilename, std::string planFilename, std::string inputName, std::string outputName) {
+int convert(std::string uffFilename, std::string planFilename, std::string inputName, std::string outputName) {
   IBuilder *builder = createInferBuilder(gLogger);
   INetworkDefinition *network = builder->createNetwork();
   IUffParser *parser = createUffParser();
@@ -66,6 +66,8 @@ void convert(std::string uffFilename, std::string planFilename, std::string inpu
   network->destroy();
   _engine->destroy();
   serializedEngine->destroy();
+
+  return 0;
 }
 
 int setup(std::string planFilename, std::string inputName, std::string outputName, bool _use_mappedMemory) {

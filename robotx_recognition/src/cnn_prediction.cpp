@@ -12,6 +12,7 @@
 #include <string>
 
 // infer.cu(CUDA使用時), infer.cpp(CUDA使わない時)の関数を呼び出す
+extern int convert(std::string uffFilename, std::string planFilename, std::string inputName, std::string outputName);
 extern int setup(std::string planFilename, std::string inputName, std::string outputName, bool _use_mappedMemory);
 extern void destroy(void);
 extern void infer(cv::Mat image, float* out);
