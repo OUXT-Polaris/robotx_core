@@ -1,7 +1,7 @@
 #include <robotx_localization.h>
 
 robotx_localization::robotx_localization() : params_() {
-  initiazlie_particle_filter_();
+  initialize_particle_filter_();
   robot_pose_pub_ = nh_.advertise<geometry_msgs::PoseStamped>("/robot_pose", 1);
   odom_pub_ = nh_.advertise<nav_msgs::Odometry>("/odom", 1);
   init_fix_pub_ = nh_.advertise<sensor_msgs::NavSatFix>("/origin/fix", 1);
@@ -14,15 +14,11 @@ robotx_localization::robotx_localization() : params_() {
 
 robotx_localization::~robotx_localization() { thread_update_frame_.join(); }
 
-void robotx_localization::initiazlie_particle_filter_(){
+void robotx_localization::initialize_particle_filter_(){
   yaw_ = 0;
   Eigen::VectorXd init_value = Eigen::VectorXd::Ones(3);
-  init_value = init_value * 0.5;
-  std::vector<bool> is_circular(3);
-  is_circular[0] = false;
-  is_circular[1] = false;
-  is_circular[2] = true;
-  pfilter_ptr_ = new particle_filter(3, params_.num_particles, init_value, is_circular);
+  init_value;
+  pfilter_ptr_ = new particle_filter(3, params_.num_particles, init_value);
   fix_recieved_ = false;
   twist_received_ = false;
   imu_recieved_ = false;
@@ -40,32 +36,23 @@ void robotx_localization::update_frame_() {
     pfilter_ptr_->resample(params_.ess_threshold);
     Eigen::VectorXd control_input(3);
     Eigen::VectorXd state = pfilter_ptr_->get_state();
-    Eigen::VectorXd position(3);
-    position(0) = params_.min_x + state(0) * (params_.max_x - params_.min_x);
-    position(1) = params_.min_y + state(1) * (params_.max_y - params_.min_y);
-    position(2) = 2 * M_PI * state(2);
-    control_input(0) = (std::cos(position(2)) * last_twist_message_.linear.x -
-                        std::sin(position(2)) * last_twist_message_.linear.y) /
+    control_input(0) = (std::cos(state(2)) * last_twist_message_.linear.x -
+                        std::sin(state(2)) * last_twist_message_.linear.y) /
                        params_.publish_rate;
-    control_input(1) = (std::sin(position(2)) * last_twist_message_.linear.x +
-                        std::cos(position(2)) * last_twist_message_.linear.y) /
+    control_input(1) = (std::sin(state(2)) * last_twist_message_.linear.x +
+                        std::cos(state(2)) * last_twist_message_.linear.y) /
                        params_.publish_rate;
     control_input(2) = last_twist_message_.angular.z / params_.publish_rate;
-    control_input(0) = control_input(0) / (params_.max_x - params_.min_x);
-    control_input(1) = control_input(1) / (params_.max_y - params_.min_y);
-    control_input(2) = control_input(2) / (2 * M_PI);
-    pfilter_ptr_->add_system_noise(control_input, 0);
+    pfilter_ptr_->add_system_noise(control_input, 0.0);
     Eigen::MatrixXd states = pfilter_ptr_->get_states();
-    double measurement_x = (last_fix_message_.longitude - init_measurement_.longitude) * 111263.283 /
-                           (params_.max_x - params_.min_x);
+    double measurement_x = (last_fix_message_.longitude - init_measurement_.longitude) * 111263.283;
     double measurement_y = (last_fix_message_.latitude - init_measurement_.latitude) * 6378150 *
-                           std::cos(last_fix_message_.longitude / 180 * M_PI) * 2 * M_PI / (360 * 60 * 60) /
-                           (params_.max_y - params_.min_y);
+                           std::cos(last_fix_message_.longitude / 180 * M_PI) * 2 * M_PI / (360 * 60 * 60);
     Eigen::VectorXd weights(params_.num_particles);
     for (int i = 0; i < params_.num_particles; i++) {
       double error =
-          std::sqrt(std::pow(states(0, i) - measurement_x, 2) + std::pow(states(1, i) - measurement_y, 2) + std::pow(states(2, i) - yaw_, 2));
-      double threashold = 0.01;
+          std::sqrt(std::pow(states(0, i) - measurement_x, 2) + std::pow(states(1, i) - measurement_y, 2) + 100*std::pow(states(2, i) - yaw_, 2));
+      double threashold = 0.001;
       // avoid zero division
       if (std::fabs(error) < threashold) error = threashold;
       weights(i) = 1 / error;
@@ -77,12 +64,12 @@ void robotx_localization::update_frame_() {
     transform_stamped.header.frame_id = params_.publish_frame;
     transform_stamped.child_frame_id = params_.robot_frame;
     transform_stamped.transform.translation.x =
-        predicted_pos(0) * (params_.max_x - params_.min_x) + params_.min_x;
+        predicted_pos(0);
     transform_stamped.transform.translation.y =
-        predicted_pos(1) * (params_.max_y - params_.min_y) + params_.min_y;
+        predicted_pos(1);
     transform_stamped.transform.translation.z = 0;
     tf2::Quaternion q;
-    q.setRPY(0, 0, predicted_pos(2) * 2 * M_PI);
+    q.setRPY(0, 0, predicted_pos(2));
     transform_stamped.transform.rotation.x = q.x();
     transform_stamped.transform.rotation.y = q.y();
     transform_stamped.transform.rotation.z = q.z();
@@ -90,8 +77,8 @@ void robotx_localization::update_frame_() {
     broadcaster_.sendTransform(transform_stamped);
     geometry_msgs::PoseStamped robot_pose_msg;
     robot_pose_msg.header = transform_stamped.header;
-    robot_pose_msg.pose.position.x = predicted_pos(0) * (params_.max_x - params_.min_x) + params_.min_x;
-    robot_pose_msg.pose.position.y = predicted_pos(1) * (params_.max_y - params_.min_y) + params_.min_y;
+    robot_pose_msg.pose.position.x = predicted_pos(0);
+    robot_pose_msg.pose.position.y = predicted_pos(1);
     robot_pose_msg.pose.position.z = 0;
     robot_pose_msg.pose.orientation.x = q.x();
     robot_pose_msg.pose.orientation.y = q.y();
@@ -116,7 +103,7 @@ void robotx_localization::update_frame_() {
 
 void robotx_localization::reset_callback_(std_msgs::Empty msg){
   std::lock(fix_mutex_, twist_mutex_, imu_mutex_);
-  initiazlie_particle_filter_();
+  initialize_particle_filter_();
   fix_mutex_.unlock();
   twist_mutex_.unlock();
   imu_mutex_.unlock();

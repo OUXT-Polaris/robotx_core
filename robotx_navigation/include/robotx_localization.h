@@ -38,10 +38,6 @@ class robotx_localization {
     std::string reset_topic;
     int num_particles;
     int publish_rate;
-    double min_x;
-    double min_y;
-    double max_x;
-    double max_y;
     double ess_threshold;
     parameters() {
       ros::param::param<std::string>(ros::this_node::getName() + "/robot_frame", robot_frame,
@@ -49,18 +45,13 @@ class robotx_localization {
       ros::param::param<std::string>(ros::this_node::getName() + "/publish_frame", publish_frame, "map");
       ros::param::param<std::string>(ros::this_node::getName() + "/twist_topic", twist_topic,
                                      ros::this_node::getName() + "/twist");
-      ros::param::param<std::string>(ros::this_node::getName() + "/reset_topic", reset_topic,
-                                     ros::this_node::getName() + "/reset");
+      ros::param::param<std::string>(ros::this_node::getName() + "/reset_topic", reset_topic,"/reset");
       ros::param::param<std::string>(ros::this_node::getName() + "/fix_topic", fix_topic,
                                      ros::this_node::getName() + "/fix");
       ros::param::param<std::string>(ros::this_node::getName() + "/imu_topic", imu_topic,
                                      ros::this_node::getName() + "/imu");
       ros::param::param<int>(ros::this_node::getName() + "/num_particles", num_particles, 1000);
       ros::param::param<int>(ros::this_node::getName() + "/publish_rate", publish_rate, 100);
-      ros::param::param<double>(ros::this_node::getName() + "/min_x", min_x, -100);
-      ros::param::param<double>(ros::this_node::getName() + "/min_y", min_y, -100);
-      ros::param::param<double>(ros::this_node::getName() + "/max_x", max_x, 100);
-      ros::param::param<double>(ros::this_node::getName() + "/max_y", max_y, 100);
       ros::param::param<double>(ros::this_node::getName() + "/ess_threshold", ess_threshold,
                                 (double)num_particles / (double)3);
     }
@@ -69,7 +60,7 @@ class robotx_localization {
   ~robotx_localization();
 
  private:
-  void initiazlie_particle_filter_();
+  void initialize_particle_filter_();
   const parameters params_;
   void imu_callback_(sensor_msgs::Imu msg);
   void fix_callback_(sensor_msgs::NavSatFix msg);
