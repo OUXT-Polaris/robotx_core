@@ -1,3 +1,5 @@
 objects_topic_name: /cnn_prediction_node/object_roi
+odom_frame: odom
+object_roi_frame: velodyne
 local_mapping_buffer_length: 10
 matching_distance_threashold: 1.0
