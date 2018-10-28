@@ -104,6 +104,7 @@ class robotx_hardware_interface {
   };
   robotx_hardware_interface();
   ~robotx_hardware_interface();
+  void run();
   /**
    * @brief function for setting action mode.
    *
@@ -264,6 +265,11 @@ class robotx_hardware_interface {
    *
    */
   remote_operated_interface remote_operated_if;
+  /**
+   * @brief io_service_thread
+   *
+   */
+  boost::thread io_service_thread_;
   /**
    * @brief send_command_thread
    *

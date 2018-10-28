@@ -54,6 +54,10 @@ void tcp_client::on_connect(const boost::system::error_code &error) {
 }
 
 void tcp_client::on_receive(const boost::system::error_code &error, size_t bytes_transferred) {
+    if (error) {
+      ROS_ERROR_STREAM(error.message());
+    }
+  /*
   if (error == boost::asio::error::operation_aborted) {
     ROS_ERROR_STREAM("timeout"
                      << "(" << ip_address_ << ":" << port_ << ")");
@@ -64,22 +68,33 @@ void tcp_client::on_receive(const boost::system::error_code &error, size_t bytes
       ROS_ERROR_STREAM(error.message());
     }
   }
+  */
 }
 
 void tcp_client::send(double data) {
+  if(!connection_status_)
+  {
+    return;
+  }
   // send data by using tcp/ip protocol
   std::array<double, 1> data_arr;
   data_arr[0] = data;
   boost::asio::async_write(socket_, boost::asio::buffer(data_arr),
                            boost::bind(&tcp_client::on_send, this, boost::asio::placeholders::error,
                                        boost::asio::placeholders::bytes_transferred));
+  return;
 }
 
 void tcp_client::send(std::string data) {
+  if(!connection_status_)
+  {
+    return;
+  }
   // send data by using tcp/ip protocol
   boost::asio::async_write(socket_, boost::asio::buffer(data),
                            boost::bind(&tcp_client::on_send, this, boost::asio::placeholders::error,
                                        boost::asio::placeholders::bytes_transferred));
+  return;
 }
 
 // callback function for sending data
@@ -95,6 +110,6 @@ void tcp_client::start_receive() {
   boost::asio::async_read(socket_, receive_buff_, boost::asio::transfer_all(),
                           boost::bind(&tcp_client::on_receive, this, boost::asio::placeholders::error,
                                       boost::asio::placeholders::bytes_transferred));
-  timer_.expires_from_now(std::chrono::seconds(timeout_));
-  timer_.async_wait(boost::bind(&tcp_client::on_timer, this, _1));
+  //timer_.expires_from_now(std::chrono::seconds(timeout_));
+  //timer_.async_wait(boost::bind(&tcp_client::on_timer, this, _1));
 }
