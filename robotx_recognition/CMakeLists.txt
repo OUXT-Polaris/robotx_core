@@ -7,6 +7,11 @@ project(robotx_recognition)
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
+## for tensor rt compile flag with cuda
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+set(CUDA_NVCC_FLAGS -std c++11)
+set(CMAKE_CXX_STANDARD 11)
+
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   pcl_ros
@@ -37,6 +42,9 @@ endif()
 
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
+
+# for tensorrt
+find_package(CUDA)
 
 ###################################
 ## catkin specific configuration ##
@@ -123,13 +131,41 @@ add_dependencies(pointcloud_merger_nodelet robotx_msgs_generate_messages_cpp)
 target_link_libraries(pointcloud_merger_nodelet ${catkin_LIBRARIES})
 #clang_format(pointcloud_merger_nodelet)
 
+# cnn_prediction
+# あればinfer.cuをビルド、ない場合は下で分岐してinfer.cppを使う
+if(CUDA_FOUND)
+  include_directories(
+    include
+    ${catkin_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
+    ${CUDA_INCLUDE_DIRS}
+  )
+  cuda_add_executable(cnn_prediction_node src/infer.cu src/cnn_prediction.cpp src/cnn_prediction_node.cpp)  # main
+  add_dependencies(cnn_prediction_node
+    ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${catkin_EXPORTED_LIBRARIES})
+  target_link_libraries(cnn_prediction_node ${catkin_LIBRARIES} ${CUDA_LIBRARIES} ${Boost_LIBRARIES} nvinfer nvparsers)
+
+else()
+  include_directories(
+    include
+    ${catkin_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
+  )
+  add_executable(cnn_prediction_node src/infer.cpp src/cnn_prediction.cpp src/cnn_prediction_node.cpp)  # main
+  add_dependencies(cnn_prediction_node
+    ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${catkin_EXPORTED_LIBRARIES})
+  target_link_libraries(cnn_prediction_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+endif()
+
+
 #############
 ## Install ##
 #############
 # CPP Execution programs
-set(CPP_EXEC_NAMES 
+set(CPP_EXEC_NAMES
   object_recognition_node euclidean_clustering_node passthrough_filter_node pointcloud_merger_node
-  hsv_buoy_detector_node bing_object_detection_node object_bbox_extractor_node)
+  hsv_buoy_detector_node bing_object_detection_node object_bbox_extractor_node cnn_prediction_node)
 foreach(cpp_exec_names ${CPP_EXEC_NAMES})
   install(TARGETS ${cpp_exec_names}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
