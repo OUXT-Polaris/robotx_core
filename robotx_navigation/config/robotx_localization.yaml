@@ -1,4 +1,4 @@
-publish_frame: world
+publish_frame: odom
 robot_frame: base_footprint
 twist_topic: /vel
 fix_topic: /fix

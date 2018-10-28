@@ -4,5 +4,5 @@ twist_topic: /cmd_vel
 default_torelance: 3.0
 default_linear_velocity: 1.5
 robot_frame: base_link
-map_frame: world
+map_frame: map
 publish_rate: 30

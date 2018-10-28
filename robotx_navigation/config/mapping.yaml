@@ -1,1 +1,3 @@
 objects_topic_name: /cnn_prediction_node/object_roi
+local_mapping_buffer_length: 10
+matching_distance_threashold: 1.0

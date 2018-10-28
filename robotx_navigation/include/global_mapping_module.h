@@ -17,6 +17,7 @@ private:
     void objects_callback_(const robotx_msgs::ObjectRegionOfInterestArray msg);
     std::string objects_topic_name_;
     double matching_distance_threashold_;
+    int local_mapping_buffer_length_;
     ros::NodeHandle nh_;
     ros::Subscriber objects_sub_;
 };

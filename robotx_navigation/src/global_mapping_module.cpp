@@ -3,7 +3,8 @@
 global_mapping_module::global_mapping_module()
 {
     nh_.param<std::string>(ros::this_node::getName()+"/objects_topic_name", objects_topic_name_,ros::this_node::getName()+"/object_roi");
-    nh_.param<double>(ros::this_node::getName()+"matching_distance_threashold", matching_distance_threashold_, 1.0);
+    nh_.param<double>(ros::this_node::getName()+"/matching_distance_threashold", matching_distance_threashold_, 1.0);
+    nh_.param<int>(ros::this_node::getName()+"/local_mapping_buffer_length", local_mapping_buffer_length_,10);
     objects_sub_ = nh_.subscribe(objects_topic_name_,3,&global_mapping_module::objects_callback_,this);
 }
 
