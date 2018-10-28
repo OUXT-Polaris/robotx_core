@@ -25,7 +25,7 @@ class remote_operated_interface {
    *
    */
   struct parameters {
-    enum controllers { DUALSHOCK4_SIMPLE = 0, DUALSHOCK4 = 1 };
+    enum controllers { DUALSHOCK4_SIMPLE = 0, DUALSHOCK4 = 1, LOGICOOL = 2 };
     int controller_type;
     /**
      * @brief Construct a new parameters objects
