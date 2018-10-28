@@ -16,8 +16,7 @@ robotx_localization::~robotx_localization() { thread_update_frame_.join(); }
 
 void robotx_localization::initialize_particle_filter_(){
   yaw_ = 0;
-  Eigen::VectorXd init_value = Eigen::VectorXd::Ones(3);
-  init_value;
+  Eigen::VectorXd init_value = Eigen::VectorXd::Zero(3);
   pfilter_ptr_ = new particle_filter(3, params_.num_particles, init_value);
   fix_recieved_ = false;
   twist_received_ = false;
