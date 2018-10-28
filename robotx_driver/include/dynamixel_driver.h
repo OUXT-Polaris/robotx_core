@@ -12,6 +12,7 @@ public:
     dynamixel_driver();
     ~dynamixel_driver();
 private:
+    ros::Subscriber command_sub_;
     std::string input_topic_;
     ros::NodeHandle nh_;
     int motor_id_;

@@ -5,6 +5,7 @@ dynamixel_driver::dynamixel_driver()
     ros::param::param<std::string>(ros::this_node::getName() + "/input_topic", input_topic_, ros::this_node::getName()+"/target_angle");
     ros::param::param<int>(ros::this_node::getName() + "/id", motor_id_, 0);
     joint_command_client_ = nh_.serviceClient<dynamixel_workbench_msgs::JointCommand>("joint_command");
+    command_sub_ = nh_.subscribe(input_topic_,10,&dynamixel_driver::command_callback_,this);
 }
 
 dynamixel_driver::~dynamixel_driver()
