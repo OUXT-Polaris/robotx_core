@@ -34,7 +34,17 @@ robotx_hardware_interface::robotx_hardware_interface()
         new tcp_client(io_service_, params_.left_motor_ip, params_.left_motor_port, params_.timeout);
     right_motor_cmd_client_ptr_ =
         new tcp_client(io_service_, params_.right_motor_ip, params_.right_motor_port, params_.timeout);
-    io_service_.run();
+    io_service_thread_ = boost::thread(boost::bind(&boost::asio::io_service::run, &io_service_));
+    last_motor_cmd_msg_.data.resize(4);
+    last_motor_cmd_msg_.data[0] = 0;
+    last_motor_cmd_msg_.data[1] = 0;
+    last_motor_cmd_msg_.data[2] = 0;
+    last_motor_cmd_msg_.data[3] = 0;
+    last_manual_motor_cmd_msg_.data.resize(4);
+    last_manual_motor_cmd_msg_.data[0] = 0;
+    last_manual_motor_cmd_msg_.data[1] = 0;
+    last_manual_motor_cmd_msg_.data[2] = 0;
+    last_manual_motor_cmd_msg_.data[3] = 0;
   }
   thruster_diagnostic_updater_.setHardwareID("thruster");
   thruster_diagnostic_updater_.add("left_connection_status", this,
@@ -56,6 +66,7 @@ void robotx_hardware_interface::run(){
 }
 
 robotx_hardware_interface::~robotx_hardware_interface() {
+  io_service_thread_.join();
   send_command_thread_.join();
   publish_heartbeat_thread_.join();
 }
@@ -163,8 +174,8 @@ void robotx_hardware_interface::send_command_() {
       }
     }
     if (params_.target == params_.ALL || params_.target == params_.HARDWARE) {
-      //left_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[0]);
-      //right_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[2]);
+      left_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[0]);
+      right_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[2]);
     }
     mtx_.unlock();
     rate.sleep();
