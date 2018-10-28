@@ -20,10 +20,10 @@ void global_mapping_module::objects_callback_(const robotx_msgs::ObjectRegionOfI
 {
     robotx_msgs::ObjectRegionOfInterestArray transformed_rois;
     transformed_rois.header = msg.header;
-    geometry_msgs::TransformStamped transform_stamped_;
+    geometry_msgs::TransformStamped transform_stamped;
     try
     {
-        transform_stamped_ = tf_buffer_.lookupTransform(odom_frame_, object_roi_frame_, ros::Time(0));
+        transform_stamped = tf_buffer_.lookupTransform(odom_frame_, object_roi_frame_, ros::Time(0));
     }
     catch (tf2::TransformException &ex)
     {
@@ -32,7 +32,18 @@ void global_mapping_module::objects_callback_(const robotx_msgs::ObjectRegionOfI
     }
     for(auto roi_itr = msg.object_rois.begin(); roi_itr != msg.object_rois.end(); roi_itr++)
     {
-
+        robotx_msgs::ObjectRegionOfInterest transformed_roi;
+        transformed_roi.header = roi_itr->header;
+        transformed_roi.roi_2d = roi_itr->roi_2d;
+        geometry_msgs::PoseStamped pose_stamped;
+        pose_stamped.header = roi_itr->roi_3d.header;
+        pose_stamped.pose = roi_itr->roi_3d.pose;
+        geometry_msgs::Vector3Stamped dimensions_stamped;
+        dimensions_stamped.header = roi_itr->roi_3d.header;
+        dimensions_stamped.vector = roi_itr->roi_3d.dimensions;
+        tf2::doTransform(pose_stamped, pose_stamped, transform_stamped);
+        tf2::doTransform(dimensions_stamped, dimensions_stamped, transform_stamped);
+        
     }
     //transformed_roi.roi_2d = 
     return;

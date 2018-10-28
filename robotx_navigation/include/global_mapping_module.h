@@ -5,6 +5,9 @@
 #include <ros/ros.h>
 #include <tf2_ros/transform_listener.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <geometry_msgs/Vector3Stamped.h>
+#include <geometry_msgs/PoseStamped.h>
 
 //headers in this package
 #include <local_mapping_module.h>
