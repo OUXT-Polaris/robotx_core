@@ -28,6 +28,8 @@ find_package(catkin REQUIRED COMPONENTS
   message_filters
 )
 
+find_package(Ceres REQUIRED)
+
 catkin_package()
 
 ###########
@@ -36,6 +38,7 @@ catkin_package()
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${CERESS_INCLUDE_DIRS}
 )
 
 add_executable(twist_from_fix_velocity_node src/twist_from_fix_velocity_node.cpp src/twist_calculator.cpp)
@@ -85,7 +88,7 @@ target_link_libraries(waypoint_logger_node ${catkin_LIBRARIES})
 add_dependencies(waypoint_logger_node robotx_msgs_generate_messages_cpp)
 
 add_executable(mapping_node src/mapping_node.cpp src/global_mapping_module.cpp src/local_mapping_module.cpp)
-target_link_libraries(mapping_node ${catkin_LIBRARIES})
+target_link_libraries(mapping_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
 add_dependencies(mapping_node robotx_msgs_generate_messages_cpp)
 
 #############

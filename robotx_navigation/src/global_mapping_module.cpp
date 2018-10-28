@@ -43,8 +43,11 @@ void global_mapping_module::objects_callback_(const robotx_msgs::ObjectRegionOfI
         dimensions_stamped.vector = roi_itr->roi_3d.dimensions;
         tf2::doTransform(pose_stamped, pose_stamped, transform_stamped);
         tf2::doTransform(dimensions_stamped, dimensions_stamped, transform_stamped);
-        
+        transformed_roi.roi_3d.header.stamp = roi_itr->roi_3d.header.stamp;
+        transformed_roi.roi_3d.header.frame_id = odom_frame_;
+        transformed_roi.roi_3d.dimensions = dimensions_stamped.vector;
+        transformed_roi.roi_3d.pose = pose_stamped.pose;
+        transformed_rois.object_rois.push_back(transformed_roi);
     }
-    //transformed_roi.roi_2d = 
     return;
 }

@@ -10,10 +10,13 @@
 class local_mapping_module
 {
 public:
-    local_mapping_module(int buffer_length);
+    local_mapping_module(int buffer_length, double matching_distance_threashold);
     ~local_mapping_module();
-    void add_measurement(robotx_msgs::ObjectRegionOfInterestArray measurement);
+    bool add_measurement(robotx_msgs::ObjectRegionOfInterestArray measurement);
 private:
+    void build_();
     boost::circular_buffer<robotx_msgs::ObjectRegionOfInterestArray> buf_;
+    int buffer_length_;
+    double matching_distance_threashold_;
 };
 #endif //LOCAL_MAPPING_MODULE_H_INCLUDED
