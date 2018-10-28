@@ -4,6 +4,9 @@ timeout: 30
 frequency: 30
 # DUALSHOCK4_SIMPLE=0
 # DUALSHOCK4=1
-controller_type: 0
-left_motor_ip: 127.0.0.1 #192.168.10.20
-right_motor_ip: 127.0.0.1 # 192.168.10.21
+# LOGICOOL=2
+controller_type: 2
+left_motor_ip: 192.168.1.20
+right_motor_ip: 192.168.1.21
+left_motor_port: 50000
+right_motor_port: 50000

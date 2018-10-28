@@ -35,6 +35,10 @@ robotx_hardware_interface::robotx_hardware_interface()
     right_motor_cmd_client_ptr_ =
         new tcp_client(io_service_, params_.right_motor_ip, params_.right_motor_port, params_.timeout);
     io_service_thread_ = boost::thread(boost::bind(&boost::asio::io_service::run, &io_service_));
+    left_thrust_joint_pub_ =
+        nh_.advertise<std_msgs::Float64>("/left_engine_position_controller/command", 1);
+    right_thrust_joint_pub_ =
+        nh_.advertise<std_msgs::Float64>("/right_engine_position_controller/command", 1);
     last_motor_cmd_msg_.data.resize(4);
     last_motor_cmd_msg_.data[0] = 0;
     last_motor_cmd_msg_.data[1] = 0;
@@ -174,8 +178,26 @@ void robotx_hardware_interface::send_command_() {
       }
     }
     if (params_.target == params_.ALL || params_.target == params_.HARDWARE) {
-      left_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[0]);
-      right_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[2]);
+      if (driving_mode_ == params_.REMOTE_OPERATED) {
+        left_motor_cmd_client_ptr_->send(last_manual_motor_cmd_msg_.data[0]);
+        right_motor_cmd_client_ptr_->send(last_manual_motor_cmd_msg_.data[2]);
+        std_msgs::Float64 left_thrust_joint_cmd_;
+        left_thrust_joint_cmd_.data = last_manual_motor_cmd_msg_.data[1];
+        std_msgs::Float64 right_thrust_joint_cmd_;
+        right_thrust_joint_cmd_.data = last_manual_motor_cmd_msg_.data[3];
+        left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
+        right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
+      }
+      if (driving_mode_ == params_.AUTONOMOUS) {
+        left_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[0]);
+        right_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[2]);
+        std_msgs::Float64 left_thrust_joint_cmd_;
+        left_thrust_joint_cmd_.data = last_motor_cmd_msg_.data[1];
+        std_msgs::Float64 right_thrust_joint_cmd_;
+        right_thrust_joint_cmd_.data = last_motor_cmd_msg_.data[3];
+        left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
+        right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
+      }
     }
     mtx_.unlock();
     rate.sleep();
