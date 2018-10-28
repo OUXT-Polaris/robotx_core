@@ -84,6 +84,10 @@ add_executable(waypoint_logger_node src/waypoint_logger_node.cpp src/waypoint_lo
 target_link_libraries(waypoint_logger_node ${catkin_LIBRARIES})
 add_dependencies(waypoint_logger_node robotx_msgs_generate_messages_cpp)
 
+add_executable(mapping_node src/mapping_node.cpp src/global_mapping_module.cpp src/local_mapping_module.cpp)
+target_link_libraries(mapping_node ${catkin_LIBRARIES})
+add_dependencies(mapping_node robotx_msgs_generate_messages_cpp)
+
 #############
 ## Install ##
 #############
