@@ -9,7 +9,7 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     nh_.param<std::string>(ros::this_node::getName()+"/map_frame", map_frame_, "map");
     nh_.param<std::string>(ros::this_node::getName()+"/navigation_status_topic", navigation_status_topic_, ros::this_node::getName()+"/navigation_status");
     nh_.param<std::string>(ros::this_node::getName()+"/robot_pose_topic", robot_pose_topic_, ros::this_node::getName()+"/robot_pose");
-    nh_.param<double>(ros::this_node::getName()+"search_angle", search_angle_, 1.57);
+    nh_.param<double>(ros::this_node::getName()+"/search_angle", search_angle_, 1.57);
     waypoint_bag_file_path_ = ros::package::getPath("robotx_navigation") + "/data/" + waypoint_bag_filename;
     rosbag::Bag bag;
     bag.open(waypoint_bag_file_path_);
