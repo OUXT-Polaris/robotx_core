@@ -17,3 +17,9 @@ void obstacle_avoid::twist_cmd_callback_(const geometry_msgs::Twist::ConstPtr ms
     twist_cmd_pub_.publish(twist_cmd);
     return;
 }
+
+void obstacle_avoid::obstacle_map_callback_(const nav_msgs::OccupancyGrid::Ptr msg)
+{
+    map_ptr_ = boost::shared_ptr<nav_msgs::OccupancyGrid>(msg);
+    return;
+}
