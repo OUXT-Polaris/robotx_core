@@ -266,6 +266,11 @@ class robotx_hardware_interface {
    */
   remote_operated_interface remote_operated_if;
   /**
+   * @brief io_service_thread
+   *
+   */
+  boost::thread io_service_thread_;
+  /**
    * @brief send_command_thread
    *
    */
