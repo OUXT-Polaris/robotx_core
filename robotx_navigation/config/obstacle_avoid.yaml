@@ -1,0 +1,3 @@
+odom_topic : /odom
+raw_cmd_vel_topic : /carrot_planner_node/input_cmd_vel
+map_topic : /obstacle_map

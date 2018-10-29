@@ -4,6 +4,7 @@
 //headers in ROS
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/OccupancyGrid.h>
+#include <nav_msgs/Odometry.h>
 
 //headers in FLANN
 #include <flann/flann.hpp>
@@ -16,7 +17,7 @@ class state_lattice_planner
 public:
     state_lattice_planner();
     ~state_lattice_planner();
-    bool plan(geometry_msgs::Twist current_twist, boost::shared_ptr<nav_msgs::OccupancyGrid> map_ptr);
+    bool plan(geometry_msgs::Twist current_twist, nav_msgs::Odometry odom, boost::shared_ptr<nav_msgs::OccupancyGrid> map_ptr);
 private:
 };
 #endif  //STATE_LATTICE_PLANNER_H_INCLUDED
