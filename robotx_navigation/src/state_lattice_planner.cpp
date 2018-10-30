@@ -10,6 +10,18 @@ state_lattice_planner::~state_lattice_planner()
 
 }
 
+void state_lattice_planner::set_parameters(double max_angular_vel, double max_angular_acceleration,
+    double max_linear_vel, double max_linear_acceleration, double prediction_time, int num_prediction)
+{
+    max_angular_vel_ = max_angular_vel;
+    max_angular_acceleration_ = max_angular_acceleration;
+    max_linear_vel_ = max_linear_vel;
+    max_linear_acceleration_ = max_linear_acceleration;
+    prediction_time_ = prediction_time;
+    num_prediction_ = num_prediction;
+    return;
+}
+
 planner_result state_lattice_planner::plan(geometry_msgs::Twist raw_twist_cmd, geometry_msgs::PoseStamped target_pose, 
     geometry_msgs::Twist current_twist, boost::shared_ptr<nav_msgs::OccupancyGrid> map_ptr, geometry_msgs::Twist& twist_cmd)
 {
