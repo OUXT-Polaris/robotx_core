@@ -26,7 +26,7 @@ public:
     state_lattice_planner();
     ~state_lattice_planner();
     planner_result plan(geometry_msgs::Twist raw_twist_cmd, geometry_msgs::PoseStamped target_pose, 
-        nav_msgs::Odometry odom, boost::shared_ptr<nav_msgs::OccupancyGrid> map_ptr, geometry_msgs::Twist& twist_cmd);
+        geometry_msgs::Twist current_twist, boost::shared_ptr<nav_msgs::OccupancyGrid> map_ptr, geometry_msgs::Twist& twist_cmd);
 private:
 };
 #endif  //STATE_LATTICE_PLANNER_H_INCLUDED

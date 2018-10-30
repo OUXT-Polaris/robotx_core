@@ -7,6 +7,9 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <tf2_ros/transform_listener.h>
+#include <geometry_msgs/TransformStamped.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 //headers in this package
 #include <state_lattice_planner.h>
@@ -43,6 +46,8 @@ private:
     std::string raw_cmd_vel_topic_;
     std::string odom_topic_;
     std::string target_pose_topic_;
+    tf2_ros::Buffer tf_buffer_;
+    tf2_ros::TransformListener tf_listener_;
 };
 
 #endif  //OBSTACLE_AVOID_H_INCLUDED

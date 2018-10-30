@@ -1,6 +1,6 @@
 #include <obstacle_avoid.h>
 
-obstacle_avoid::obstacle_avoid()
+obstacle_avoid::obstacle_avoid() : tf_listener_(tf_buffer_)
 {
     twist_cmd_pub_ = nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
     map_recieved_ = false;
@@ -41,10 +41,22 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
     std::lock_guard<std::mutex> lock(mtx_);
     odom_recieved_ = true;
     odom_ = *msg;
+    geometry_msgs::TransformStamped target_pose_transform_stamped_;
+    try
+    {
+        target_pose_transform_stamped_ = tf_buffer_.lookupTransform(msg->header.frame_id, target_pose_.header.frame_id, ros::Time(0));
+    }
+    catch (tf2::TransformException &ex)
+    {
+        ROS_WARN("%s",ex.what());
+        return;
+    }
+    geometry_msgs::PoseStamped transformed_target_pose_;
+    tf2::doTransform(target_pose_, transformed_target_pose_, target_pose_transform_stamped_);
     if(odom_recieved_ && map_recieved_ && twist_cmd_recieved_)
     {
         geometry_msgs::Twist twist_cmd;
-        planner_.plan(raw_twist_cmd_, target_pose_, odom_, map_ptr_, twist_cmd);
+        planner_.plan(raw_twist_cmd_, transformed_target_pose_, odom_.twist.twist, map_ptr_, twist_cmd);
         twist_cmd_pub_.publish(raw_twist_cmd_);
     }
     return;
