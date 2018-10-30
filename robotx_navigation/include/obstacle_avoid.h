@@ -49,6 +49,12 @@ private:
     std::string raw_cmd_vel_topic_;
     std::string odom_topic_;
     std::string target_pose_topic_;
+    double max_angular_vel_;
+    double max_angular_acceleration_;
+    double max_linear_vel_;
+    double max_linear_acceleration_;
+    double prediction_time_;
+    int num_prediction_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
 };

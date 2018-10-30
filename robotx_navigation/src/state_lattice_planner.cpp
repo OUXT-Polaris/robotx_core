@@ -19,6 +19,7 @@ planner_result state_lattice_planner::plan(geometry_msgs::Twist raw_twist_cmd, g
         twist_cmd = raw_twist_cmd;
         return NO_OBSTACLE;
     }
+    double current_r = current_twist.linear.x/current_twist.angular.z;
     twist_cmd = raw_twist_cmd;
     return FAILED_TO_FIND_PATH;
 }

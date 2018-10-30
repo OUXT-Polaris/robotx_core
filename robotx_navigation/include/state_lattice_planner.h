@@ -16,8 +16,9 @@
 enum planner_result
 {
     NO_OBSTACLE = 0,
-    SUCCEED_TO_FIND_PATH = 1,
-    FAILED_TO_FIND_PATH = 2
+    NO_OBSTACLE_ON_CURRENT_PATH = 1,
+    SUCCEED_TO_FIND_PATH = 2,
+    FAILED_TO_FIND_PATH = 3
 };
 
 class state_lattice_planner
