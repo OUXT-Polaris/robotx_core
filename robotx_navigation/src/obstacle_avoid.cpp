@@ -43,8 +43,8 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
     odom_ = *msg;
     if(odom_recieved_ && map_recieved_ && twist_cmd_recieved_)
     {
-        
-        planner_.plan(raw_twist_cmd_, odom_, map_ptr_);
+        geometry_msgs::Twist twist_cmd;
+        planner_.plan(raw_twist_cmd_, target_pose_, odom_, map_ptr_, twist_cmd);
         twist_cmd_pub_.publish(raw_twist_cmd_);
     }
     return;
