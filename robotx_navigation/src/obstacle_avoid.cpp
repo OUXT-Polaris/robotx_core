@@ -3,6 +3,8 @@
 obstacle_avoid::obstacle_avoid() : tf_listener_(tf_buffer_)
 {
     twist_cmd_pub_ = nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
+    angular_vel_pub_ = nh_.advertise<std_msgs::Float32>("/cmd_angular_vel", 1);
+    linear_vel_pub_ = nh_.advertise<std_msgs::Float32>("/cmd_linear_vel", 1);
     map_recieved_ = false;
     odom_recieved_ = false;
     twist_cmd_recieved_ = false;
@@ -57,7 +59,12 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
     {
         geometry_msgs::Twist twist_cmd;
         planner_.plan(raw_twist_cmd_, transformed_target_pose_, odom_.twist.twist, map_ptr_, twist_cmd);
-        twist_cmd_pub_.publish(raw_twist_cmd_);
+        twist_cmd_pub_.publish(twist_cmd);
+        std_msgs::Float32 linear_vel_msg,angular_vel_msg;
+        linear_vel_msg.data = twist_cmd.linear.x;
+        angular_vel_msg.data = twist_cmd.angular.z;
+        linear_vel_pub_.publish(linear_vel_msg);
+        angular_vel_pub_.publish(angular_vel_msg);
     }
     return;
 }

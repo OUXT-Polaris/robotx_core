@@ -10,6 +10,7 @@
 #include <tf2_ros/transform_listener.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <std_msgs/Float32.h>
 
 //headers in this package
 #include <state_lattice_planner.h>
@@ -29,6 +30,8 @@ private:
     ros::Subscriber map_sub_;
     ros::Subscriber target_pose_sub_;
     ros::Publisher twist_cmd_pub_;
+    ros::Publisher linear_vel_pub_;
+    ros::Publisher angular_vel_pub_;
     void twist_cmd_callback_(const geometry_msgs::Twist::ConstPtr msg);
     void odom_callback_(const nav_msgs::Odometry::ConstPtr msg);
     void obstacle_map_callback_(const nav_msgs::OccupancyGrid::Ptr msg);

@@ -28,5 +28,6 @@ public:
     planner_result plan(geometry_msgs::Twist raw_twist_cmd, geometry_msgs::PoseStamped target_pose, 
         geometry_msgs::Twist current_twist, boost::shared_ptr<nav_msgs::OccupancyGrid> map_ptr, geometry_msgs::Twist& twist_cmd);
 private:
+    boost::optional<flann::Matrix<float> > map_to_matrix_(boost::shared_ptr<nav_msgs::OccupancyGrid> map_ptr);
 };
 #endif  //STATE_LATTICE_PLANNER_H_INCLUDED
