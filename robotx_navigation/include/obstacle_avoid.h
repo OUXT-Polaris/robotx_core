@@ -12,9 +12,6 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <std_msgs/Float32.h>
 
-//headers in this package
-#include <state_lattice_planner.h>
-
 //headers in STL
 #include <mutex>
 
@@ -36,7 +33,6 @@ private:
     void odom_callback_(const nav_msgs::Odometry::ConstPtr msg);
     void obstacle_map_callback_(const nav_msgs::OccupancyGrid::Ptr msg);
     void target_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg);
-    state_lattice_planner planner_;
     boost::shared_ptr<nav_msgs::OccupancyGrid> map_ptr_;
     geometry_msgs::PoseStamped target_pose_;
     geometry_msgs::Twist raw_twist_cmd_;
@@ -49,14 +45,10 @@ private:
     std::string raw_cmd_vel_topic_;
     std::string odom_topic_;
     std::string target_pose_topic_;
-    double max_angular_vel_;
-    double max_angular_acceleration_;
-    double max_linear_vel_;
-    double max_linear_acceleration_;
-    double prediction_time_;
-    int num_prediction_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
+    double search_radius_;
+    double search_angle_;
 };
 
 #endif  //OBSTACLE_AVOID_H_INCLUDED

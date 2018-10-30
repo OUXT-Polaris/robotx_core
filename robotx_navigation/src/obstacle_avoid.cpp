@@ -12,13 +12,8 @@ obstacle_avoid::obstacle_avoid() : tf_listener_(tf_buffer_)
     nh_.param<std::string>(ros::this_node::getName()+"/raw_cmd_vel_topic", raw_cmd_vel_topic_, ros::this_node::getName()+"/input_cmd_vel");
     nh_.param<std::string>(ros::this_node::getName()+"/odom_topic", odom_topic_, "/odom");
     nh_.param<std::string>(ros::this_node::getName()+"/target_pose_topic", target_pose_topic_, ros::this_node::getName()+"/target_pose");
-    nh_.param<double>(ros::this_node::getName()+"/max_angular_vel", max_angular_vel_, 0.3);
-    nh_.param<double>(ros::this_node::getName()+"/max_linear_vel", max_linear_vel_, 1.5);
-    nh_.param<double>(ros::this_node::getName()+"/max_angular_acceleration", max_angular_acceleration_, 0.1);
-    nh_.param<double>(ros::this_node::getName()+"/max_linear_acceleration", max_linear_acceleration_, 0.3);
-    nh_.param<double>(ros::this_node::getName()+"/prediction_time", prediction_time_, 3.0);
-    nh_.param<int>(ros::this_node::getName()+"/num_prediction", num_prediction_, 30);
-    planner_.set_parameters(max_angular_vel_, max_angular_acceleration_, max_linear_vel_, max_linear_acceleration_, prediction_time_, num_prediction_);
+    nh_.param<double>(ros::this_node::getName()+"/search_radius", search_radius_, 3.0);
+    nh_.param<double>(ros::this_node::getName()+"/search_angle", search_angle_, 0.3);
     map_sub_ = nh_.subscribe(map_topic_, 3, &obstacle_avoid::obstacle_map_callback_, this);
     twist_cmd_sub_ = nh_.subscribe(raw_cmd_vel_topic_, 10, &obstacle_avoid::twist_cmd_callback_, this);
     odom_sub_ = nh_.subscribe(odom_topic_, 10, &obstacle_avoid::odom_callback_, this);
@@ -64,8 +59,53 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
     tf2::doTransform(target_pose_, transformed_target_pose_, target_pose_transform_stamped_);
     if(odom_recieved_ && map_recieved_ && twist_cmd_recieved_)
     {
+        bool found_obstacle = false;
+        for (int i = 0; i < map_ptr_->info.height; i++) 
+        {
+            for (int m = 0; m < map_ptr_->info.width; m++)
+            {
+                if(map_ptr_->data[i * map_ptr_->info.height + m] > 0)
+                {
+                    double x = (double)m * map_ptr_->info.resolution - 0.5 * map_ptr_->info.resolution * map_ptr_->info.width;
+                    double y = (double)i * map_ptr_->info.resolution - 0.5 * map_ptr_->info.resolution * map_ptr_->info.height;
+                    if(x==0 && y==0)
+                    {
+
+                    }
+                    else
+                    {
+                        double theta = std::atan2(y,x);
+                        double r = std::sqrt(y*y+x*x);
+                        if(r<search_radius_ && std::fabs(theta) < search_angle_)
+                        {
+                            found_obstacle = true;
+                        }
+                    }
+                }
+            }
+        }
         geometry_msgs::Twist twist_cmd;
-        planner_.plan(raw_twist_cmd_, transformed_target_pose_, odom_.twist.twist, map_ptr_, twist_cmd);
+        if(found_obstacle == true)
+        {
+            ROS_ERROR_STREAM("found obstacle");
+            double x = transformed_target_pose_.pose.position.x;
+            double y = transformed_target_pose_.pose.position.y;
+            double theta = std::atan2(y,x);
+            if(theta > 0)
+            {
+                twist_cmd.linear.x = 0;
+                twist_cmd.angular.z = 0.3;
+            }
+            else
+            {
+                twist_cmd.linear.x = 0;
+                twist_cmd.angular.z = -0.3;                
+            }
+        }
+        else
+        {
+            twist_cmd = raw_twist_cmd_;
+        }
         twist_cmd_pub_.publish(twist_cmd);
         std_msgs::Float32 linear_vel_msg,angular_vel_msg;
         linear_vel_msg.data = twist_cmd.linear.x;
