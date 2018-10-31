@@ -35,6 +35,7 @@ add_message_files(
   WayPointArray.msg
   WayPoint.msg
   NavigationStatus.msg
+  Event.msg
 )
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
