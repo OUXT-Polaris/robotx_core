@@ -84,11 +84,16 @@ add_executable(waypoint_logger_node src/waypoint_logger_node.cpp src/waypoint_lo
 target_link_libraries(waypoint_logger_node ${catkin_LIBRARIES})
 add_dependencies(waypoint_logger_node robotx_msgs_generate_messages_cpp)
 
+add_executable(obstacle_avoid_node src/obstacle_avoid_node.cpp src/obstacle_avoid.cpp)
+target_link_libraries(obstacle_avoid_node ${catkin_LIBRARIES})
+add_dependencies(obstacle_avoid_node robotx_msgs_generate_messages_cpp)
+
 #############
 ## Install ##
 #############
 # CPP codes
 set(NODE_FILES 
+  obstacle_avoid_node
   waypoint_logger_node
   twist_from_fix_velocity_node 
   geographic_map_server_node 
