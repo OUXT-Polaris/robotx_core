@@ -22,3 +22,22 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
 )
+
+add_executable(robotx_decision_maker_node src/robotx_decision_maker_node.cpp src/control_state_machine.cpp src/state_machine.cpp)
+target_link_libraries(robotx_decision_maker_node ${catkin_LIBRARIES})
+add_dependencies(robotx_decision_maker_node robotx_msgs_generate_messages_cpp)
+
+set(NODE_FILES robotx_decision_maker_node)
+foreach(nodes ${NODE_FILES})
+  install(TARGETS ${nodes}
+    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+    )
+endforeach(nodes)
+install(DIRECTORY include/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+
+if (CATKIN_ENABLE_TESTING)
+  find_package(roslaunch REQUIRED)
+  roslaunch_add_file_check(launch)
+endif()

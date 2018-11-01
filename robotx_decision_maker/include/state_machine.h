@@ -1,0 +1,39 @@
+#ifndef STATE_MACHINE_H_INCLUDED
+#define STATE_MACHINE_H_INCLUDED
+
+//headers in boost
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graph_utility.hpp>
+
+//headers in STL
+#include <mutex>
+
+struct transition_property
+{
+    std::vector<std::string> trigger_events;
+};
+
+struct state_property
+{
+    std::string name;
+};
+
+typedef boost::adjacency_list<boost::listS, boost::vecS, boost::bidirectionalS, state_property, transition_property> graph_t;
+typedef graph_t::vertex_descriptor vertex_t;
+typedef graph_t::edge_descriptor edge_t;
+typedef boost::graph_traits<graph_t>::adjacency_iterator adjacency_iterator_t;
+
+class state_machine
+{
+public:
+    state_machine();
+    ~state_machine();
+    void add_transition(std::string from_state_name, std::string to_state_name, std::string trigger_event_name);
+    bool set_current_state(std::string current_state);
+    std::vector<std::string> get_possibe_transition_states();
+private:
+    std::mutex mtx_;
+    graph_t state_graph_;
+    vertex_t current_state_;
+};
+#endif  //STATE_MACHINE_H_INCLUDED
