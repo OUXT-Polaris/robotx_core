@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   robotx_msgs
   roscpp
   std_msgs
+  roslib
 )
 
 find_package(Boost REQUIRED COMPONENTS system)
@@ -36,6 +37,11 @@ endforeach(nodes)
 install(DIRECTORY include/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
+
+foreach(dir launch data)
+  install(DIRECTORY ${dir}/
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
+endforeach(dir)
 
 if (CATKIN_ENABLE_TESTING)
   find_package(roslaunch REQUIRED)

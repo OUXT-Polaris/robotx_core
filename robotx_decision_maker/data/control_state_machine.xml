@@ -1,0 +1,5 @@
+<state_machine>
+    <transition from = "manual" to="autonomous" name="system bringup"/>
+
+    <transition from = "autonomous" to="manual" name="system bringup"/>
+</state_machine>

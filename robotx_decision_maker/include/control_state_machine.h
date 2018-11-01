@@ -4,6 +4,10 @@
 //headers in this package
 #include <state_machine.h>
 
+//headers in ROS
+#include <ros/ros.h>
+#include <ros/package.h>
+
 //headers in STL
 #include <memory>
 

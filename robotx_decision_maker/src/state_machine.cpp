@@ -1,8 +1,17 @@
 #include <state_machine.h>
 
-state_machine::state_machine()
+state_machine::state_machine(std::string xml_filepath)
 {
-
+    using namespace boost::property_tree;
+    ptree pt;
+    read_xml(xml_filepath, pt);
+    for (const ptree::value_type& state_itr : pt.get_child("state_machine"))
+    {
+        std::string from_state_name = state_itr.second.get<std::string>("<xmlattr>.from");
+        std::string to_state_name = state_itr.second.get<std::string>("<xmlattr>.to");
+        std::string trigger_event_name = state_itr.second.get<std::string>("<xmlattr>.name");
+        add_transition_(from_state_name, to_state_name, trigger_event_name);
+    }
 }
 
 state_machine::~state_machine()
@@ -26,7 +35,7 @@ bool state_machine::set_current_state(std::string current_state)
     return false;
 }
 
-void state_machine::add_transition(std::string from_state_name, std::string to_state_name, std::string trigger_event_name)
+void state_machine::add_transition_(std::string from_state_name, std::string to_state_name, std::string trigger_event_name)
 {
     std::lock_guard<std::mutex> lock(mtx_);
     vertex_t from_state;
@@ -79,4 +88,20 @@ std::vector<std::string> state_machine::get_possibe_transition_states()
         ret.push_back(state_graph_[*vi].name);
     }
     return ret;
+}
+
+bool state_machine::try_transition(std::string trigger_event_name)
+{
+    std::lock_guard<std::mutex> lock(mtx_);
+    adjacency_iterator_t vi;
+    adjacency_iterator_t vi_end;
+    for (boost::tie(vi, vi_end) = adjacent_vertices(current_state_, state_graph_); vi != vi_end; ++vi)
+    {
+        if(state_graph_[*vi].name == trigger_event_name)
+        {
+            current_state_ = *vi;
+            return true;
+        }
+    }
+    return false;
 }

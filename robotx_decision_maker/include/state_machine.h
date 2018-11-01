@@ -4,6 +4,10 @@
 //headers in boost
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_utility.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
 //headers in STL
 #include <mutex>
@@ -26,12 +30,13 @@ typedef boost::graph_traits<graph_t>::adjacency_iterator adjacency_iterator_t;
 class state_machine
 {
 public:
-    state_machine();
+    state_machine(std::string xml_filepath);
     ~state_machine();
-    void add_transition(std::string from_state_name, std::string to_state_name, std::string trigger_event_name);
+    bool try_transition(std::string trigger_event_name);
     bool set_current_state(std::string current_state);
     std::vector<std::string> get_possibe_transition_states();
 private:
+    void add_transition_(std::string from_state_name, std::string to_state_name, std::string trigger_event_name);
     std::mutex mtx_;
     graph_t state_graph_;
     vertex_t current_state_;

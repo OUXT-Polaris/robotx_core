@@ -2,7 +2,8 @@
 
 control_state_machine::control_state_machine()
 {
-    state_machine_ptr_ = std::make_shared<state_machine>();
+    std::string xml_filepath = ros::package::getPath("robotx_decision_maker") + std::string("/data/control_state_machine.xml");
+    state_machine_ptr_ = std::make_shared<state_machine>(xml_filepath);
 }
 
 control_state_machine::~control_state_machine()
