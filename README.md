@@ -19,3 +19,10 @@ sudo apt update
 sudo apt install fakeroot dpkg-dev debhelper
 source build_dpkg.bash
 ``` 
+
+# Model conversion is required before first run of robotx_recognition
+Before running, converted model weight file of CNN detector (robotx_recognition/data/robotx.plan) should be downloaded/generated.
+To generate the model, run the snippet below on the machine (with TensorRT installed).
+```
+bash robotx_recognition/setup_model.sh
+```
