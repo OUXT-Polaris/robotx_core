@@ -64,12 +64,14 @@ void state_machine::add_transition_(std::string from_state_name, std::string to_
         vertex_t v = boost::add_vertex(state_graph_);
         state_graph_[v].name = from_state_name;
         from_state = v;
+        state_names_.push_back(from_state_name);
     }
     if(!to_state_found)
     {
         vertex_t v = boost::add_vertex(state_graph_);
         state_graph_[v].name = to_state_name;
         to_state = v;
+        state_names_.push_back(to_state_name);
     }
     bool inserted = false;
     boost::tie(transition, inserted) = boost::add_edge(from_state, to_state, state_graph_);
@@ -104,4 +106,12 @@ bool state_machine::try_transition(std::string trigger_event_name)
         }
     }
     return false;
+}
+
+void state_machine::draw_state_machine(std::string dot_filename)
+{
+    std::lock_guard<std::mutex> lock(mtx_);
+    std::ofstream f(dot_filename.c_str());
+    boost::write_graphviz(f, state_graph_, boost::make_label_writer(&state_names_[0]));
+    return;
 }

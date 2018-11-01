@@ -8,6 +8,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/graph/graphviz.hpp>
 
 //headers in STL
 #include <mutex>
@@ -35,10 +36,12 @@ public:
     bool try_transition(std::string trigger_event_name);
     bool set_current_state(std::string current_state);
     std::vector<std::string> get_possibe_transition_states();
+    void draw_state_machine(std::string dot_filename);
 private:
     void add_transition_(std::string from_state_name, std::string to_state_name, std::string trigger_event_name);
     std::mutex mtx_;
     graph_t state_graph_;
     vertex_t current_state_;
+    std::vector<std::string> state_names_;
 };
 #endif  //STATE_MACHINE_H_INCLUDED
