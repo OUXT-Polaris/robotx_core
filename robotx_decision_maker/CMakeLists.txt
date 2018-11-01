@@ -24,7 +24,8 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(robotx_decision_maker_node src/robotx_decision_maker_node.cpp src/control_state_machine.cpp src/state_machine.cpp)
+add_executable(robotx_decision_maker_node src/robotx_decision_maker_node.cpp 
+src/state_machine.cpp src/control_state_machine.cpp src/mission_state_machine.cpp)
 target_link_libraries(robotx_decision_maker_node ${catkin_LIBRARIES})
 add_dependencies(robotx_decision_maker_node robotx_msgs_generate_messages_cpp)
 

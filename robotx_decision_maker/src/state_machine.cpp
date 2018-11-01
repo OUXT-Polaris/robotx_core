@@ -10,6 +10,7 @@ state_machine::state_machine(std::string xml_filepath)
         std::string from_state_name = state_itr.second.get<std::string>("<xmlattr>.from");
         std::string to_state_name = state_itr.second.get<std::string>("<xmlattr>.to");
         std::string trigger_event_name = state_itr.second.get<std::string>("<xmlattr>.name");
+        //std::cout << from_state_name << "," << to_state_name << std::endl;
         add_transition_(from_state_name, to_state_name, trigger_event_name);
     }
 }
@@ -41,41 +42,68 @@ void state_machine::add_transition_(std::string from_state_name, std::string to_
     vertex_t from_state;
     vertex_t to_state;
     edge_t transition;
-    bool from_state_found = false;
-    bool to_state_found = false;
-    bool edge_found = false;
     auto vertex_range = boost::vertices(state_graph_);
-    for (auto first = vertex_range.first, last = vertex_range.second; first != last; ++first)
+    if(from_state_name != to_state_name)
     {
-        vertex_t v = *first;
-        if(state_graph_[v].name == from_state_name)
+        bool from_state_found = false;
+        bool to_state_found = false;
+        for (auto first = vertex_range.first, last = vertex_range.second; first != last; ++first)
         {
-            from_state_found = true;
+            vertex_t v = *first;
+            if(state_graph_[v].name == from_state_name)
+            {
+                from_state_found = true;
+                from_state = v;
+            }
+            if(state_graph_[v].name == to_state_name)
+            {
+                to_state_found = true;
+                to_state = v;
+            }
+        }
+        if(!from_state_found)
+        {
+            vertex_t v = boost::add_vertex(state_graph_);
+            state_graph_[v].name = from_state_name;
             from_state = v;
+            state_names_.push_back(from_state_name);
         }
-        if(state_graph_[v].name == to_state_name)
+        if(!to_state_found)
         {
-            to_state_found = true;
+            vertex_t v = boost::add_vertex(state_graph_);
+            state_graph_[v].name = to_state_name;
             to_state = v;
+            state_names_.push_back(to_state_name);
         }
+        bool inserted = false;
+        boost::tie(transition, inserted) = boost::add_edge(from_state, to_state, state_graph_);
+        state_graph_[transition].trigger_events.push_back(trigger_event_name);
     }
-    if(!from_state_found)
+    else
     {
-        vertex_t v = boost::add_vertex(state_graph_);
-        state_graph_[v].name = from_state_name;
-        from_state = v;
-        state_names_.push_back(from_state_name);
+        bool state_found = false;
+        for (auto first = vertex_range.first, last = vertex_range.second; first != last; ++first)
+        {
+            vertex_t v = *first;
+            if(state_graph_[v].name == from_state_name)
+            {
+                state_found = true;
+                from_state = v;
+                to_state = v;
+            }
+        }
+        if(!state_found)
+        {
+            vertex_t v = boost::add_vertex(state_graph_);
+            state_graph_[v].name = from_state_name;
+            from_state = v;
+            to_state = v;
+            state_names_.push_back(from_state_name);            
+        }
+        bool inserted = false;
+        boost::tie(transition, inserted) = boost::add_edge(from_state, to_state, state_graph_);
+        state_graph_[transition].trigger_events.push_back(trigger_event_name);
     }
-    if(!to_state_found)
-    {
-        vertex_t v = boost::add_vertex(state_graph_);
-        state_graph_[v].name = to_state_name;
-        to_state = v;
-        state_names_.push_back(to_state_name);
-    }
-    bool inserted = false;
-    boost::tie(transition, inserted) = boost::add_edge(from_state, to_state, state_graph_);
-    state_graph_[transition].trigger_events.push_back(trigger_event_name);
     return;
 }
 

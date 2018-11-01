@@ -1,0 +1,26 @@
+<state_machine>
+    <transition from = "demonstrate_navigation_and_control" to="demonstrate_navigation_and_control" name="task_failed"/>
+    <transition from = "demonstrate_navigation_and_control" to="entrance_gates" name="task_succeed"/>
+
+    
+    <transition from = "entrance_gates" to="entrance_gates" name="task_failed"/>
+    <transition from = "entrance_gates" to="scan_the_code" name="task_succeed"/>
+
+    <transition from = "scan_the_code" to="scan_the_code" name="task_failed"/>
+    <transition from = "scan_the_code" to="exit_gates" name="task_succeed"/>
+
+    <transition from = "exit_gates" to="exit_gates" name="task_failed"/>
+    <transition from = "exit_gates" to="avoid_obstacles" name="task_succeed"/>
+
+
+    <transition from = "avoid_obstacles" to="avoid_obstacles" name="task_failed"/>
+    <transition from = "avoid_obstacles" to="find_totems" name="task_succeed"/>
+
+    
+    <transition from = "find_totems" to="find_totems" name="task_failed"/>
+    <transition from = "find_totems" to="identify_symbols_and_dock" name="task_succeed"/>
+
+
+    <transition from = "identify_symbols_and_dock" to="identify_symbols_and_dock" name="task_failed"/>
+    <transition from = "identify_symbols_and_dock" to="mission_complete" name="task_succeed"/>
+</state_machine>
