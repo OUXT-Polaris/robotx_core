@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="robotx_decision_maker" type="robotx_state_machine_node" name="robotx_state_machine_node" output="screen" respawn="true">
+    </node>
+</launch>
