@@ -21,6 +21,9 @@ void rostate_machine::publish_current_state_()
     {
         robotx_msgs::State state_msg;
         state_msg.current_state = state_machine_ptr_->get_current_state();
+        state_msg.possible_transitions = state_machine_ptr_->get_possibe_transitions();
+        state_msg.possible_transition_states = state_machine_ptr_->get_possibe_transition_states();
+        current_state_pub_.publish(state_msg);
         rate.sleep();
     }
     return;

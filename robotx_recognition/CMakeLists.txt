@@ -131,6 +131,8 @@ add_dependencies(pointcloud_merger_nodelet robotx_msgs_generate_messages_cpp)
 target_link_libraries(pointcloud_merger_nodelet ${catkin_LIBRARIES})
 #clang_format(pointcloud_merger_nodelet)
 
+option(USE_CNN "Use CNN" OFF)
+
 # cnn_prediction
 # あればinfer.cuをビルド、ない場合は下で分岐してinfer.cppを使う
 if(CUDA_FOUND)
@@ -140,10 +142,12 @@ if(CUDA_FOUND)
     ${OpenCV_INCLUDE_DIRS}
     ${CUDA_INCLUDE_DIRS}
   )
-  #cuda_add_executable(cnn_prediction_node src/infer.cu src/cnn_prediction.cpp src/cnn_prediction_node.cpp)  # main
-  #add_dependencies(cnn_prediction_node
-    #${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${catkin_EXPORTED_LIBRARIES})
-  #target_link_libraries(cnn_prediction_node ${catkin_LIBRARIES} ${CUDA_LIBRARIES} ${Boost_LIBRARIES} nvinfer nvparsers)
+  if(USE_CNN)
+    cuda_add_executable(cnn_prediction_node src/infer.cu src/cnn_prediction.cpp src/cnn_prediction_node.cpp)  # main
+    add_dependencies(cnn_prediction_node
+      ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${catkin_EXPORTED_LIBRARIES})
+    target_link_libraries(cnn_prediction_node ${catkin_LIBRARIES} ${CUDA_LIBRARIES} ${Boost_LIBRARIES} nvinfer nvparsers)
+  endif()
 
 else()
   include_directories(
@@ -151,11 +155,12 @@ else()
     ${catkin_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
   )
-  #add_executable(cnn_prediction_node src/infer.cpp src/cnn_prediction.cpp src/cnn_prediction_node.cpp)  # main
-  #add_dependencies(cnn_prediction_node
-    #${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${catkin_EXPORTED_LIBRARIES})
-  #target_link_libraries(cnn_prediction_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-
+  if(USE_CNN)
+    add_executable(cnn_prediction_node src/infer.cpp src/cnn_prediction.cpp src/cnn_prediction_node.cpp)  # main
+    add_dependencies(cnn_prediction_node
+      ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${catkin_EXPORTED_LIBRARIES})
+    target_link_libraries(cnn_prediction_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+  endif()
 endif()
 
 
