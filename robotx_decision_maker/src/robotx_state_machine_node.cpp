@@ -12,6 +12,9 @@ int main(int argc, char *argv[])
     control_state_machine control_state_machine_;
     mission_state_machine mission_state_machine_;
     navigation_state_machine navigation_state_machine_;
+    control_state_machine_.run();
+    mission_state_machine_.run();
+    navigation_state_machine_.run();
     ros::spin();
     return 0;
 }

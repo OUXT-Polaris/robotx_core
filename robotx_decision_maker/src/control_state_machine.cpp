@@ -11,3 +11,9 @@ control_state_machine::~control_state_machine()
 {
 
 }
+
+void control_state_machine::run()
+{
+    state_machine_ptr_->run();
+    return;
+}

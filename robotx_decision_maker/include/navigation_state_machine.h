@@ -16,6 +16,7 @@ class navigation_state_machine
 public:
     navigation_state_machine();
     ~navigation_state_machine();
+    void run();
 private:
     std::shared_ptr<rostate_machine> state_machine_ptr_;
 };

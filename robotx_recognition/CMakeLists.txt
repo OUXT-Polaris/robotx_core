@@ -168,14 +168,26 @@ endif()
 ## Install ##
 #############
 # CPP Execution programs
+if(USE_CNN)
+  set(CPP_EXEC_NAMES
+    object_recognition_node euclidean_clustering_node passthrough_filter_node pointcloud_merger_node
+    hsv_buoy_detector_node bing_object_detection_node object_bbox_extractor_node cnn_prediction_node)
+  foreach(cpp_exec_names ${CPP_EXEC_NAMES})
+    install(TARGETS ${cpp_exec_names}
+      RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+      )
+  endforeach(cpp_exec_names)
+else()
 set(CPP_EXEC_NAMES
   object_recognition_node euclidean_clustering_node passthrough_filter_node pointcloud_merger_node
   hsv_buoy_detector_node bing_object_detection_node object_bbox_extractor_node) #cnn_prediction_node)
-foreach(cpp_exec_names ${CPP_EXEC_NAMES})
+  foreach(cpp_exec_names ${CPP_EXEC_NAMES})
   install(TARGETS ${cpp_exec_names}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
     )
-endforeach(cpp_exec_names)
+  endforeach(cpp_exec_names)
+endif()
+
 # include header files
 install(DIRECTORY include/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}

@@ -11,11 +11,16 @@
 //headers in ROS
 #include <ros/ros.h>
 
+//headers in Boost
+#include <boost/thread.hpp>
+#include <boost/bind.hpp>
+
 class rostate_machine
 {
 public:
     rostate_machine(std::string xml_filepath, std::string dot_filepath, std::string state_machine_name);
     ~rostate_machine();
+    void run();
 private:
     void publish_current_state_();
     std::shared_ptr<state_machine> state_machine_ptr_;

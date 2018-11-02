@@ -16,6 +16,7 @@ class mission_state_machine
 public:
     mission_state_machine();
     ~mission_state_machine();
+    void run();
 private:
     std::shared_ptr<rostate_machine> state_machine_ptr_;
 };

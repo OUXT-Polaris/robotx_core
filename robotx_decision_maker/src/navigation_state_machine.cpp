@@ -11,3 +11,9 @@ navigation_state_machine::~navigation_state_machine()
 {
 
 }
+
+void navigation_state_machine::run()
+{
+    state_machine_ptr_->run();
+    return;
+}

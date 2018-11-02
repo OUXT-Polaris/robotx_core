@@ -20,8 +20,8 @@ class control_state_machine
 public:
     control_state_machine();
     ~control_state_machine();
+    void run();
 private:
-
     std::shared_ptr<rostate_machine> state_machine_ptr_;
     ros::Publisher dot_pub_;
     ros::NodeHandle nh_;

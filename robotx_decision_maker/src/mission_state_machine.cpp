@@ -11,3 +11,9 @@ mission_state_machine::~mission_state_machine()
 {
 
 }
+
+void mission_state_machine::run()
+{
+    state_machine_ptr_->run();
+    return;
+}
