@@ -27,6 +27,7 @@ typedef boost::adjacency_list<boost::listS, boost::vecS, boost::bidirectionalS, 
 typedef graph_t::vertex_descriptor vertex_t;
 typedef graph_t::edge_descriptor edge_t;
 typedef boost::graph_traits<graph_t>::adjacency_iterator adjacency_iterator_t;
+typedef boost::graph_traits<graph_t>::out_edge_iterator out_edge_iterator_t;
 
 class state_machine
 {
@@ -36,6 +37,7 @@ public:
     bool try_transition(std::string trigger_event_name);
     bool set_current_state(std::string current_state);
     std::vector<std::string> get_possibe_transition_states();
+    std::vector<std::string> get_possibe_transitions();
     void draw_state_machine(std::string dot_filename);
 private:
     void add_transition_(std::string from_state_name, std::string to_state_name, std::string trigger_event_name);

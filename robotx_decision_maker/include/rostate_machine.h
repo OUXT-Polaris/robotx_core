@@ -6,6 +6,9 @@
 //headers in STL
 #include <memory>
 
+//headers in ROS
+#include <ros/ros.h>
+
 class rostate_machine
 {
 public:

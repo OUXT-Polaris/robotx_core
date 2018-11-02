@@ -131,6 +131,19 @@ std::vector<std::string> state_machine::get_possibe_transition_states()
     return ret;
 }
 
+std::vector<std::string> state_machine::get_possibe_transitions()
+{
+    std::lock_guard<std::mutex> lock(mtx_);
+    std::vector<std::string> ret;
+    out_edge_iterator_t ei;
+    out_edge_iterator_t ei_end;
+    for (boost::tie(ei, ei_end) = out_edges(current_state_, state_graph_); ei != ei_end; ++ei)
+    {
+        std::copy(state_graph_[*ei].trigger_events.begin(), state_graph_[*ei].trigger_events.end(), std::back_inserter(ret));
+    }
+    return ret;
+}
+
 bool state_machine::try_transition(std::string trigger_event_name)
 {
     std::lock_guard<std::mutex> lock(mtx_);
