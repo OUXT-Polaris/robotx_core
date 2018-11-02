@@ -24,12 +24,13 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(robotx_decision_maker_node src/robotx_decision_maker_node.cpp 
-src/state_machine.cpp src/control_state_machine.cpp src/mission_state_machine.cpp)
-target_link_libraries(robotx_decision_maker_node ${catkin_LIBRARIES})
-add_dependencies(robotx_decision_maker_node robotx_msgs_generate_messages_cpp)
+add_executable(robotx_state_machine_node src/robotx_state_machine_node.cpp 
+  src/state_machine.cpp src/control_state_machine.cpp src/mission_state_machine.cpp
+  src/navigation_state_machine.cpp src/rostate_machine.cpp)
+target_link_libraries(robotx_state_machine_node ${catkin_LIBRARIES})
+add_dependencies(robotx_state_machine_node robotx_msgs_generate_messages_cpp)
 
-set(NODE_FILES robotx_decision_maker_node)
+set(NODE_FILES robotx_state_machine_node)
 foreach(nodes ${NODE_FILES})
   install(TARGETS ${nodes}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

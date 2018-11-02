@@ -1,0 +1,20 @@
+<state_machine>
+    <init_state name="navigation_start"/>
+
+    <transition from = "navigation_start" to="heading_to_next_waypoint" name="navigation_start"/>
+
+    <transition from = "heading_to_next_waypoint" to="moving_to_next_waypoint" name="head_to_next_target"/>
+    <transition from = "heading_to_next_waypoint" to="obstacle_avoid" name="obstacle_found"/>
+
+    <transition from = "moving_to_next_waypoint" to="align_to_next_waypoint" name="moved_to_next_target"/>
+    <transition from = "moving_to_next_waypoint" to="obstacle_avoid" name="obstacle_found"/>
+
+    <transition from = "obstacle_avoid" to="go_straight" name="obstacle_not_found"/>
+
+    <transition from = "go_straight" to="heading_to_next_waypoint" name="go_straight_finished"/>
+    <transition from = "go_straight" to="obstacle_avoid" name="go_straight_finished"/>
+
+    <transition from = "align_to_next_waypoint" to="obstacle_avoid" name="obstacle_found"/>
+    <transition from = "align_to_next_waypoint" to="heading_to_next_waypoint" name="next_waypoint_found"/>
+    <transition from = "align_to_next_waypoint" to="navigation_finished" name="reach_last_waypoint"/>
+</state_machine>
