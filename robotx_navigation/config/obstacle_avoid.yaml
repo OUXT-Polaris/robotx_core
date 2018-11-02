@@ -1,0 +1,6 @@
+odom_topic : /odom
+raw_cmd_vel_topic : /carrot_planner_node/input_cmd_vel
+map_topic : /obstacle_map
+target_pose_topic : /waypoint_server_node/next_waypoint
+search_radius : 6.0
+search_angle : 0.5
