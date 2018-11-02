@@ -1,2 +1,2 @@
 Header header
-string name
+string trigger_event_name

@@ -14,9 +14,16 @@ rostate_machine::~rostate_machine()
 
 }
 
+void rostate_machine::event_callback_(robotx_msgs::Event msg)
+{
+    state_machine_ptr_->try_transition(msg.trigger_event_name);
+    return;
+}
+
 void rostate_machine::run()
 {
     boost::thread publish_thread(boost::bind(&rostate_machine::publish_current_state_, this));
+    trigger_event_sub_ = nh_.subscribe<robotx_msgs::Event>(ros::this_node::getName()+"/"+state_machine_name_+"/trigger_event", 10, &rostate_machine::event_callback_,this);
     return;
 }
 
