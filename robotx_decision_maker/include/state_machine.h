@@ -38,6 +38,7 @@ public:
     bool set_current_state(std::string current_state);
     std::vector<std::string> get_possibe_transition_states();
     std::vector<std::string> get_possibe_transitions();
+    std::string get_current_state();
     void draw_state_machine(std::string dot_filename);
 private:
     void add_transition_(std::string from_state_name, std::string to_state_name, std::string trigger_event_name);

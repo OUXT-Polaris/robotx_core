@@ -160,6 +160,12 @@ bool state_machine::try_transition(std::string trigger_event_name)
     return false;
 }
 
+std::string state_machine::get_current_state()
+{
+    std::lock_guard<std::mutex> lock(mtx_);
+    return state_graph_[current_state_].name;   
+}
+
 void state_machine::draw_state_machine(std::string dot_filename)
 {
     std::lock_guard<std::mutex> lock(mtx_);

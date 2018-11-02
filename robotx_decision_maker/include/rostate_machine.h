@@ -19,8 +19,10 @@ public:
 private:
     void publish_current_state_();
     std::shared_ptr<state_machine> state_machine_ptr_;
+    ros::NodeHandle nh_;
     ros::Publisher current_state_pub_;
     std::string state_machine_name_;
+    double publish_rate_;
 };
 
 #endif  //ROSTATE_MACHINE_H_INCLUDED
