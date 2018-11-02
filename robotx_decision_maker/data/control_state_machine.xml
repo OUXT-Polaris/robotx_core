@@ -1,4 +1,6 @@
 <state_machine>
+    <init_state name="manual"/>
+
     <transition from = "manual" to="autonomous" name="system_bringup"/>
     <transition from = "manual" to="emergency" name="fatal_error"/>
 

@@ -5,14 +5,22 @@ state_machine::state_machine(std::string xml_filepath)
     using namespace boost::property_tree;
     ptree pt;
     read_xml(xml_filepath, pt);
+    std::string init_state_name;
     for (const ptree::value_type& state_itr : pt.get_child("state_machine"))
     {
-        std::string from_state_name = state_itr.second.get<std::string>("<xmlattr>.from");
-        std::string to_state_name = state_itr.second.get<std::string>("<xmlattr>.to");
-        std::string trigger_event_name = state_itr.second.get<std::string>("<xmlattr>.name");
-        //std::cout << from_state_name << "," << to_state_name << std::endl;
-        add_transition_(from_state_name, to_state_name, trigger_event_name);
+        if(state_itr.first == "transition")
+        {
+            std::string from_state_name = state_itr.second.get<std::string>("<xmlattr>.from");
+            std::string to_state_name = state_itr.second.get<std::string>("<xmlattr>.to");
+            std::string trigger_event_name = state_itr.second.get<std::string>("<xmlattr>.name");
+            add_transition_(from_state_name, to_state_name, trigger_event_name);
+        }
+        if(state_itr.first == "init_state")
+        {
+            init_state_name = state_itr.second.get<std::string>("<xmlattr>.name");
+        }
     }
+    set_current_state(init_state_name);
 }
 
 state_machine::~state_machine()

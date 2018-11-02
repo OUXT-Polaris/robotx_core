@@ -1,4 +1,9 @@
 <state_machine>
+    <init_state name="mission_start"/>
+
+    <transition from = "mission_start" to="demonstrate_navigation_and_control" name="mission_start"/>
+
+
     <transition from = "demonstrate_navigation_and_control" to="demonstrate_navigation_and_control" name="task_failed"/>
     <transition from = "demonstrate_navigation_and_control" to="entrance_gates" name="task_succeed"/>
 
