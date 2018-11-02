@@ -2,7 +2,7 @@
 #define CONTROL_STATE_MACHINE_H_INCLUDED
 
 //headers in this package
-#include <state_machine.h>
+#include <rostate_machine.h>
 
 //headers in ROS
 #include <ros/ros.h>
@@ -22,7 +22,7 @@ public:
     ~control_state_machine();
 private:
 
-    std::shared_ptr<state_machine> state_machine_ptr_;
+    std::shared_ptr<rostate_machine> state_machine_ptr_;
     ros::Publisher dot_pub_;
     ros::NodeHandle nh_;
 };
