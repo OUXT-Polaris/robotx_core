@@ -1,5 +1,5 @@
 # jetson_0
-- IP : 192.168.10.100
+- IP : 192.168.1.100
 - ROS MASTER
 
 ### Description
@@ -7,13 +7,13 @@
 - 自己位置推定（localization.launch）
 
 ##### Motor Driver IP
-- motor_driver_left : 192.168.10.20
-- motor_driver_right : 192.168.10.21
+- motor_driver_left : 192.168.1.20
+- motor_driver_right : 192.168.1.21
 
 ---
 
 # jetson_1
-- IP : 192.168.10.101
+- IP : 192.168.1.101
 - ROS CLIENT
 
 ### Desctiption
@@ -21,13 +21,13 @@
 - euclidean_cluster
 
 ###### Velodyne IP
-- AI Pilot velodyne : 192.168.10.10
-- Front velodyne : 192.168.10.11
+- AI Pilot velodyne : 192.168.1.10
+- Front velodyne : 192.168.1.11
 
 ---
 
 # jetson_2
-- IP : 192.168.10.102
+- IP : 192.168.1.102
 - ROS CLIENT
 
 ### Description
