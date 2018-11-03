@@ -15,13 +15,15 @@ dynamixel_driver::~dynamixel_driver()
 
 void dynamixel_driver::command_callback_(std_msgs::Float64 msg)
 {
+  if(joint_command_client_.exists()) {
     dynamixel_workbench_msgs::JointCommand joint_command;
-    joint_command.request.unit = "raw";
+    joint_command.request.unit = "rad";
     joint_command.request.id = (uint8_t)motor_id_;
     joint_command.request.goal_position = msg.data;
     if(!joint_command_client_.call(joint_command))
-    {
+      {
         ROS_ERROR_STREAM("failed to write target angle to " << motor_id_  << " dynamixel.");
-    }
-    return;
+      }
+  }
+  return;
 }
