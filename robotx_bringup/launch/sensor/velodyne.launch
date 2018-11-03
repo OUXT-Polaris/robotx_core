@@ -8,17 +8,21 @@
   <arg name="front_pcap" default=""/>
   
   <!-- AI Pilot -->
-  <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch">
-    <arg name="device_ip" value="$(arg ai_pilot_ip)"/>
-    <arg name="frame_id" value="ai_pilot_velodyne"/>
-    <arg name="pcap" value="$(arg ai_pilot_pcap)"/>
-  </include>
+  <group ns="ai_pilot">
+    <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch">
+      <arg name="device_ip" value="$(arg ai_pilot_ip)"/>
+      <arg name="frame_id" value="ai_pilot_velodyne"/>
+      <arg name="pcap" value="$(arg ai_pilot_pcap)"/>
+    </include>
+  </group>
   
   <!-- Front -->
-  <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch">
-    <arg name="device_ip" value="$(arg front_ip)"/>
-    <arg name="frame_id" value="front_velodyne"/>
-    <arg name="pcap" value="$(arg front_pcap)"/>
-  </include>
+  <group ns="front">
+    <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch">
+      <arg name="device_ip" value="$(arg front_ip)"/>
+      <arg name="frame_id" value="front_velodyne"/>
+      <arg name="pcap" value="$(arg front_pcap)"/>
+    </include>
+  </group>
   
 </launch>
