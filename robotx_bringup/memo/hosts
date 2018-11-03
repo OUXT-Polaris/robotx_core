@@ -3,14 +3,14 @@
 # ============
 
 # Jetsons
-jetson_0 192.168.10.100
-jetson_1 192.168.10.101
-jetson_2 192.168.10.102
+jetson_0 192.168.1.100
+jetson_1 192.168.1.101
+jetson_2 192.168.1.102
 
 # Velodynes
-ai_pilot_velodyne 192.168.10.10
-front_velodyne 192.168.10.21
+ai_pilot_velodyne 192.168.1.10
+front_velodyne 192.168.1.21
 
 # Motor Driver
-motor_driver_left 192.168.10.20
-motor_driver_right 192.168.10.21
+motor_driver_left 192.168.1.20
+motor_driver_right 192.168.1.21
