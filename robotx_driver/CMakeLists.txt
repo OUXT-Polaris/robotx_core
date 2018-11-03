@@ -74,6 +74,10 @@ target_link_libraries(robotx_hardware_interface_node ${catkin_LIBRARIES} ${Boost
 #add_document(robotx_hardware_interface_node)
 #clang_format(robotx_hardware_interface_node)
 
+add_executable(dynamixel_driver_node src/dynamixel_driver_node.cpp src/dynamixel_driver.cpp)
+add_dependencies(dynamixel_driver_node robotx_msgs_generate_messages_cpp)
+target_link_libraries(dynamixel_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
 message(STATUS "")
 message(STATUS "FoundCUDA              : ${CUDA_FOUND}")
 
@@ -84,10 +88,10 @@ if(CUDA_FOUND)
   #set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}; "-std=c++11 -O3")
   set(CUDA_HOST_COMPILER g++)
 
-  set(cuda_diagnostic_src src/cuda_diagnostic.cpp)
-  cuda_add_executable(cuda_diagnostic_node ${cuda_diagnostic_src} src/cuda_diagnostic_node.cpp)
-  add_dependencies(cuda_diagnostic_node robotx_msgs_generate_messages_cpp)
-  target_link_libraries(cuda_diagnostic_node ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${CUDA_LIBRARIES})
+  #set(cuda_diagnostic_src src/cuda_diagnostic.cpp)
+  #cuda_add_executable(cuda_diagnostic_node ${cuda_diagnostic_src} src/cuda_diagnostic_node.cpp)
+  #add_dependencies(cuda_diagnostic_node robotx_msgs_generate_messages_cpp)
+  #target_link_libraries(cuda_diagnostic_node ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${CUDA_LIBRARIES})
   #add_document(cuda_diagnostic_node)
   #clang_format(cuda_diagnostic_node)
 endif()
@@ -97,11 +101,11 @@ endif()
 ## Install ##
 #############
 if(CUDA_FOUND)
-  install(TARGETS cuda_diagnostic_node robotx_hardware_interface_node heartbeat_publisher_node
+  install(TARGETS robotx_hardware_interface_node heartbeat_publisher_node dynamixel_driver_node #cuda_diagnostic_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 else()
-  install(TARGETS robotx_hardware_interface_node heartbeat_publisher_node
+  install(TARGETS robotx_hardware_interface_node heartbeat_publisher_node dynamixel_driver_node
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 endif()

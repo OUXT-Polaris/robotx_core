@@ -7,8 +7,6 @@ project(robotx_navigation)
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
-find_package(Ceres REQUIRED)
-
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
@@ -22,6 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_geometry_msgs
   nav_msgs
   jsk_recognition_msgs
+  jsk_rviz_plugins
   dwa_local_planner
   global_planner
   yaml_cpp_0_3
@@ -73,22 +72,36 @@ target_link_libraries(ndt_mapping_node ${catkin_LIBRARIES})
 #add_document(ndt_mapping_node)
 #clang_format(ndt_mapping_node)
 
-add_executable(simple_navigator_node src/simple_navigator_node.cpp src/simple_navigator.cpp 
-  src/euclidean_cluster_buffer.cpp)
-target_link_libraries(simple_navigator_node ${catkin_LIBRARIES} ${CERES_LIBRARIES})
-add_dependencies(simple_navigator_node robotx_msgs_generate_messages_cpp)
+add_executable(carrot_planner_node src/carrot_planner_node.cpp src/carrot_planner.cpp)
+target_link_libraries(carrot_planner_node ${catkin_LIBRARIES})
+add_dependencies(carrot_planner_node robotx_msgs_generate_messages_cpp)
+
+add_executable(waypoint_server_node src/waypoint_server_node.cpp src/waypoint_server.cpp)
+target_link_libraries(waypoint_server_node ${catkin_LIBRARIES})
+add_dependencies(waypoint_server_node robotx_msgs_generate_messages_cpp)
+
+add_executable(waypoint_logger_node src/waypoint_logger_node.cpp src/waypoint_logger.cpp)
+target_link_libraries(waypoint_logger_node ${catkin_LIBRARIES})
+add_dependencies(waypoint_logger_node robotx_msgs_generate_messages_cpp)
+
+add_executable(obstacle_avoid_node src/obstacle_avoid_node.cpp src/obstacle_avoid.cpp)
+target_link_libraries(obstacle_avoid_node ${catkin_LIBRARIES})
+add_dependencies(obstacle_avoid_node robotx_msgs_generate_messages_cpp)
 
 #############
 ## Install ##
 #############
 # CPP codes
 set(NODE_FILES 
+  obstacle_avoid_node
+  waypoint_logger_node
   twist_from_fix_velocity_node 
   geographic_map_server_node 
   obstacle_map_server_node 
   robotx_localization_node 
   costmap_clear_request_sender_node 
-  simple_navigator_node
+  carrot_planner_node
+  waypoint_server_node
   ndt_mapping_node)
 foreach(nodes ${NODE_FILES})
   install(TARGETS ${nodes}

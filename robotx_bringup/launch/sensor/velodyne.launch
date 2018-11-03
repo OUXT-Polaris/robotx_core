@@ -1,8 +1,8 @@
 <launch>
 
   <!-- IP address -->
-  <arg name="ai_pilot_ip" default="192.168.10.10"/>
-  <arg name="front_ip" default="192.168.10.11"/>
+  <arg name="ai_pilot_ip" default="192.168.10.201"/>
+  <arg name="front_ip" default="192.168.10.202"/>
   <!-- Pcap file -->
   <arg name="ai_pilot_pcap" default=""/>
   <arg name="front_pcap" default=""/>

@@ -5,8 +5,8 @@ find_package(catkin REQUIRED)
 catkin_package()
 
 # Install
-set(LAUNCH_DIRS launch launch/sensor launch/driver)
-set(CONFIG_DIRS config/velodyne)
+set(LAUNCH_DIRS launch launch/sensor) #launch/driver)
+#set(CONFIG_DIRS config/velodyne)
 
 foreach(dir ${CONFIG_DIRS} ${LAUNCH_DIRS} )
   install(DIRECTORY ${dir}/
