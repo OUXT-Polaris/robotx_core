@@ -13,6 +13,7 @@
       <arg name="device_ip" value="$(arg ai_pilot_ip)"/>
       <arg name="frame_id" value="ai_pilot_velodyne"/>
       <arg name="pcap" value="$(arg ai_pilot_pcap)"/>
+      <arg name="port" value="2368" />
     </include>
   </group>
   
@@ -22,6 +23,7 @@
       <arg name="device_ip" value="$(arg front_ip)"/>
       <arg name="frame_id" value="front_velodyne"/>
       <arg name="pcap" value="$(arg front_pcap)"/>
+      <arg name="port" value="2369" />
     </include>
   </group>
   
