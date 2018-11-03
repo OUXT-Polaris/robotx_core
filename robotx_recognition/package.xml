@@ -49,6 +49,6 @@
   <!--<run_depend>python-tensorflow-gpu-pip</run_depend>-->
   
   <export>
-    <nodelet plugin="${prefix}/robotx_recognition_nodelet.xml" />
+    <!--<nodelet plugin="${prefix}/robotx_recognition_nodelet.xml" />-->
   </export>
 </package>
