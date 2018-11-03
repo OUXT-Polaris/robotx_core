@@ -7,8 +7,9 @@ catkin_package()
 # Install
 set(LAUNCH_DIRS launch launch/sensor) #launch/driver)
 #set(CONFIG_DIRS config/velodyne)
+set(DATA_DIRS data)
 
-foreach(dir ${CONFIG_DIRS} ${LAUNCH_DIRS} )
+foreach(dir ${CONFIG_DIRS} ${LAUNCH_DIRS} ${DATA_DIRS})
   install(DIRECTORY ${dir}/
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
 endforeach(dir)
