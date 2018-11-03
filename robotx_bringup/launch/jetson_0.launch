@@ -1,13 +1,6 @@
 <launch>
-  <!-- Load hardware devices -->
-  <include file="$(find robotx_driver)/hardware.launch"/>
-  <!-- Load GPS, Speed sensor -->
-  <include file="$(find robotx_bringup)/launch/sensor/nmea_navsat.launch"/>
-
-  <!-- Load Twist controller -->
-  <include file="$(find robotx_twist_controller)/launch/twist_controller.launch"/>
-
-  <!-- Load Localization -->
-  <include file="$(find robotx_navigation)/launch/localization.launch"/>
-  
+  <machine name="jetson_0" address="192.168.1.101" env-loader="/home/nvidia/catkin_ws/devel/env.sh" user="nvidia" password="nvidia"/>
+  <!-- Launch Velodynes -->
+  <include file="$(find robotx_bringup)/launch/sensor/ai_pilot.launch"/>
+  <include file="$(find robotx_bringup)/launch/sensor/uvc_camera.launch"/>
 </launch>

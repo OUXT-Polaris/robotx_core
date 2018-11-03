@@ -1,4 +1,9 @@
 <launch>
+  <machine name="jetson_2" address="192.168.1.103" env-loader="/home/nvidia/catkin_ws/devel/env.sh" user="nvidia" password="nvidia"/>
   <!-- Launch camera -->
   <include file="$(find robotx_bringup)/launch/uvc_camera.launch"/>
+  <!-- Load GPS, Speed sensor -->
+  <include file="$(find robotx_bringup)/launch/sensor/nmea_navsat.launch"/>
+  <!-- Load hardware devices -->
+  <include file="$(find robotx_driver)/hardware.launch"/>
 </launch>

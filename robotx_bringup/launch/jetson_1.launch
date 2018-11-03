@@ -1,7 +1,5 @@
 <launch>
+  <machine name="jetson_1" address="192.168.1.102" env-loader="/home/nvidia/catkin_ws/devel/env.sh" user="nvidia" password="nvidia"/>
   <!-- Launch Velodynes -->
-  <include file="$(find robotx_bringup)/launch/sensor/velodyne.launch"/>
-
-  <!-- Launch euclidean_cluster -->
-  <include file="$(find robotx_recognition)/launch/recognition.launch"/>
+  <include file="$(find robotx_bringup)/launch/sensor/front_velodyne.launch"/>
 </launch>
