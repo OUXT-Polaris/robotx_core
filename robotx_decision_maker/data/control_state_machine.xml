@@ -1,11 +1,11 @@
 <state_machine>
-    <init_state name="manual"/>
+    <init_state name="remote_operated"/>
 
-    <transition from = "manual" to="autonomous" name="system_bringup"/>
-    <transition from = "manual" to="emergency" name="fatal_error"/>
+    <transition from = "remote_operated" to="autonomous" name="system_bringup"/>
+    <transition from = "remote_operated" to="emergency" name="fatal_error"/>
 
-    <transition from = "autonomous" to="manual" name="system_bringup"/>
+    <transition from = "autonomous" to="remote_operated" name="system_bringup"/>
     <transition from = "autonomous" to="emergency" name="fatal_error"/>
 
-    <transition from = "emergency" to="manual" name="manual_reset"/>
+    <transition from = "emergency" to="remote_operated" name="manual_reset"/>
 </state_machine>

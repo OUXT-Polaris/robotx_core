@@ -29,6 +29,22 @@ typedef graph_t::edge_descriptor edge_t;
 typedef boost::graph_traits<graph_t>::adjacency_iterator adjacency_iterator_t;
 typedef boost::graph_traits<graph_t>::out_edge_iterator out_edge_iterator_t;
 
+struct state_info_t
+{
+    const std::vector<std::string> possibe_transition_states;
+    const std::vector<std::string> possibe_transitions;
+    const std::string current_state;
+    state_info_t(std::string current_state_, 
+        std::vector<std::string> possibe_transition_states_,
+        std::vector<std::string> possibe_transitions_)
+            : current_state(current_state_), 
+                possibe_transition_states(possibe_transition_states_),
+                possibe_transitions(possibe_transitions_)
+            {
+
+            }
+};
+
 class state_machine
 {
 public:
@@ -39,6 +55,7 @@ public:
     std::vector<std::string> get_possibe_transition_states();
     std::vector<std::string> get_possibe_transitions();
     std::string get_current_state();
+    state_info_t get_state_info();
     void draw_state_machine(std::string dot_filename);
 private:
     void add_transition_(std::string from_state_name, std::string to_state_name, std::string trigger_event_name);
