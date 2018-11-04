@@ -33,9 +33,10 @@ void rostate_machine::publish_current_state_()
     while(ros::ok())
     {
         robotx_msgs::State state_msg;
-        state_msg.current_state = state_machine_ptr_->get_current_state();
-        state_msg.possible_transitions = state_machine_ptr_->get_possibe_transitions();
-        state_msg.possible_transition_states = state_machine_ptr_->get_possibe_transition_states();
+        state_info_t info = state_machine_ptr_->get_state_info();
+        state_msg.current_state = info.current_state;
+        state_msg.possible_transitions = info.possibe_transitions;
+        state_msg.possible_transition_states = info.possibe_transition_states;
         current_state_pub_.publish(state_msg);
         rate.sleep();
     }
