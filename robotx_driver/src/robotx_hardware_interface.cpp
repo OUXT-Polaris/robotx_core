@@ -39,6 +39,8 @@ robotx_hardware_interface::robotx_hardware_interface()
         nh_.advertise<std_msgs::Float64>("/left_engine_position_controller/command", 1);
     right_thrust_joint_pub_ =
         nh_.advertise<std_msgs::Float64>("/right_engine_position_controller/command", 1);
+    control_event_pub_ = 
+        nh_.advertise<robotx_msgs::Event>("/robotx_state_machine_node/control_state_machine/trigger_event", 1);
     last_motor_cmd_msg_.data.resize(4);
     last_motor_cmd_msg_.data[0] = 0;
     last_motor_cmd_msg_.data[1] = 0;
@@ -60,6 +62,8 @@ robotx_hardware_interface::robotx_hardware_interface()
   fix_sub_ = nh_.subscribe("/fix", 1, &robotx_hardware_interface::fix_callback_, this);
   motor_command_sub_ =
       nh_.subscribe("/wam_v/motor_command", 1, &robotx_hardware_interface::motor_command_callback_, this);
+  control_state_sub_ =
+      nh_.subscribe("/robotx_state_machine_node/control_state_machine/current_state", 1, &robotx_hardware_interface::control_state_callback_, this);
 }
 
 void robotx_hardware_interface::run(){
@@ -89,6 +93,11 @@ void robotx_hardware_interface::current_task_number_callback_(std_msgs::UInt8 ms
 
 void robotx_hardware_interface::fix_callback_(sensor_msgs::NavSatFix msg) {
   last_fix_msg_ = msg;
+  return;
+}
+
+void robotx_hardware_interface::control_state_callback_(robotx_msgs::State msg)
+{
   return;
 }
 

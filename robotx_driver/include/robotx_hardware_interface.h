@@ -4,8 +4,10 @@
 // headers in this package
 #include <remote_operated_interface.h>
 #include <tcp_client.h>
+#include <robotx_msgs/State.h>
+#include <robotx_msgs/Event.h>
 
-// headers in ROS
+// headers in ROSs
 #include <diagnostic_updater/diagnostic_updater.h>
 #include <diagnostic_updater/publisher.h>
 #include <ros/ros.h>
@@ -122,6 +124,10 @@ class robotx_hardware_interface {
 
  private:
   /**
+   * @brief ROS callback function for control state machine
+  */
+  void control_state_callback_(robotx_msgs::State msg);
+  /**
    * @brief ROS callback function for motor command
    *
    * @param msg [left_thruster_cmd left_thruster_joint_angle
@@ -179,6 +185,16 @@ class robotx_hardware_interface {
    *
    */
   ros::Subscriber current_task_number_sub_;
+  /**
+   * @brief ROS subscriber fot /robotx_state_machine_node/control_state_machine/current_state topic.(message type :
+   * robotx_msgs/State)
+   */
+  ros::Subscriber control_state_sub_;
+  /**
+   * @brief ROS publisher fot /robotx_state_machine_node/control_state_machine/trigger_event topic.(message type :
+   * robotx_msgs/Event)
+   */
+  ros::Publisher control_event_pub_;
   /**
    * @brief ROS publisher for /left_thrust_cmd topic.(message type :
    * std_msgs/Float32)
