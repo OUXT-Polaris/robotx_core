@@ -16,6 +16,8 @@
 struct transition_property
 {
     std::vector<std::string> trigger_events;
+    std::string from_state;
+    std::string to_state;
 };
 
 struct state_property
