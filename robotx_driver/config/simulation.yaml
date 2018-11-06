@@ -1,7 +1,5 @@
 #ALL = 0, SIMULATION = 1, HARDWARE = 2
 target: 1
-#REMOTE_OPERATED = 0, AUTONOMOUS = 1, EMERGENCY = 2
-init_mode: 0
 timeout: 30
 frequency: 30
 # DUALSHOCK4_SIMPLE=0

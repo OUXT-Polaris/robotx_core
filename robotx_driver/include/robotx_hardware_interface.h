@@ -27,11 +27,6 @@ class robotx_hardware_interface {
  public:
   struct parameters {
     /**
-     * @brief enum parameters describe driving mode.
-     *
-     */
-    enum modes_ { REMOTE_OPERATED = 0, AUTONOMOUS = 1, EMERGENCY = 2 };
-    /**
      * @brief enum parameters describe target.
      *
      */
@@ -41,11 +36,6 @@ class robotx_hardware_interface {
      * @sa robotx_hardware_interface::targets_
      */
     int target;
-    /**
-     * @brief action mode
-     * @sa robotx_hardware_interface::modes_
-     */
-    int init_mode;
     /**
      * @brief connection timeout [sec] with motor controller
      *
@@ -92,7 +82,6 @@ class robotx_hardware_interface {
      */
     parameters() {
       ros::param::param<int>(ros::this_node::getName() + "/target", target, ALL);
-      ros::param::param<int>(ros::this_node::getName() + "/init_mode", init_mode, REMOTE_OPERATED);
       ros::param::param<int>(ros::this_node::getName() + "/timeout", timeout, 30);
       ros::param::param<int>(ros::this_node::getName() + "/frequency", frequency, 30);
       ros::param::param<std::string>(ros::this_node::getName() + "/left_motor_ip", left_motor_ip,
@@ -108,12 +97,6 @@ class robotx_hardware_interface {
   ~robotx_hardware_interface();
   void run();
   /**
-   * @brief function for setting action mode.
-   *
-   * @param mode target action mode
-   */
-  void set_action_mode(int mode);
-  /**
    * @brief callback function for
    * remote_operated_interface::send_motor_command
    * function
@@ -121,6 +104,8 @@ class robotx_hardware_interface {
    * @param msg
    */
   void recieve_remote_oprated_motor_command(std_msgs::Float64MultiArray msg);
+
+  void recieve_remote_oprated_state_command(robotx_msgs::Event msg);
 
  private:
   /**
@@ -191,11 +176,6 @@ class robotx_hardware_interface {
    */
   ros::Subscriber control_state_sub_;
   /**
-   * @brief ROS publisher fot /robotx_state_machine_node/control_state_machine/trigger_event topic.(message type :
-   * robotx_msgs/Event)
-   */
-  ros::Publisher control_event_pub_;
-  /**
    * @brief ROS publisher for /left_thrust_cmd topic.(message type :
    * std_msgs/Float32)
    *
@@ -262,11 +242,6 @@ class robotx_hardware_interface {
    */
   const parameters params_;
   /**
-   * @brief parameter for driving mode.
-   *
-   */
-  volatile int driving_mode_;
-  /**
    * @brief parameter for current task number.
    *
    */
@@ -315,6 +290,10 @@ class robotx_hardware_interface {
    * @param stat
    */
   void update_right_thruster_connection_status_(diagnostic_updater::DiagnosticStatusWrapper &stat);
+  /**
+   * @brief parameter for current control state
+   */
+  robotx_msgs::State current_control_state_;
 };
 
 #endif  // ROBOTX_HARDWARE_INTERFACE_H_INCLUDEDE
