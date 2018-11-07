@@ -26,6 +26,18 @@ void remote_operated_interface::joy_callback_(sensor_msgs::Joy msg) {
   last_joy_cmd_ = msg;
   std_msgs::Float64MultiArray motor_command_msg;
   if (params_.controller_type == params_.DUALSHOCK4_SIMPLE) {
+    if (analyzer_.button_pressed(2)){
+      if(current_state_.current_state == "emergency"){
+        robotx_msgs::Event event;
+        event.trigger_event_name = "manual_reset";
+        trigger_event_pub_.publish(event);
+      }
+    }
+    if (analyzer_.button_pressed(1)){
+      robotx_msgs::Event event;
+      event.trigger_event_name = "fatal_error";
+      trigger_event_pub_.publish(event);
+    }
     if (analyzer_.button_pressed(12)) {
       if(current_state_.current_state == "autonomous"){
         robotx_msgs::Event event;
