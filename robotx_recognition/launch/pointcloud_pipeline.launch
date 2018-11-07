@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<launch>
+    <group ns="pointcloud_nodelets">
+        <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
+
+        <!-- Run a VoxelGrid filter to clean NaNs and downsample the data -->
+        <node pkg="nodelet" type="nodelet" name="voxel_grid" args="load pcl/VoxelGrid pcl_manager" output="screen">
+            <remap from="~input" to="/pointcloud_nodelets/pcl_manager/merged_points" />
+            <rosparam>
+            filter_field_name: z
+            filter_limit_min: 0.01
+            filter_limit_max: 1.5
+            filter_limit_negative: False
+            leaf_size: 0.01
+            </rosparam>
+        </node>
+        
+        <node pkg="nodelet" type="nodelet" name="pointcloud_merger" args="load robotx_recognition_nodelet/pointcloud_merger_nodelet pcl_manager" output="screen">
+        </node>
+
+        <node pkg="nodelet" type="nodelet" name="euclidean_clustering_nodelet" args="load robotx_recognition_nodelet/euclidean_clustering_nodelet pcl_manager">  
+        </node>
+    </group>
+</launch>

@@ -188,6 +188,12 @@ set(CPP_EXEC_NAMES
   endforeach(cpp_exec_names)
 endif()
 
+install(TARGETS object_recognition_nodelet euclidean_clustering_nodelet passthrough_filter_nodelet
+  pointcloud_merger_nodelet object_bbox_extractor_nodelet
+        RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
+
 # include header files
 install(DIRECTORY include/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
@@ -205,6 +211,9 @@ foreach(dir config data launch)
   install(DIRECTORY ${dir}/
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
 endforeach(dir)
+
+install(FILES robotx_recognition_nodelet.xml
+DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 #############
 ## Testing ##
