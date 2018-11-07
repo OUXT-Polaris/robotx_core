@@ -4,6 +4,7 @@
 // headers in this package
 #include <robotx_msgs/State.h>
 #include <robotx_msgs/Event.h>
+#include <joy_analyzer.h>
 
 // headers in ROS
 #include <ros/ros.h>
@@ -55,6 +56,10 @@ class remote_operated_interface {
   ~remote_operated_interface();
 
  private:
+  /**
+   * @brief analyzer for joystick
+   */
+  joy_analyzer analyzer_;
   /**
    * @brief ROS nodehandle
    *

@@ -22,10 +22,11 @@ void remote_operated_interface::current_state_callback_(robotx_msgs::State msg){
 
 void remote_operated_interface::joy_callback_(sensor_msgs::Joy msg) {
   std::lock_guard<std::mutex> lock(mtx_);
+  analyzer_.add_data(msg);
   last_joy_cmd_ = msg;
   std_msgs::Float64MultiArray motor_command_msg;
   if (params_.controller_type == params_.DUALSHOCK4_SIMPLE) {
-    if (last_joy_cmd_.buttons[12] == 1) {
+    if (analyzer_.button_pressed(12)) {
       if(current_state_.current_state == "autonomous"){
         robotx_msgs::Event event;
         event.trigger_event_name = "manual_override";
@@ -45,7 +46,7 @@ void remote_operated_interface::joy_callback_(sensor_msgs::Joy msg) {
     send_motor_command_signal_(motor_command_msg);
   }
   if (params_.controller_type == params_.DUALSHOCK4) {
-    if (last_joy_cmd_.buttons[12] == 1) {
+    if (analyzer_.button_pressed(12)) {
       if(current_state_.current_state == "autonomous"){
         robotx_msgs::Event event;
         event.trigger_event_name = "manual_override";
@@ -65,7 +66,7 @@ void remote_operated_interface::joy_callback_(sensor_msgs::Joy msg) {
     send_motor_command_signal_(motor_command_msg);
   }
   if (params_.controller_type == params_.LOGICOOL) {
-    if (last_joy_cmd_.buttons[8] == 1) {
+    if (analyzer_.button_pressed(8)) {
       if(current_state_.current_state == "autonomous"){
         robotx_msgs::Event event;
         event.trigger_event_name = "manual_override";
