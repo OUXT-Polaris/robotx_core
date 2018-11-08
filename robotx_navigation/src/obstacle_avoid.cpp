@@ -2,18 +2,23 @@
 
 obstacle_avoid::obstacle_avoid() : tf_listener_(tf_buffer_)
 {
-    twist_cmd_pub_ = nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
-    angular_vel_pub_ = nh_.advertise<std_msgs::Float32>("/cmd_angular_vel", 1);
-    linear_vel_pub_ = nh_.advertise<std_msgs::Float32>("/cmd_linear_vel", 1);
+    current_state_ = boost::none;
     map_recieved_ = false;
     odom_recieved_ = false;
     twist_cmd_recieved_ = false;
     nh_.param<std::string>(ros::this_node::getName()+"/map_topic", map_topic_, "/obstacle_map");
+    nh_.param<std::string>(ros::this_node::getName()+"/cmd_vel_topic", cmd_vel_topic_, ros::this_node::getName()+"/cmd_vel");
     nh_.param<std::string>(ros::this_node::getName()+"/raw_cmd_vel_topic", raw_cmd_vel_topic_, ros::this_node::getName()+"/input_cmd_vel");
     nh_.param<std::string>(ros::this_node::getName()+"/odom_topic", odom_topic_, "/odom");
     nh_.param<std::string>(ros::this_node::getName()+"/target_pose_topic", target_pose_topic_, ros::this_node::getName()+"/target_pose");
+    nh_.param<std::string>(ros::this_node::getName()+"/current_state_topic", current_state_topic_, ros::this_node::getName()+"current_state");
+    nh_.param<std::string>(ros::this_node::getName()+"/trigger_event_topic", trigger_event_topic_, ros::this_node::getName()+"/trigger_event");  
     nh_.param<double>(ros::this_node::getName()+"/search_radius", search_radius_, 3.0);
     nh_.param<double>(ros::this_node::getName()+"/search_angle", search_angle_, 0.3);
+    twist_cmd_pub_ = nh_.advertise<geometry_msgs::Twist>(cmd_vel_topic_, 10);
+    angular_vel_pub_ = nh_.advertise<std_msgs::Float32>("/cmd_angular_vel", 1);
+    linear_vel_pub_ = nh_.advertise<std_msgs::Float32>("/cmd_linear_vel", 1);
+    trigger_event_pub_ = nh_.advertise<robotx_msgs::Event>(trigger_event_topic_, 1);
     map_sub_ = nh_.subscribe(map_topic_, 3, &obstacle_avoid::obstacle_map_callback_, this);
     twist_cmd_sub_ = nh_.subscribe(raw_cmd_vel_topic_, 10, &obstacle_avoid::twist_cmd_callback_, this);
     odom_sub_ = nh_.subscribe(odom_topic_, 10, &obstacle_avoid::odom_callback_, this);
@@ -23,6 +28,13 @@ obstacle_avoid::obstacle_avoid() : tf_listener_(tf_buffer_)
 obstacle_avoid::~obstacle_avoid()
 {
 
+}
+
+void obstacle_avoid::current_state_callback_(const robotx_msgs::State::ConstPtr msg)
+{
+    std::lock_guard<std::mutex> lock(mtx_);
+    *current_state_ = *msg;
+    return;
 }
 
 void obstacle_avoid::target_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg)

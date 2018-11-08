@@ -15,6 +15,13 @@
 //headers in STL
 #include <mutex>
 
+//headers in boost
+#include <boost/optional.hpp>
+
+//headers in robotx_packages
+#include <robotx_msgs/State.h>
+#include <robotx_msgs/Event.h>
+
 class obstacle_avoid
 {
 public:
@@ -26,9 +33,12 @@ private:
     ros::Subscriber odom_sub_;
     ros::Subscriber map_sub_;
     ros::Subscriber target_pose_sub_;
+    ros::Subscriber current_state_sub_;
+    ros::Publisher trigger_event_pub_;
     ros::Publisher twist_cmd_pub_;
     ros::Publisher linear_vel_pub_;
     ros::Publisher angular_vel_pub_;
+    void current_state_callback_(const robotx_msgs::State::ConstPtr msg);
     void twist_cmd_callback_(const geometry_msgs::Twist::ConstPtr msg);
     void odom_callback_(const nav_msgs::Odometry::ConstPtr msg);
     void obstacle_map_callback_(const nav_msgs::OccupancyGrid::Ptr msg);
@@ -43,10 +53,14 @@ private:
     std::mutex mtx_;
     std::string map_topic_;
     std::string raw_cmd_vel_topic_;
+    std::string cmd_vel_topic_;
     std::string odom_topic_;
     std::string target_pose_topic_;
+    std::string current_state_topic_;
+    std::string trigger_event_topic_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
+    boost::optional<robotx_msgs::State> current_state_;
     double search_radius_;
     double search_angle_;
 };
