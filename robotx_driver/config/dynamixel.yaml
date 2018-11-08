@@ -1,0 +1,5 @@
+device_name: /dev/ttyUSB0
+baud_rate: 57600
+scan_range: 10
+profile_velocity: 200
+profile_acceleration: 50

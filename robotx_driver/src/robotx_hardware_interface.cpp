@@ -4,6 +4,7 @@
 
 // headers in STL
 #include <time.h>
+#include <cmath>
 
 robotx_hardware_interface::robotx_hardware_interface()
     : params_(robotx_hardware_interface::parameters()),
@@ -181,9 +182,9 @@ void robotx_hardware_interface::send_command_() {
         left_motor_cmd_client_ptr_->send(last_manual_motor_cmd_msg_.data[0]);
         right_motor_cmd_client_ptr_->send(last_manual_motor_cmd_msg_.data[2]);
         std_msgs::Float64 left_thrust_joint_cmd_;
-        left_thrust_joint_cmd_.data = last_manual_motor_cmd_msg_.data[1];
+        left_thrust_joint_cmd_.data = last_manual_motor_cmd_msg_.data[1]*M_PI_2;
         std_msgs::Float64 right_thrust_joint_cmd_;
-        right_thrust_joint_cmd_.data = last_manual_motor_cmd_msg_.data[3];
+        right_thrust_joint_cmd_.data = last_manual_motor_cmd_msg_.data[3]*M_PI_2;
         left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
         right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
       }
@@ -191,9 +192,9 @@ void robotx_hardware_interface::send_command_() {
         left_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[0]);
         right_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[2]);
         std_msgs::Float64 left_thrust_joint_cmd_;
-        left_thrust_joint_cmd_.data = last_motor_cmd_msg_.data[1];
+        left_thrust_joint_cmd_.data = last_motor_cmd_msg_.data[1]*M_PI_2;
         std_msgs::Float64 right_thrust_joint_cmd_;
-        right_thrust_joint_cmd_.data = last_motor_cmd_msg_.data[3];
+        right_thrust_joint_cmd_.data = last_motor_cmd_msg_.data[3]*M_PI_2;
         left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
         right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
       }
