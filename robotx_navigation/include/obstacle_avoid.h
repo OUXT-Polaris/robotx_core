@@ -43,8 +43,10 @@ private:
     void odom_callback_(const nav_msgs::Odometry::ConstPtr msg);
     void obstacle_map_callback_(const nav_msgs::OccupancyGrid::Ptr msg);
     void target_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg);
+    bool obstacle_found_(const nav_msgs::Odometry::ConstPtr msg);
+    geometry_msgs::PoseStamped transformed_target_pose_;
     boost::shared_ptr<nav_msgs::OccupancyGrid> map_ptr_;
-    geometry_msgs::PoseStamped target_pose_;
+    boost::optional<geometry_msgs::PoseStamped> target_pose_;
     geometry_msgs::Twist raw_twist_cmd_;
     volatile bool odom_recieved_;
     volatile bool twist_cmd_recieved_;

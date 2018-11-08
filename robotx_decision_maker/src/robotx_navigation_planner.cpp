@@ -4,6 +4,7 @@ robotx_navigation_planner::robotx_navigation_planner()
 {
     obstacle_avoid_cmd_ = boost::none;
     waypoint_planner_cmd_ = boost::none;
+    current_state_ = boost::none;
     ros::param::param<std::string>(ros::this_node::getName() + "/current_state_topic", 
         current_state_topic_, "/robotx_state_machine_node/navigation_state_machine/current_state");
     ros::param::param<std::string>(ros::this_node::getName() + "/trigger_event_topic", 
@@ -27,37 +28,50 @@ robotx_navigation_planner::~robotx_navigation_planner()
 
 void robotx_navigation_planner::publish_cmd_vel_()
 {
-    std::lock_guard<std::mutex> lock(mtx_);
-    return;
-}
-
-void robotx_navigation_planner::run()
-{
     ros::Rate rate(publish_rate_);
     while(ros::ok())
     {
-        publish_cmd_vel_();
+        mtx_.lock();
+        //if(waypoint_planner_cmd_ && obstacle_avoid_cmd_)
+        //{
+            if(current_state_ && current_state_->current_state == "obstacle_avoid")
+            {
+                cmd_vel_pub_.publish(*obstacle_avoid_cmd_);
+            }
+            else
+            {
+                cmd_vel_pub_.publish(*waypoint_planner_cmd_);                
+            }
+        //}
+        mtx_.unlock();
         rate.sleep();
     }
     return;
 }
 
-void robotx_navigation_planner::current_state_callback_(const robotx_msgs::StateConstPtr msg)
+void robotx_navigation_planner::run()
 {
-    std::lock_guard<std::mutex> lock(mtx_);
+    boost::thread publish_cmd_vel_th = boost::thread(&robotx_navigation_planner::publish_cmd_vel_, this);
     return;
 }
 
-void robotx_navigation_planner::waypoint_planner_cmd_callback_(const geometry_msgs::Twist msg)
+void robotx_navigation_planner::current_state_callback_(robotx_msgs::State msg)
 {
     std::lock_guard<std::mutex> lock(mtx_);
-    waypoint_planner_cmd_ = msg;
+    current_state_ = msg;
     return;
 }
 
-void robotx_navigation_planner::obstacle_avoid_cmd_callback_(const geometry_msgs::Twist msg)
+void robotx_navigation_planner::waypoint_planner_cmd_callback_(const geometry_msgs::Twist::ConstPtr msg)
 {
     std::lock_guard<std::mutex> lock(mtx_);
-    obstacle_avoid_cmd_ = msg;
+    waypoint_planner_cmd_ = *msg;
+    return;
+}
+
+void robotx_navigation_planner::obstacle_avoid_cmd_callback_(const geometry_msgs::Twist::ConstPtr msg)
+{
+    std::lock_guard<std::mutex> lock(mtx_);
+    obstacle_avoid_cmd_ = *msg;
     return;
 }

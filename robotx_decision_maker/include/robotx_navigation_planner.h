@@ -11,6 +11,7 @@
 
 //headers in boost
 #include <boost/optional.hpp>
+#include <boost/thread.hpp>
 
 //headers in STL
 #include <mutex>
@@ -23,9 +24,9 @@ public:
     void run();
 private:
     void publish_cmd_vel_();
-    void current_state_callback_(const robotx_msgs::StateConstPtr msg);
-    void waypoint_planner_cmd_callback_(const geometry_msgs::Twist msg);
-    void obstacle_avoid_cmd_callback_(const geometry_msgs::Twist msg);
+    void current_state_callback_(robotx_msgs::State msg);
+    void waypoint_planner_cmd_callback_(const geometry_msgs::Twist::ConstPtr msg);
+    void obstacle_avoid_cmd_callback_(const geometry_msgs::Twist::ConstPtr msg);
     ros::NodeHandle nh_;
     ros::Publisher trigger_event_pub_;
     ros::Publisher cmd_vel_pub_;
@@ -39,6 +40,7 @@ private:
     double publish_rate_;
     boost::optional<geometry_msgs::Twist> waypoint_planner_cmd_;
     boost::optional<geometry_msgs::Twist> obstacle_avoid_cmd_;
+    boost::optional<robotx_msgs::State> current_state_;
     std::mutex mtx_;
 };
 #endif  //ROBOXT_NAVIGATION_PLANNER_H_INCLUDED

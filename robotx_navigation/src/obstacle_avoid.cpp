@@ -52,26 +52,25 @@ void obstacle_avoid::twist_cmd_callback_(const geometry_msgs::Twist::ConstPtr ms
     return;
 }
 
-void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
+bool obstacle_avoid::obstacle_found_(const nav_msgs::Odometry::ConstPtr msg)
 {
-    std::lock_guard<std::mutex> lock(mtx_);
-    odom_recieved_ = true;
-    odom_ = *msg;
+    if(!target_pose_)
+    {
+        return false;
+    }
     geometry_msgs::TransformStamped target_pose_transform_stamped_;
     try
     {
-        target_pose_transform_stamped_ = tf_buffer_.lookupTransform(msg->header.frame_id, target_pose_.header.frame_id, ros::Time(0));
+        target_pose_transform_stamped_ = tf_buffer_.lookupTransform(msg->header.frame_id, target_pose_->header.frame_id, ros::Time(0));
     }
     catch (tf2::TransformException &ex)
     {
         ROS_WARN("%s",ex.what());
-        return;
+        return false;
     }
-    geometry_msgs::PoseStamped transformed_target_pose_;
-    tf2::doTransform(target_pose_, transformed_target_pose_, target_pose_transform_stamped_);
+    tf2::doTransform(*target_pose_, transformed_target_pose_, target_pose_transform_stamped_);
     if(odom_recieved_ && map_recieved_ && twist_cmd_recieved_)
     {
-        bool found_obstacle = false;
         for (int i = 0; i < map_ptr_->info.height; i++) 
         {
             for (int m = 0; m < map_ptr_->info.width; m++)
@@ -90,41 +89,48 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
                         double r = std::sqrt(y*y+x*x);
                         if(r<search_radius_ && std::fabs(theta) < search_angle_)
                         {
-                            found_obstacle = true;
+                            return true;
                         }
                     }
                 }
             }
         }
-        geometry_msgs::Twist twist_cmd;
-        if(found_obstacle == true)
+    }
+    return false;
+}
+
+void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
+{
+    std::lock_guard<std::mutex> lock(mtx_);
+    odom_recieved_ = true;
+    odom_ = *msg;
+    geometry_msgs::Twist twist_cmd;
+    if(obstacle_found_(msg))
+    {
+        robotx_msgs::Event event_msg;
+        event_msg.trigger_event_name = "obstacle_found";
+        event_msg.header.stamp = ros::Time::now();
+        trigger_event_pub_.publish(event_msg);
+        double x = transformed_target_pose_.pose.position.x;
+        double y = transformed_target_pose_.pose.position.y;
+        double theta = std::atan2(y,x);
+        if(theta > 0)
         {
-            ROS_ERROR_STREAM("found obstacle");
-            double x = transformed_target_pose_.pose.position.x;
-            double y = transformed_target_pose_.pose.position.y;
-            double theta = std::atan2(y,x);
-            if(theta > 0)
-            {
-                twist_cmd.linear.x = 0;
-                twist_cmd.angular.z = 0.3;
-            }
-            else
-            {
-                twist_cmd.linear.x = 0;
-                twist_cmd.angular.z = -0.3;                
-            }
+            twist_cmd.linear.x = 0;
+            twist_cmd.angular.z = 0.3;
         }
         else
         {
-            twist_cmd = raw_twist_cmd_;
+            twist_cmd.linear.x = 0;
+            twist_cmd.angular.z = -0.3;                
         }
-        twist_cmd_pub_.publish(twist_cmd);
-        std_msgs::Float32 linear_vel_msg,angular_vel_msg;
-        linear_vel_msg.data = twist_cmd.linear.x;
-        angular_vel_msg.data = twist_cmd.angular.z;
-        linear_vel_pub_.publish(linear_vel_msg);
-        angular_vel_pub_.publish(angular_vel_msg);
     }
+    twist_cmd_pub_.publish(twist_cmd);
+    std_msgs::Float32 linear_vel_msg,angular_vel_msg;
+    linear_vel_msg.data = twist_cmd.linear.x;
+    angular_vel_msg.data = twist_cmd.angular.z;
+    linear_vel_pub_.publish(linear_vel_msg);
+    angular_vel_pub_.publish(angular_vel_msg);
     return;
 }
 
