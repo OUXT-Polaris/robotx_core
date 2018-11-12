@@ -13,17 +13,11 @@ xacro_add_files(
     INORDER INSTALL DESTINATION urdf
 )
 
-#############
-## Install ##
-#############
 foreach(dir launch mesh urdf)
   install(DIRECTORY ${dir}/
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
 endforeach(dir)
 
-#############
-## Testing ##
-#############
 if (CATKIN_ENABLE_TESTING)
   find_package(roslaunch REQUIRED)
   roslaunch_add_file_check(launch)
