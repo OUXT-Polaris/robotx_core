@@ -15,3 +15,8 @@ include_directories(
 )
 
 catkin_package(CFG_EXTRAS toolchain.cmake)
+
+foreach(dir docker)
+  install(DIRECTORY ${dir}/
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
+endforeach(dir)
