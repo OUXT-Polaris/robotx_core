@@ -13,5 +13,6 @@
   <depend>roscpp</depend>
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
+  <build_depend>robotx_build_flags</build_depend>
   
 </package>

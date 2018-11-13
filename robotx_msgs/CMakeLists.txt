@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   jsk_recognition_msgs
   geographic_msgs
+  robotx_build_flags
 )
 
 ################################################
