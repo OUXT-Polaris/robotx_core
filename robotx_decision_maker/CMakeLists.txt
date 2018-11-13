@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   roslib
+  robotx_build_flags
 )
 
 find_package(Boost REQUIRED COMPONENTS system)

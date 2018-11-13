@@ -26,6 +26,7 @@ find_package(catkin REQUIRED COMPONENTS
   yaml_cpp_0_3
   pcl_ros
   message_filters
+  robotx_build_flags
 )
 
 catkin_package()
