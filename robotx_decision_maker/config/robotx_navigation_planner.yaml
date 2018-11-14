@@ -1,0 +1,5 @@
+current_state_topic : /robotx_state_machine_node/navigation_state_machine/current_state
+trigger_event_topic : /robotx_state_machine_node/navigation_state_machine/trigger_event
+waypoint_planner_cmd_topic : /carrot_planner_node/cmd_vel
+obstacle_avoid_cmd_topic : /obstacle_avoid_node/cmd_vel
+publish_rate : 30

@@ -19,9 +19,10 @@
   <build_depend>diagnostic_updater</build_depend>
   <build_depend>python-bloom</build_depend>
   <build_depend>fakeroot</build_depend>
+  <build_depend>robotx_decision_maker</build_depend>
   <build_depend>nmea_msgs</build_depend>
   <build_depend>robotx_build_flags</build_depend>
-
+  
   <build_export_depend>joy</build_export_depend>
   <build_export_depend>robotx_msgs</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
@@ -52,8 +53,9 @@
   <exec_depend>uvc_camera</exec_depend>
   <exec_depend>opencv_apps</exec_depend>
   <exec_depend>mqtt_bridge</exec_depend>
+  <exec_depend>robotx_decision_maker</exec_depend>
   <exec_depend>nmea_msgs</exec_depend>
-
+  
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->

@@ -1,6 +1,11 @@
 #ifndef REMOTE_OPERATED_INTERFACE_H_INCLUDED
 #define REMOTE_OPERATED_INTERFACE_H_INCLUDED
 
+// headers in this package
+#include <robotx_msgs/State.h>
+#include <robotx_msgs/Event.h>
+#include <joy_analyzer.h>
+
 // headers in ROS
 #include <ros/ros.h>
 #include <sensor_msgs/Joy.h>
@@ -8,6 +13,7 @@
 
 // headers in STL
 #include <functional>
+#include <mutex>
 
 // headers in boost
 #include <boost/asio.hpp>
@@ -42,8 +48,7 @@ class remote_operated_interface {
    *
    * @param set_action_mode_function callback function for set_action_mode
    */
-  remote_operated_interface(std::function<void(int)> set_action_mode_function,
-                            std::function<void(std_msgs::Float64MultiArray)> send_motor_command);
+  remote_operated_interface(std::function<void(std_msgs::Float64MultiArray)> send_motor_command);
   /**
    * @brief Destroy the remote operated interface object
    *
@@ -51,6 +56,10 @@ class remote_operated_interface {
   ~remote_operated_interface();
 
  private:
+  /**
+   * @brief analyzer for joystick
+   */
+  joy_analyzer analyzer_;
   /**
    * @brief ROS nodehandle
    *
@@ -62,6 +71,11 @@ class remote_operated_interface {
    */
   ros::Subscriber joy_sub_;
   /**
+   * @brief ROS Subscriber for /robotx_state_machine_node/control_state_machine/current_state
+   * (message type: robotx_msgs/State)
+   */
+  ros::Subscriber current_state_sub_;
+  /**
    * @brief parameters for remote_operated_interface class
    *
    */
@@ -70,12 +84,12 @@ class remote_operated_interface {
    * @brief callback function for set_action_mode
    *
    */
-  std::function<void(int)> set_action_mode_function_;
+  std::function<void(robotx_msgs::Event)> set_action_mode_function_;
   /**
    * @brief singal for set_action_mode function
    * @sa robotx_hardware_interface::set_action_mode
    */
-  boost::signals2::signal<void(int)> action_mode_signal_;
+  boost::signals2::signal<void(robotx_msgs::Event)> action_mode_signal_;
   /**
    * @brief callback function for sending motor command
    * @sa robotx_hardware_interface::recieve_remote_oprated_motor_command
@@ -97,6 +111,10 @@ class remote_operated_interface {
    *
    */
   sensor_msgs::Joy last_joy_cmd_;
+  void current_state_callback_(robotx_msgs::State msg);
+  ros::Publisher trigger_event_pub_;
+  robotx_msgs::State current_state_;
+  std::mutex mtx_;
 };
 
 #endif  // REMOTE_OPERATED_INTERFACE_H_INCLUDED

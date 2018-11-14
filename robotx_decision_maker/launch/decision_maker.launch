@@ -2,4 +2,11 @@
 <launch>
     <node pkg="robotx_decision_maker" type="robotx_state_machine_node" name="robotx_state_machine_node" output="screen" respawn="true">
     </node>
+
+    <node pkg="robotx_decision_maker" type="robotx_task_planner_node" name="robotx_task_planner_node" output="screen" respawn="true">
+    </node>
+
+    <node pkg="robotx_decision_maker" type="robotx_navigation_planner_node" name="robotx_navigation_planner_node" output="screen" respawn="true">
+        <rosparam file="$(find robotx_decision_maker)/config/robotx_navigation_planner.yaml" command="load"/>
+    </node>
 </launch>

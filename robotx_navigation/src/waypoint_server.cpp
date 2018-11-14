@@ -12,15 +12,22 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     nh_.param<double>(ros::this_node::getName()+"/search_angle", search_angle_, 1.57);
     waypoint_bag_file_path_ = ros::package::getPath("robotx_navigation") + "/data/" + waypoint_bag_filename;
     rosbag::Bag bag;
-    bag.open(waypoint_bag_file_path_);
-    for(rosbag::MessageInstance const m: rosbag::View(bag))
+    try
     {
-        robotx_msgs::WayPointArray::ConstPtr i = m.instantiate<robotx_msgs::WayPointArray>();
-        if(i != NULL)
+        bag.open(waypoint_bag_file_path_);
+        for(rosbag::MessageInstance const m: rosbag::View(bag))
         {
-            waypoints_ = *i;
-            break;
+            robotx_msgs::WayPointArray::ConstPtr i = m.instantiate<robotx_msgs::WayPointArray>();
+            if(i != NULL)
+            {
+                waypoints_ = *i;
+                break;
+            }
         }
+    }
+    catch(...)
+    {
+
     }
     bag.close();
     marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker",1);
