@@ -1,3 +1,6 @@
 fix_topic : /sc30_driver_node/fix
 true_course_topic : /sc30_driver_node/true_course
 twist_topic : /sc30_driver_node/twist
+world_frame : world
+world_pose_topic : /world_pose_publisher_node/world_pose
+world_odom_topic : /world_pose_publisher_node/odom
