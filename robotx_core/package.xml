@@ -20,6 +20,7 @@
   <exec_depend>wamv_description</exec_depend>
   <exec_depend>robotx_twist_controller</exec_depend>
   <exec_depend>robotx_decision_maker</exec_depend>
+  <exec_depend>robotx_build_flags</exec_depend>
   
   <export>
     <metapackage/>

@@ -7,18 +7,13 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   geometry_msgs
   std_msgs
- )
+  robotx_build_flags
+)
 
-###################################
-## catkin specific configuration ##
-###################################
 catkin_package(
 CATKIN_DEPENDS roscpp std_msgs geometry_msgs
 )
 
-###########
-## Build ##
-###########
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
@@ -27,9 +22,6 @@ include_directories(
 add_executable(robotx_twist_controller src/robotx_twist_controller.cpp)
 target_link_libraries(robotx_twist_controller ${catkin_LIBRARIES})
 
-#############
-## Install ##
-#############
 foreach(programs robotx_twist_controller)
   install(TARGETS ${programs}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -44,9 +36,6 @@ foreach(dir launch)
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
 endforeach(dir)
 
-#############
-## Testing ##
-#############
 if (CATKIN_ENABLE_TESTING)
   find_package(roslaunch REQUIRED)
   roslaunch_add_file_check(launch)

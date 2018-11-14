@@ -29,6 +29,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_sensor_msgs
   jsk_recognition_msgs
   nodelet
+  robotx_build_flags
 )
 
 find_package(Boost REQUIRED COMPONENTS system thread)

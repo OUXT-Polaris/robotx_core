@@ -27,7 +27,8 @@
   <build_depend>python-bloom</build_depend>
   <build_depend>fakeroot</build_depend>
   <build_depend>robotx_decision_maker</build_depend>
-
+  <build_depend>robotx_build_flags</build_depend>
+  
   <build_export_depend>joy</build_export_depend>
   <build_export_depend>robotx_msgs</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
