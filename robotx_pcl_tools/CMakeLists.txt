@@ -61,7 +61,6 @@ install(DIRECTORY include/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
-
 #############
 ## Testing ##
 #############
