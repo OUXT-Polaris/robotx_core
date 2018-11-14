@@ -89,6 +89,10 @@ add_executable(obstacle_avoid_node src/obstacle_avoid_node.cpp src/obstacle_avoi
 target_link_libraries(obstacle_avoid_node ${catkin_LIBRARIES})
 add_dependencies(obstacle_avoid_node robotx_msgs_generate_messages_cpp)
 
+add_executable(world_pose_publisher_node src/world_pose_publisher_node.cpp src/world_pose_publisher.cpp src/UTM.cpp)
+target_link_libraries(world_pose_publisher_node ${catkin_LIBRARIES})
+add_dependencies(world_pose_publisher_node robotx_msgs_generate_messages_cpp)
+
 #############
 ## Install ##
 #############
