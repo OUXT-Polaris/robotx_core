@@ -23,8 +23,9 @@ void sc30_driver::nmea_cakkback_(const nmea_msgs::Sentence::ConstPtr msg)
     int type = get_sentence_type_(msg->sentence);
     if(type == SENTENCE_GPRMC)
     {
-        boost::optional<sensor_msgs::NavSatFix> fix = parse_gprmc_sentence_(msg);
-        if(fix)
+        boost::optional<sensor_msgs::NavSatFix> fix = get_nav_sat_fix_(msg);
+        bool status = is_valid_status_(msg);
+        if(fix && status)
         {
             navsat_fix_pub_.publish(*fix);
         }
@@ -32,7 +33,32 @@ void sc30_driver::nmea_cakkback_(const nmea_msgs::Sentence::ConstPtr msg)
     return;
 }
 
-boost::optional<sensor_msgs::NavSatFix> sc30_driver::parse_gprmc_sentence_(const nmea_msgs::Sentence::ConstPtr sentence)
+bool sc30_driver::is_valid_status_(const nmea_msgs::Sentence::ConstPtr sentence)
+{
+    std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
+    if(splited_sentence[2]  == "A")
+    {
+        return true;
+    }
+    ROS_ERROR_STREAM("SC30 status is not valid.");
+    return false;
+}
+
+boost::optional<geometry_msgs::QuaternionStamped> sc30_driver::get_true_course_(const nmea_msgs::Sentence::ConstPtr sentence)
+{
+    geometry_msgs::QuaternionStamped true_course;
+    std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
+    return true_course;
+}
+
+boost::optional<geometry_msgs::TwistStamped> sc30_driver::get_twist_(const nmea_msgs::Sentence::ConstPtr sentence)
+{
+    geometry_msgs::TwistStamped twist;
+    std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
+    return twist;
+}
+
+boost::optional<sensor_msgs::NavSatFix> sc30_driver::get_nav_sat_fix_(const nmea_msgs::Sentence::ConstPtr sentence)
 {
     sensor_msgs::NavSatFix fix;
     std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
@@ -75,10 +101,6 @@ int sc30_driver::get_sentence_type_(std::string sentence)
     if(type_str == "$GPRMC")
     {
         return SENTENCE_GPRMC;
-    }
-    if(type_str == "$GPVTG")
-    {
-        return SENTENCE_GPVTG;
     }
     return SENTENCE_UNDEFINED;
 }
