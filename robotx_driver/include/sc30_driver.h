@@ -7,6 +7,7 @@
 #include <sensor_msgs/NavSatFix.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/QuaternionStamped.h>
+#include <tf/tf.h>
 
 //headers in STL
 #include <vector>

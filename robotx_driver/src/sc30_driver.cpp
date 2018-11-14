@@ -24,10 +24,20 @@ void sc30_driver::nmea_cakkback_(const nmea_msgs::Sentence::ConstPtr msg)
     if(type == SENTENCE_GPRMC)
     {
         boost::optional<sensor_msgs::NavSatFix> fix = get_nav_sat_fix_(msg);
+        boost::optional<geometry_msgs::QuaternionStamped> quat = get_true_course_(msg);
+        boost::optional<geometry_msgs::TwistStamped> twist = get_twist_(msg);
         bool status = is_valid_status_(msg);
         if(fix && status)
         {
             navsat_fix_pub_.publish(*fix);
+        }
+        if(quat && status)
+        {
+            true_course_pub_.publish(*quat);
+        }
+        if(twist && status)
+        {
+            twist_pub_.publish(*twist);
         }
     }
     return;
@@ -48,6 +58,19 @@ boost::optional<geometry_msgs::QuaternionStamped> sc30_driver::get_true_course_(
 {
     geometry_msgs::QuaternionStamped true_course;
     std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
+    std::string true_course_str = splited_sentence[8];
+    try
+    {
+        double true_course_value = std::stod(true_course_str);
+        true_course.header = sentence->header;
+        tf::Quaternion quat;
+        quat.setRPY(0,0,-1*true_course_value);
+        quaternionTFToMsg(quat, true_course.quaternion);
+    }
+    catch(...)
+    {
+        return boost::none;
+    }
     return true_course;
 }
 
@@ -55,6 +78,22 @@ boost::optional<geometry_msgs::TwistStamped> sc30_driver::get_twist_(const nmea_
 {
     geometry_msgs::TwistStamped twist;
     std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
+    std::string speed_str = splited_sentence[7];
+    try
+    {
+        double speed = std::stod(speed_str);
+        twist.header = sentence->header;
+        twist.twist.linear.x = speed;
+        twist.twist.linear.y = 0;
+        twist.twist.linear.z = 0;
+        twist.twist.angular.x = 0;
+        twist.twist.angular.y = 0;
+        twist.twist.angular.z = 0;
+    }
+    catch(...)
+    {
+        return boost::none;
+    }
     return twist;
 }
 
