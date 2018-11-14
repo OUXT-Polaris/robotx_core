@@ -29,9 +29,13 @@ private:
     ros::NodeHandle pnh_;
     boost::shared_ptr<message_filters::Synchronizer<sync_policy> > sync_ptr_;
     boost::shared_ptr<message_filters::Subscriber<sensor_msgs::NavSatFix> > fix_sub_ptr_;
+    boost::shared_ptr<message_filters::Subscriber<geometry_msgs::TwistStamped> > twist_sub_ptr_;
+    boost::shared_ptr<message_filters::Subscriber<geometry_msgs::QuaternionStamped> > true_course_sub_ptr_;
     std::string fix_topic_;
+    std::string twist_topic_;
+    std::string true_course_topic_;
     void gnss_callback_(const sensor_msgs::NavSatFixConstPtr& fix,
         const geometry_msgs::TwistStampedConstPtr& twist,
-        const geometry_msgs::QuaternionStampedConstPtr quat);
+        const geometry_msgs::QuaternionStampedConstPtr true_course);
 };
 #endif  //WORLD_POSE_PUBLISHER_H_INCLUDED
