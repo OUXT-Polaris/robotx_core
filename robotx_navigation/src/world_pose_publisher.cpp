@@ -35,6 +35,8 @@ void world_pose_publisher::gnss_callback_(const sensor_msgs::NavSatFixConstPtr& 
     world_odom.header.stamp = fix->header.stamp;
     world_pose.header.frame_id = world_frame_;
     world_odom.header.frame_id = world_frame_;
+    world_odom.child_frame_id = twist->header.frame_id;
+    world_odom.twist.twist = twist->twist;
     if(!origin_)
     {
         global_pose init_pose;
