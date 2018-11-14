@@ -13,6 +13,7 @@ world_pose_publisher::world_pose_publisher(ros::NodeHandle nh,ros::NodeHandle pn
     world_odom_pub_ = nh_.advertise<nav_msgs::Odometry>(world_odom_topic_,10);
     world_pose_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(world_pose_topic_,10);
     origin_ = boost::none;
+    origin_utm_ = boost::none;
     fix_sub_ptr_ = boost::make_shared<message_filters::Subscriber<sensor_msgs::NavSatFix> >(nh_,fix_topic_,1);
     twist_sub_ptr_ = boost::make_shared<message_filters::Subscriber<geometry_msgs::TwistStamped> >(nh_,twist_topic_,1);
     true_course_sub_ptr_ = boost::make_shared<message_filters::Subscriber<geometry_msgs::QuaternionStamped> >(nh_,true_course_topic_,1);
@@ -40,6 +41,8 @@ void world_pose_publisher::gnss_callback_(const sensor_msgs::NavSatFixConstPtr& 
         init_pose.fix = *fix;
         init_pose.true_course = *true_course;
         origin_ = init_pose;
+        double x,y;
+        LatLonToUTMXY(init_pose.fix.latitude,init_pose.fix.altitude,0,x,y);
     }
     else
     {

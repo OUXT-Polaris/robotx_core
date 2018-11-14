@@ -26,6 +26,12 @@ struct global_pose
     geometry_msgs::QuaternionStamped true_course;
 };
 
+struct utm_position
+{
+    double x;
+    double y;
+};
+
 typedef message_filters::sync_policies::ApproximateTime
     <sensor_msgs::NavSatFix, geometry_msgs::TwistStamped, geometry_msgs::QuaternionStamped> sync_policy;
 
@@ -47,6 +53,7 @@ private:
     tf2_ros::TransformBroadcaster broadcaster_;
     std::string world_frame_;
     boost::optional<global_pose> origin_;
+    boost::optional<utm_position> origin_utm_;
     std::string world_pose_topic_;
     ros::Publisher world_pose_pub_;
     std::string world_odom_topic_;
