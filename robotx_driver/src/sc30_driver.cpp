@@ -6,8 +6,10 @@ sc30_driver::sc30_driver(ros::NodeHandle nh, ros::NodeHandle pnh)
     pnh_ = pnh;
     pnh_.param<std::string>("twist_topic", twist_topic_, ros::this_node::getName()+"/twist");
     pnh_.param<std::string>("fix_topic", fix_topic_, ros::this_node::getName()+"/fix");
+    pnh_.param<std::string>("true_course_topic", true_course_topic_, ros::this_node::getName()+"/true_course");
     navsat_fix_pub_ = nh_.advertise<sensor_msgs::NavSatFix>(fix_topic_,10);
-    twist_pub_ = nh_.advertise<geometry_msgs::Twist>(twist_topic_,10);
+    twist_pub_ = nh_.advertise<geometry_msgs::TwistStamped>(twist_topic_,10);
+    true_course_pub_ = nh_.advertise<geometry_msgs::QuaternionStamped>(true_course_topic_,10);
     nmea_sub_ = nh_.subscribe("/nmea_sentence",10,&sc30_driver::nmea_cakkback_,this);
 }
 
@@ -35,7 +37,9 @@ boost::optional<sensor_msgs::NavSatFix> sc30_driver::parse_gprmc_sentence_(const
     sensor_msgs::NavSatFix fix;
     std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
     std::string lat_str = splited_sentence[3];
+    std::string north_or_south_str = splited_sentence[4];
     std::string lon_str = splited_sentence[5];
+    std::string east_or_west_str = splited_sentence[6];
     try
     {
         std::string lat_min_str = lat_str.substr(lat_str.length()-(size_t)7,(size_t)7);
@@ -48,6 +52,14 @@ boost::optional<sensor_msgs::NavSatFix> sc30_driver::parse_gprmc_sentence_(const
         double lon_deg = std::stod(lon_deg_str);
         fix.latitude = lat_deg + lat_min/60.0;
         fix.longitude = lon_deg + lon_min/60.0;
+        if(north_or_south_str == "S")
+        {
+            fix.latitude = fix.latitude * -1;
+        }
+        if(east_or_west_str == "W")
+        {
+            fix.longitude = fix.longitude * -1;
+        }
         fix.header = sentence->header;
     }
     catch(...)

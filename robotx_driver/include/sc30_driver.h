@@ -5,7 +5,8 @@
 #include <ros/ros.h>
 #include <nmea_msgs/Sentence.h>
 #include <sensor_msgs/NavSatFix.h>
-#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/TwistStamped.h>
+#include <geometry_msgs/QuaternionStamped.h>
 
 //headers in STL
 #include <vector>
@@ -34,8 +35,10 @@ private:
     ros::Subscriber nmea_sub_;
     ros::Publisher twist_pub_;
     ros::Publisher navsat_fix_pub_;
+    ros::Publisher true_course_pub_;
     std::string twist_topic_;
     std::string fix_topic_;
+    std::string true_course_topic_;
 };
 
 #endif  //SC30_DRIVER_H_INCLUDED
