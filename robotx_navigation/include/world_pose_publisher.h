@@ -13,6 +13,9 @@
 //headers in this package
 #include <UTM.h>
 
+//headers in Boost
+#include <boost/shared_ptr.hpp>
+
 typedef message_filters::sync_policies::ApproximateTime
     <sensor_msgs::NavSatFix, geometry_msgs::TwistStamped, geometry_msgs::QuaternionStamped> sync_policy;
 
@@ -24,6 +27,9 @@ public:
 private:
     ros::NodeHandle nh_;
     ros::NodeHandle pnh_;
+    boost::shared_ptr<message_filters::Synchronizer<sync_policy> > sync_ptr_;
+    boost::shared_ptr<message_filters::Subscriber<sensor_msgs::NavSatFix> > fix_sub_ptr_;
+    std::string fix_topic_;
     void gnss_callback_(const sensor_msgs::NavSatFixConstPtr& fix,
         const geometry_msgs::TwistStampedConstPtr& twist,
         const geometry_msgs::QuaternionStampedConstPtr quat);

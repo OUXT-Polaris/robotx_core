@@ -107,6 +107,7 @@ set(NODE_FILES
   #costmap_clear_request_sender_node 
   carrot_planner_node
   waypoint_server_node
+  world_pose_publisher_node
   #ndt_mapping_node
   )
 foreach(nodes ${NODE_FILES})

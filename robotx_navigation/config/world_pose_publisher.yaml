@@ -1,0 +1,3 @@
+fix_topic : /sc30_driver_node/fix
+true_course_topic : /sc30_driver_node/true_course
+twist_topic : /sc30_driver_node/twist
