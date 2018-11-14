@@ -86,11 +86,11 @@ endif()
 ## Install ##
 #############
 if(CUDA_FOUND)
-  install(TARGETS robotx_hardware_interface_node heartbeat_publisher_node dynamixel_driver_node #cuda_diagnostic_node
+  install(TARGETS robotx_hardware_interface_node heartbeat_publisher_node dynamixel_driver_node sc30_driver_node #cuda_diagnostic_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 else()
-  install(TARGETS robotx_hardware_interface_node heartbeat_publisher_node dynamixel_driver_node
+  install(TARGETS robotx_hardware_interface_node heartbeat_publisher_node dynamixel_driver_node sc30_driver_node
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 endif()
