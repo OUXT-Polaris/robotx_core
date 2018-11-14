@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   diagnostic_msgs
   diagnostic_updater
+  nmea_msgs
   robotx_build_flags
 )
 
@@ -59,6 +60,10 @@ add_executable(dynamixel_driver_node src/dynamixel_driver_node.cpp src/dynamixel
 add_dependencies(dynamixel_driver_node robotx_msgs_generate_messages_cpp)
 target_link_libraries(dynamixel_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
+add_executable(sc30_driver_node src/sc30_driver_node.cpp src/sc30_driver.cpp)
+add_dependencies(sc30_driver_node robotx_msgs_generate_messages_cpp)
+target_link_libraries(sc30_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
 message(STATUS "")
 message(STATUS "FoundCUDA              : ${CUDA_FOUND}")
 
@@ -82,11 +87,11 @@ endif()
 ## Install ##
 #############
 if(CUDA_FOUND)
-  install(TARGETS robotx_hardware_interface_node heartbeat_publisher_node dynamixel_driver_node #cuda_diagnostic_node
+  install(TARGETS robotx_hardware_interface_node heartbeat_publisher_node dynamixel_driver_node sc30_driver_node #cuda_diagnostic_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 else()
-  install(TARGETS robotx_hardware_interface_node heartbeat_publisher_node dynamixel_driver_node
+  install(TARGETS robotx_hardware_interface_node heartbeat_publisher_node dynamixel_driver_node sc30_driver_node
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 endif()
