@@ -7,7 +7,7 @@
 int main(int argc, char *argv[]) {
   ros::init(argc, argv, "geographic_map_server_node");
   geographic_map_server map_server;
-  map_server.run();
+  map_server.publish();
   ros::spin();
   return 0;
 }

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="geographic_map_server_node" pkg="robotx_navigation" type="geographic_map_server_node" args="" output="screen" respawn="true">
+        <rosparam command="load" file="$(find robotx_navigation)/config/geographic_map_server.yaml"/>
+    </node>
+</launch>
