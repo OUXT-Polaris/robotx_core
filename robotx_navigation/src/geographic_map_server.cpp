@@ -10,7 +10,12 @@ geographic_map_server::~geographic_map_server() {}
 
 void geographic_map_server::publish()
 {
-  map_pub_.publish(geographic_map_);
+  ros::Rate rate(1);
+  while(ros::ok())
+  {
+    map_pub_.publish(geographic_map_);
+    rate.sleep();
+  }
   return;
 }
 
