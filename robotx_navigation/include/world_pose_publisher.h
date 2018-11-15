@@ -10,6 +10,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/QuaternionStamped.h>
+#include <geometry_msgs/TransformStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <tf2_ros/transform_broadcaster.h>
 
@@ -18,19 +19,6 @@
 
 //headers in Boost
 #include <boost/shared_ptr.hpp>
-#include <boost/optional.hpp>
-
-struct global_pose
-{
-    sensor_msgs::NavSatFix fix;
-    geometry_msgs::QuaternionStamped true_course;
-};
-
-struct utm_position
-{
-    double x;
-    double y;
-};
 
 typedef message_filters::sync_policies::ApproximateTime
     <sensor_msgs::NavSatFix, geometry_msgs::TwistStamped, geometry_msgs::QuaternionStamped> sync_policy;
@@ -52,8 +40,6 @@ private:
     std::string true_course_topic_;
     tf2_ros::TransformBroadcaster broadcaster_;
     std::string world_frame_;
-    boost::optional<global_pose> origin_;
-    boost::optional<utm_position> origin_utm_;
     std::string world_pose_topic_;
     ros::Publisher world_pose_pub_;
     std::string world_odom_topic_;

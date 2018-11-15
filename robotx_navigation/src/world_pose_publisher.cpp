@@ -12,8 +12,6 @@ world_pose_publisher::world_pose_publisher(ros::NodeHandle nh,ros::NodeHandle pn
     pnh_.param<std::string>("world_odom_topic", world_odom_topic_, ros::this_node::getName()+"/odom");
     world_odom_pub_ = nh_.advertise<nav_msgs::Odometry>(world_odom_topic_,10);
     world_pose_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(world_pose_topic_,10);
-    origin_ = boost::none;
-    origin_utm_ = boost::none;
     fix_sub_ptr_ = boost::make_shared<message_filters::Subscriber<sensor_msgs::NavSatFix> >(nh_,fix_topic_,1);
     twist_sub_ptr_ = boost::make_shared<message_filters::Subscriber<geometry_msgs::TwistStamped> >(nh_,twist_topic_,1);
     true_course_sub_ptr_ = boost::make_shared<message_filters::Subscriber<geometry_msgs::QuaternionStamped> >(nh_,true_course_topic_,1);
@@ -37,18 +35,17 @@ void world_pose_publisher::gnss_callback_(const sensor_msgs::NavSatFixConstPtr& 
     world_odom.header.frame_id = world_frame_;
     world_odom.child_frame_id = twist->header.frame_id;
     world_odom.twist.twist = twist->twist;
-    if(!origin_)
-    {
-        global_pose init_pose;
-        init_pose.fix = *fix;
-        init_pose.true_course = *true_course;
-        origin_ = init_pose;
-        double x,y;
-        LatLonToUTMXY(init_pose.fix.latitude,init_pose.fix.altitude,0,x,y);
-    }
-    else
-    {
-    }
+    geometry_msgs::TransformStamped transform_stamped;
+    transform_stamped.header.stamp = fix->header.stamp;
+    transform_stamped.header.frame_id = "world";
+    transform_stamped.child_frame_id = fix->header.frame_id;
+    double x,y;
+    LatLonToUTMXY(fix->latitude,fix->altitude,0,x,y);
+    transform_stamped.transform.translation.x = x;
+    transform_stamped.transform.translation.y = y;
+    transform_stamped.transform.translation.z = 0;
+    transform_stamped.transform.rotation = true_course->quaternion;
+    broadcaster_.sendTransform(transform_stamped);
     world_odom.pose.pose = world_pose.pose;
     world_pose_pub_.publish(world_pose);
     world_odom_pub_.publish(world_odom);
