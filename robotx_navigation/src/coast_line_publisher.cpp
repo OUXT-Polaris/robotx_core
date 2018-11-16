@@ -7,7 +7,8 @@ coast_line_publisher::coast_line_publisher(ros::NodeHandle nh, ros::NodeHandle p
     pnh_.param<double>("range", range_, 0.0);
     pnh_.param<std::string>("fix_topic", fix_topic_, ros::this_node::getName()+"/fix");
     pnh_.param<std::string>("geographic_map_topic", geographic_map_topic_, ros::this_node::getName()+"/geographic_map");
-    nh_.advertise<robotx_msgs::CoastLineArray>("/coast_lines",10);
+    coast_line_pub_ = pnh_.advertise<robotx_msgs::CoastLineArray>("coast_lines",10);
+    marker_pub_ = pnh_.advertise<visualization_msgs::Marker>("marker",10);
     utm_area_buf_ = boost::circular_buffer<int>(2);
     fix_sub_ = nh_.subscribe(fix_topic_,10,&coast_line_publisher::fix_callback_,this);
     geographic_map_sub_ = nh_.subscribe(geographic_map_topic_,10,&coast_line_publisher::map_callback_,this);
@@ -47,16 +48,21 @@ void coast_line_publisher::fix_callback_(const sensor_msgs::NavSatFixConstPtr ms
     utm_area_buf_.push_back(LatLonToUTMXY(msg->latitude,msg->longitude,0,x,y));
     if(utm_area_buf_.size() == 1)
     {
-        robotx_msgs::CoastLineArray coast_lines = get_coast_lines_();
-        coast_line_pub_.publish(coast_lines);
-        return;
+        current_coast_lines_ = get_coast_lines_();
     }
     else if(utm_area_buf_[1] != utm_area_buf_[0])
     {
-        robotx_msgs::CoastLineArray coast_lines = get_coast_lines_();
-        coast_line_pub_.publish(coast_lines);
-        return;
+        current_coast_lines_ = get_coast_lines_();
     }
+    coast_line_pub_.publish(current_coast_lines_);
+    return;
+}
+
+void coast_line_publisher::publish_marker_()
+{
+    visualization_msgs::Marker marker;
+    marker.type = marker.LINE_LIST;
+    //marker.header.frame_id = 
     return;
 }
 
