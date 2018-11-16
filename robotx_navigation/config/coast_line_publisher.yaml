@@ -1,0 +1,3 @@
+range : 300
+fix_topic : /sc30_driver_node/fix
+geographic_map_topic : /geographic_map
