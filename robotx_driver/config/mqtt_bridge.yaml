@@ -55,7 +55,7 @@ bridge:
     topic_from: /joy
     topic_to: /joy
   # trigger event
-  - factory : mqtt_bridge.bridge:RosToMqttBridge
+  - factory : mqtt_bridge.bridge:MqttToRosBridge
     msg_type : robotx_msgs.msg:Event
     topic_from : /robotx_state_machine_node/control_state_machine/trigger_event
     topic_to: /robotx_state_machine_node/control_state_machine/trigger_event
