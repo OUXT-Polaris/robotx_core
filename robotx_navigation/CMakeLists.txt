@@ -89,6 +89,15 @@ add_executable(obstacle_avoid_node src/obstacle_avoid_node.cpp src/obstacle_avoi
 target_link_libraries(obstacle_avoid_node ${catkin_LIBRARIES})
 add_dependencies(obstacle_avoid_node robotx_msgs_generate_messages_cpp)
 
+add_executable(world_pose_publisher_node src/world_pose_publisher_node.cpp src/world_pose_publisher.cpp src/UTM.cpp)
+target_link_libraries(world_pose_publisher_node ${catkin_LIBRARIES})
+add_dependencies(world_pose_publisher_node robotx_msgs_generate_messages_cpp)
+
+add_executable(coast_line_publisher_node src/coast_line_publisher_node.cpp src/coast_line_publisher.cpp src/UTM.cpp)
+target_link_libraries(coast_line_publisher_node ${catkin_LIBRARIES})
+add_dependencies(coast_line_publisher_node robotx_msgs_generate_messages_cpp)
+
+
 #############
 ## Install ##
 #############
@@ -103,6 +112,8 @@ set(NODE_FILES
   #costmap_clear_request_sender_node 
   carrot_planner_node
   waypoint_server_node
+  world_pose_publisher_node
+  coast_line_publisher_node
   #ndt_mapping_node
   )
 foreach(nodes ${NODE_FILES})
