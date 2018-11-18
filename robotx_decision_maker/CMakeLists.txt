@@ -31,7 +31,15 @@ add_executable(robotx_state_machine_node src/robotx_state_machine_node.cpp
 target_link_libraries(robotx_state_machine_node ${catkin_LIBRARIES})
 add_dependencies(robotx_state_machine_node robotx_msgs_generate_messages_cpp)
 
-set(NODE_FILES robotx_state_machine_node)
+add_executable(robotx_task_planner_node src/robotx_task_planner_node.cpp src/robotx_task_planner.cpp)
+target_link_libraries(robotx_task_planner_node ${catkin_LIBRARIES})
+add_dependencies(robotx_task_planner_node robotx_msgs_generate_messages_cpp)
+
+add_executable(robotx_navigation_planner_node src/robotx_navigation_planner_node.cpp src/robotx_navigation_planner.cpp)
+target_link_libraries(robotx_navigation_planner_node ${catkin_LIBRARIES})
+add_dependencies(robotx_navigation_planner_node robotx_msgs_generate_messages_cpp)
+
+set(NODE_FILES robotx_state_machine_node robotx_task_planner_node robotx_navigation_planner_node)
 foreach(nodes ${NODE_FILES})
   install(TARGETS ${nodes}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -41,7 +49,7 @@ install(DIRECTORY include/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
-foreach(dir launch data)
+foreach(dir launch data config)
   install(DIRECTORY ${dir}/
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
 endforeach(dir)

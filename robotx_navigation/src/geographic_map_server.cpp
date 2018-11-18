@@ -2,19 +2,17 @@
 #include <geographic_map_server.h>
 
 geographic_map_server::geographic_map_server() : params_() {
-  map_pub_ = nh_.advertise<robotx_msgs::GeographicMap>("/geographic_map", 1);
+  map_pub_ = nh_.advertise<robotx_msgs::GeographicMap>("/geographic_map", 1, true);
   geographic_map_ = generate_geographic_map_();
 }
 
 geographic_map_server::~geographic_map_server() {}
 
-void geographic_map_server::run() {
-  ros::Rate rate(params_.frequency);
-  while (ros::ok) {
-    geographic_map_.header.stamp = ros::Time::now();
-    map_pub_.publish(geographic_map_);
-    rate.sleep();
-  }
+void geographic_map_server::publish()
+{
+  geographic_map_.header.stamp = ros::Time::now();
+  map_pub_.publish(geographic_map_);
+  return;
 }
 
 robotx_msgs::GeographicMap geographic_map_server::generate_geographic_map_() {

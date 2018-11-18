@@ -89,6 +89,8 @@ void state_machine::add_transition_(std::string from_state_name, std::string to_
         bool inserted = false;
         boost::tie(transition, inserted) = boost::add_edge(from_state, to_state, state_graph_);
         state_graph_[transition].trigger_events.push_back(trigger_event_name);
+        state_graph_[transition].from_state = from_state_name;
+        state_graph_[transition].to_state = to_state_name;
     }
     else
     {
@@ -114,6 +116,8 @@ void state_machine::add_transition_(std::string from_state_name, std::string to_
         bool inserted = false;
         boost::tie(transition, inserted) = boost::add_edge(from_state, to_state, state_graph_);
         state_graph_[transition].trigger_events.push_back(trigger_event_name);
+        state_graph_[transition].from_state = from_state_name;
+        state_graph_[transition].to_state = to_state_name;
     }
     return;
 }
@@ -147,17 +151,51 @@ std::vector<std::string> state_machine::get_possibe_transitions()
 bool state_machine::try_transition(std::string trigger_event_name)
 {
     std::lock_guard<std::mutex> lock(mtx_);
+    out_edge_iterator_t ei;
+    out_edge_iterator_t ei_end;
+    for (boost::tie(ei, ei_end) = out_edges(current_state_, state_graph_); ei != ei_end; ++ei)
+    {
+        for(int i=0; i<state_graph_[*ei].trigger_events.size(); i++)
+        {
+            if(trigger_event_name == state_graph_[*ei].trigger_events[i])
+            {
+                auto vertex_range = boost::vertices(state_graph_);
+                for (auto first = vertex_range.first, last = vertex_range.second; first != last; ++first)
+                {
+                    vertex_t v = *first;
+                    if(state_graph_[v].name == state_graph_[*ei].to_state)
+                    {
+                        current_state_ = v;
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+    }
+    return false;
+}
+
+state_info_t state_machine::get_state_info()
+{
+    std::lock_guard<std::mutex> lock(mtx_);
+    std::string current_state = state_graph_[current_state_].name;
+    std::vector<std::string> possibe_transitions;
+    out_edge_iterator_t ei;
+    out_edge_iterator_t ei_end;
+    for (boost::tie(ei, ei_end) = out_edges(current_state_, state_graph_); ei != ei_end; ++ei)
+    {
+        std::copy(state_graph_[*ei].trigger_events.begin(), state_graph_[*ei].trigger_events.end(), std::back_inserter(possibe_transitions));
+    }
+    std::vector<std::string> possibe_transition_states;
     adjacency_iterator_t vi;
     adjacency_iterator_t vi_end;
     for (boost::tie(vi, vi_end) = adjacent_vertices(current_state_, state_graph_); vi != vi_end; ++vi)
     {
-        if(state_graph_[*vi].name == trigger_event_name)
-        {
-            current_state_ = *vi;
-            return true;
-        }
+        possibe_transition_states.push_back(state_graph_[*vi].name);
     }
-    return false;
+    state_info_t ret(current_state, possibe_transition_states, possibe_transitions);
+    return ret;
 }
 
 std::string state_machine::get_current_state()

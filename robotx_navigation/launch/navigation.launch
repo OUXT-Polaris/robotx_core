@@ -8,10 +8,6 @@
   <node name="robotx_localization_node" pkg="robotx_navigation" type="robotx_localization_node" args="" output="screen" respawn="true">
     <rosparam command="load" file="$(find robotx_navigation)/config/robotx_localization.yaml"/>
   </node>
-  
-  <node name="geographic_map_server_node" pkg="robotx_navigation" type="geographic_map_server_node" args="" output="screen" respawn="true">
-    <rosparam command="load" file="$(find robotx_navigation)/config/geographic_map_server.yaml"/>
-  </node>
 
   <node name="carrot_planner_node" pkg="robotx_navigation" type="carrot_planner_node" args="" output="screen" respawn="true">
     <rosparam command="load" file="$(find robotx_navigation)/config/carrot_planner.yaml"/>

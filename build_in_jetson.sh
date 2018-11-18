@@ -5,4 +5,4 @@ case $ans in
     rosdep install -i -r -y --from-paths . --rosdistro kinetic
 esac
 cd /home/nvidia/catkin_ws/
-catkin_make --pkg robotx_msgs robotx_navigation robotx_recognition wamv_description
+catkin_make --pkg robotx_msgs robotx_navigation robotx_recognition robotx_pcl_tools wamv_description
