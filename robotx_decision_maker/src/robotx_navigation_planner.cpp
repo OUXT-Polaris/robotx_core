@@ -40,7 +40,7 @@ void robotx_navigation_planner::publish_cmd_vel_()
             }
             else
             {
-                cmd_vel_pub_.publish(*waypoint_planner_cmd_);                
+                cmd_vel_pub_.publish(*waypoint_planner_cmd_);
             }
         //}
         mtx_.unlock();

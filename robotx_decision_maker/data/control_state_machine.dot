@@ -1,0 +1,10 @@
+digraph G {
+0[label=remote_operated];
+1[label=autonomous];
+2[label=emergency];
+0->1 ;
+0->2 ;
+1->0 ;
+1->2 ;
+2->0 ;
+}
