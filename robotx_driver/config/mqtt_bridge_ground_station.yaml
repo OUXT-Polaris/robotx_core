@@ -9,8 +9,8 @@ mqtt:
 selializer: msgpack:dumps
 deselializer: msgpack:loads
 bridge:
-  # diagnostic_agg
+  # joy
   - factory: mqtt_bridge.bridge:RosToMqttBridge
-    msg_type: diagnostic_msgs.msg:DiagnosticArray
-    topic_from: /diagnostics_agg
-    topic_to: diagnostics_agg
+    msg_type: sensor_msgs.msg:Joy
+    topic_from: /joy
+    topic_to: joy

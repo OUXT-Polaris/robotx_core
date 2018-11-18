@@ -9,22 +9,47 @@ mqtt:
 selializer: msgpack:dumps
 deselializer: msgpack:loads
 bridge:
+  ## Topics to MQTT ##
   # diagnostic_agg
   - factory: mqtt_bridge.bridge:RosToMqttBridge
     msg_type: diagnostic_msgs.msg:DiagnosticArray
     topic_from: /diagnostics_agg
-    topic_to: diagnostics_agg
+    topic_to: /diagnostics_agg
   # heartbeat
   - factory: mqtt_bridge.bridge:RosToMqttBridge
     msg_type: robotx_msgs.msg:Heartbeat
     topic_from: /heartbeat
-    topic_to: heartbeat
+    topic_to: /heartbeat
   # object recognition
   - factory: mqtt_bridge.bridge:RosToMqttBridge
     msg_type: robotx_msgs.msg:ObjectRegionOfInterestArray
     topic_from: /cnn_prediction_node/object_roi
-    topic_to: objects
+    topic_to: /objects
   # waypoint
   - factory : mqtt_bridge.bridge:RosToMqttBridge
     msg_type : geometry_msgs.msg:PoseStamped
     topic_from : /waypoint_server_node/next_waypoint
+    topic_to: /waypoint_server_node/next_waypoint
+  # states
+  - factory : mqtt_bridge.bridge:RosToMqttBridge
+    msg_type : robotx_msgs.msg:State
+    topic_from : /robotx_state_machine_node/control_state_machine/current_state
+    topic_to: /robotx_state_machine_node/control_state_machine/current_state
+  - factory : mqtt_bridge.bridge:RosToMqttBridge
+    msg_type : robotx_msgs.msg:State
+    topic_from : /robotx_state_machine_node/mission_state_machine/current_state
+    topic_to: /robotx_state_machine_node/mission_state_machine/current_state
+  - factory : mqtt_bridge.bridge:RosToMqttBridge
+    msg_type : robotx_msgs.msg:State
+    topic_from : /robotx_state_machine_node/navigation_state_machine/current_state
+    topic_to: /robotx_state_machine_node/navigation_state_machine/current_state
+  ## Topics from MQTT ##
+  # joy
+  - factory: mqtt_bridge.bridge:MqttToRosBridge
+    msg_type: sensor_msgs.msg:Joy
+    topic_from: /joy
+    topic_to: /joy
+  - factory : mqtt_bridge.bridge:RosToMqttBridge
+    msg_type : robotx_msgs.msg:Event
+    topic_from : /robotx_state_machine_node/control_state_machine/trigger_event
+    topic_to: /robotx_state_machine_node/control_state_machine/trigger_event
