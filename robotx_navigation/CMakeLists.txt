@@ -51,9 +51,9 @@ add_dependencies(geographic_map_server_node robotx_msgs_generate_messages_cpp)
 #add_document(geographic_map_server_node)
 #clang_format(geographic_map_server_node)
 
-add_executable(robotx_localization_node src/robotx_localization_node.cpp src/robotx_localization.cpp src/particle_filter.cpp)
-target_link_libraries(robotx_localization_node ${catkin_LIBRARIES})
-add_dependencies(robotx_localization_node robotx_msgs_generate_messages_cpp)
+#add_executable(robotx_localization_node src/robotx_localization_node.cpp src/robotx_localization.cpp src/particle_filter.cpp)
+#target_link_libraries(robotx_localization_node ${catkin_LIBRARIES})
+#add_dependencies(robotx_localization_node robotx_msgs_generate_messages_cpp)
 #add_document(robotx_localization_node)
 #clang_format(robotx_localization_node)
 
@@ -102,14 +102,14 @@ add_dependencies(coast_line_publisher_node robotx_msgs_generate_messages_cpp)
 ## Install ##
 #############
 # CPP codes
-set(NODE_FILES 
+set(NODE_FILES
   obstacle_avoid_node
   waypoint_logger_node
-  #twist_from_fix_velocity_node 
-  geographic_map_server_node 
-  obstacle_map_server_node 
-  robotx_localization_node 
-  #costmap_clear_request_sender_node 
+  #twist_from_fix_velocity_node
+  geographic_map_server_node
+  obstacle_map_server_node
+  #robotx_localization_node
+  #costmap_clear_request_sender_node
   carrot_planner_node
   waypoint_server_node
   world_pose_publisher_node
