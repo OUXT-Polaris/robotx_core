@@ -1,0 +1,16 @@
+mqtt:
+  client:
+    protocol: 4      # MQTTv311
+  connection:
+    host: localhost # set MQTT Server IP or URL
+    port: 1883
+    keepalive: 60
+  private_path: device/001
+selializer: msgpack:dumps
+deselializer: msgpack:loads
+bridge:
+  # diagnostic_agg
+  - factory: mqtt_bridge.bridge:RosToMqttBridge
+    msg_type: diagnostic_msgs.msg:DiagnosticArray
+    topic_from: /diagnostics_agg
+    topic_to: diagnostics_agg
