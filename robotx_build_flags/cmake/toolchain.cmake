@@ -1,0 +1,6 @@
+option(CROSS "Enable Cross Compile for Jetson TX2" OFF)
+if(CROSS)
+    set(CMAKE_CXX_COMPILER aarch64-linux-gnu-g++)
+else()
+    set(CMAKE_CXX_COMPILER g++)
+endif()

@@ -21,11 +21,12 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   jsk_recognition_msgs
   jsk_rviz_plugins
-  dwa_local_planner
-  global_planner
+  #dwa_local_planner
+  #global_planner
   yaml_cpp_0_3
   pcl_ros
   message_filters
+  robotx_build_flags
 )
 
 catkin_package()
@@ -38,9 +39,9 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(twist_from_fix_velocity_node src/twist_from_fix_velocity_node.cpp src/twist_calculator.cpp)
-target_link_libraries(twist_from_fix_velocity_node ${catkin_LIBRARIES})
-add_dependencies(twist_from_fix_velocity_node robotx_msgs_generate_messages_cpp)
+#add_executable(twist_from_fix_velocity_node src/twist_from_fix_velocity_node.cpp src/twist_calculator.cpp)
+#target_link_libraries(twist_from_fix_velocity_node ${catkin_LIBRARIES})
+#add_dependencies(twist_from_fix_velocity_node robotx_msgs_generate_messages_cpp)
 #add_document(twist_from_fix_velocity_node)
 #clang_format(twist_from_fix_velocity_node)
 
@@ -62,13 +63,13 @@ add_dependencies(obstacle_map_server_node robotx_msgs_generate_messages_cpp)
 #add_document(obstacle_map_server_node)
 #clang_format(obstacle_map_server_node)
 
-add_executable(costmap_clear_request_sender_node src/costmap_clear_request_sender_node.cpp src/costmap_clear_request_sender.cpp)
-target_link_libraries(costmap_clear_request_sender_node ${catkin_LIBRARIES})
+#add_executable(costmap_clear_request_sender_node src/costmap_clear_request_sender_node.cpp src/costmap_clear_request_sender.cpp)
+#target_link_libraries(costmap_clear_request_sender_node ${catkin_LIBRARIES})
 #add_document(costmap_clear_request_sender_node)
 #clang_format(costmap_clear_request_sender_node)
 
-add_executable(ndt_mapping_node src/ndt_mapping_node.cpp src/ndt_mapping.cpp)
-target_link_libraries(ndt_mapping_node ${catkin_LIBRARIES})
+#add_executable(ndt_mapping_node src/ndt_mapping_node.cpp src/ndt_mapping.cpp)
+#target_link_libraries(ndt_mapping_node ${catkin_LIBRARIES})
 #add_document(ndt_mapping_node)
 #clang_format(ndt_mapping_node)
 
@@ -88,6 +89,10 @@ add_executable(obstacle_avoid_node src/obstacle_avoid_node.cpp src/obstacle_avoi
 target_link_libraries(obstacle_avoid_node ${catkin_LIBRARIES})
 add_dependencies(obstacle_avoid_node robotx_msgs_generate_messages_cpp)
 
+add_executable(world_pose_publisher_node src/world_pose_publisher_node.cpp src/world_pose_publisher.cpp src/UTM.cpp)
+target_link_libraries(world_pose_publisher_node ${catkin_LIBRARIES})
+add_dependencies(world_pose_publisher_node robotx_msgs_generate_messages_cpp)
+
 #############
 ## Install ##
 #############
@@ -95,14 +100,16 @@ add_dependencies(obstacle_avoid_node robotx_msgs_generate_messages_cpp)
 set(NODE_FILES 
   obstacle_avoid_node
   waypoint_logger_node
-  twist_from_fix_velocity_node 
+  #twist_from_fix_velocity_node 
   geographic_map_server_node 
   obstacle_map_server_node 
   robotx_localization_node 
-  costmap_clear_request_sender_node 
+  #costmap_clear_request_sender_node 
   carrot_planner_node
   waypoint_server_node
-  ndt_mapping_node)
+  world_pose_publisher_node
+  #ndt_mapping_node
+  )
 foreach(nodes ${NODE_FILES})
   install(TARGETS ${nodes}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
