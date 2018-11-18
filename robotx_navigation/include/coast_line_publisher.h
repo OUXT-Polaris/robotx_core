@@ -52,7 +52,9 @@ private:
     void fix_callback_(const sensor_msgs::NavSatFixConstPtr msg);
     void map_callback_(const robotx_msgs::GeographicMapConstPtr msg);
     point_with_area convert_geopoint_(robotx_msgs::GeographicPoint geopoint);
+    void generate_marker_();
     void publish_marker_();
+    visualization_msgs::Marker marker_;
 };
 
 #endif  //COAST_LINE_PUBLISHER_H_INCLUDED

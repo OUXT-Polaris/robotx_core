@@ -46,23 +46,51 @@ void coast_line_publisher::fix_callback_(const sensor_msgs::NavSatFixConstPtr ms
     std::lock_guard<std::mutex> lock(mtx_);
     double x,y;
     utm_area_buf_.push_back(LatLonToUTMXY(msg->latitude,msg->longitude,0,x,y));
+    /*
     if(utm_area_buf_.size() == 1)
     {
         current_coast_lines_ = get_coast_lines_();
+        generate_marker_();
     }
     else if(utm_area_buf_[1] != utm_area_buf_[0])
     {
         current_coast_lines_ = get_coast_lines_();
+        generate_marker_();
     }
+    */
+    current_coast_lines_ = get_coast_lines_();
+    generate_marker_();
     coast_line_pub_.publish(current_coast_lines_);
+    publish_marker_();
     return;
 }
 
 void coast_line_publisher::publish_marker_()
 {
-    visualization_msgs::Marker marker;
-    marker.type = marker.LINE_LIST;
-    //marker.header.frame_id = 
+    marker_.header.stamp = ros::Time::now();
+    marker_pub_.publish(marker_);
+    return;
+}
+
+void coast_line_publisher::generate_marker_()
+{
+    marker_.type = marker_.LINE_LIST;
+    marker_.header.frame_id = world_frame_;
+    marker_.action = marker_.ADD;
+    marker_.ns = "coast_line";
+    marker_.points.clear();
+    marker_.colors.clear();
+    for(auto coast_line_itr = current_coast_lines_.coast_lines.begin(); coast_line_itr != current_coast_lines_.coast_lines.end(); coast_line_itr++)
+    {
+        marker_.points.push_back(coast_line_itr->start_point);
+        marker_.points.push_back(coast_line_itr->end_point);
+        std_msgs::ColorRGBA color;
+        color.r = 0;
+        color.g = 1;
+        color.b = 0;
+        color.a = 1;
+        marker_.colors.push_back(color);
+    }
     return;
 }
 
