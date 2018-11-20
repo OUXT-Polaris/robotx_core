@@ -10,52 +10,53 @@ selializer: msgpack:dumps
 deselializer: msgpack:loads
 bridge:
   ## Topics to MQTT ##
-  # diagnostic_agg
+  # joy
   - factory: mqtt_bridge.bridge:RosToMqttBridge
+    msg_type: sensor_msgs.msg:Joy
+    topic_from: /joy
+    topic_to: joy
+  # trigger event
+  - factory : mqtt_bridge.bridge:RosToMqttBridge
+    msg_type : robotx_msgs.msg:Event
+    topic_from : /robotx_state_machine_node/control_state_machine/trigger_event
+    topic_to: /robotx_state_machine_node/control_state_machine/trigger_event
+  ## Topics from MQTT ##
+  ## Topics to MQTT ##
+  # diagnostic_agg
+  - factory: mqtt_bridge.bridge:MqttToRosBridge
     msg_type: diagnostic_msgs.msg:DiagnosticArray
     topic_from: /diagnostics_agg
     topic_to: /diagnostics_agg
   # heartbeat
-  - factory: mqtt_bridge.bridge:RosToMqttBridge
+  - factory: mqtt_bridge.bridge:MqttToRosBridge
     msg_type: robotx_msgs.msg:Heartbeat
     topic_from: /heartbeat
     topic_to: /heartbeat
   # object recognition
-  - factory: mqtt_bridge.bridge:RosToMqttBridge
+  - factory: mqtt_bridge.bridge:MqttToRosBridge
     msg_type: robotx_msgs.msg:ObjectRegionOfInterestArray
     topic_from: /cnn_prediction_node/object_roi
     topic_to: /objects
   # waypoint
-  - factory : mqtt_bridge.bridge:RosToMqttBridge
+  - factory : mqtt_bridge.bridge:MqttToRosBridge
     msg_type : geometry_msgs.msg:PoseStamped
     topic_from : /waypoint_server_node/next_waypoint
     topic_to: /waypoint_server_node/next_waypoint
   # current_pose
-  - factory : mqtt_bridge.bridge:RosToMqttBridge
+  - factory : mqtt_bridge.bridge:MqttToRosBridge
     msg_type : geometry_msgs.msg:PoseStamped
     topic_from : /robot_pose
     topic_to: /robot_pose
   # states
-  - factory : mqtt_bridge.bridge:RosToMqttBridge
+  - factory : mqtt_bridge.bridge:MqttToRosBridge
     msg_type : robotx_msgs.msg:State
     topic_from : /robotx_state_machine_node/control_state_machine/current_state
     topic_to: /robotx_state_machine_node/control_state_machine/current_state
-  - factory : mqtt_bridge.bridge:RosToMqttBridge
+  - factory : mqtt_bridge.bridge:MqttToRosBridge
     msg_type : robotx_msgs.msg:State
     topic_from : /robotx_state_machine_node/mission_state_machine/current_state
     topic_to: /robotx_state_machine_node/mission_state_machine/current_state
-  - factory : mqtt_bridge.bridge:RosToMqttBridge
+  - factory : mqtt_bridge.bridge:MqttToRosBridge
     msg_type : robotx_msgs.msg:State
     topic_from : /robotx_state_machine_node/navigation_state_machine/current_state
     topic_to: /robotx_state_machine_node/navigation_state_machine/current_state
-  ## Topics from MQTT ##
-  # joy
-  - factory: mqtt_bridge.bridge:MqttToRosBridge
-    msg_type: sensor_msgs.msg:Joy
-    topic_from: /joy
-    topic_to: /joy
-  # trigger event
-  - factory : mqtt_bridge.bridge:MqttToRosBridge
-    msg_type : robotx_msgs.msg:Event
-    topic_from : /robotx_state_machine_node/control_state_machine/trigger_event
-    topic_to: /robotx_state_machine_node/control_state_machine/trigger_event
