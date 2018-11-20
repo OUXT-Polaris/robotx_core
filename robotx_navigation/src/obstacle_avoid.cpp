@@ -122,7 +122,7 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
         else
         {
             twist_cmd.linear.x = 0;
-            twist_cmd.angular.z = -0.3;                
+            twist_cmd.angular.z = -0.3;
         }
     }
     twist_cmd_pub_.publish(twist_cmd);
