@@ -20,6 +20,7 @@ struct state_lattice_parameters
     double max_linear_velocity;
     double min_linear_velocity;
     double max_angular_velocity;
+    double step_duration_;
     int num_predictions;
     int num_samples_angular;
     int num_samples_linear;
@@ -33,6 +34,8 @@ public:
     boost::optional<std::pair<nav_msgs::Path,geometry_msgs::Twist> > plan(robotx_msgs::ObstacleMap map, geometry_msgs::Twist current_twist);
 private:
     state_lattice_parameters params_;
+    nav_msgs::Path generate_path(geometry_msgs::Twist current_twist, double linear_acceleration, double angular_acceleration);
+    double evaluate_function_(robotx_msgs::ObstacleMap map,nav_msgs::Path path);
 };
 
 #endif  //STATE_LATTICE_PLANNER
