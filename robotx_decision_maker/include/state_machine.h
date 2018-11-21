@@ -15,7 +15,7 @@
 
 struct transition_property
 {
-    std::vector<std::string> trigger_events;
+    std::string trigger_event;
     std::string from_state;
     std::string to_state;
 };
@@ -36,10 +36,10 @@ struct state_info_t
     const std::vector<std::string> possibe_transition_states;
     const std::vector<std::string> possibe_transitions;
     const std::string current_state;
-    state_info_t(std::string current_state_, 
+    state_info_t(std::string current_state_,
         std::vector<std::string> possibe_transition_states_,
         std::vector<std::string> possibe_transitions_)
-            : current_state(current_state_), 
+            : current_state(current_state_),
                 possibe_transition_states(possibe_transition_states_),
                 possibe_transitions(possibe_transitions_)
             {
