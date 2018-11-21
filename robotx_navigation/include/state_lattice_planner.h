@@ -3,7 +3,9 @@
 
 //headers in ROS
 #include <nav_msgs/Path.h>
-#include <geometry_msgs/Twist.h>
+#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/Pose2D.h>
+#include <tf2_ros/transform_listener.h>
 
 //headers in this message
 #include <robotx_msgs/ObstacleMap.h>
@@ -31,11 +33,11 @@ class state_lattice_planner
 public:
     state_lattice_planner(state_lattice_parameters params);
     ~state_lattice_planner();
-    boost::optional<std::pair<nav_msgs::Path,geometry_msgs::Twist> > plan(robotx_msgs::ObstacleMap map, geometry_msgs::Twist current_twist);
+    boost::optional<std::pair<nav_msgs::Path,geometry_msgs::Twist> > plan(robotx_msgs::ObstacleMap map, nav_msgs::Odometry odom);
 private:
     state_lattice_parameters params_;
-    nav_msgs::Path generate_path(geometry_msgs::Twist current_twist, double linear_acceleration, double angular_acceleration);
-    double evaluate_function_(robotx_msgs::ObstacleMap map,nav_msgs::Path path);
+    std::vector<geometry_msgs::Pose2D> generate_path(nav_msgs::Odometry odom, double linear_acceleration, double angular_acceleration);
+    double evaluate_function_(robotx_msgs::ObstacleMap map, std::vector<geometry_msgs::Pose2D> path);
 };
 
 #endif  //STATE_LATTICE_PLANNER

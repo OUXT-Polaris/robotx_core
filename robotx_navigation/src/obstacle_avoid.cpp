@@ -71,7 +71,7 @@ bool obstacle_avoid::obstacle_found_(const nav_msgs::Odometry::ConstPtr msg)
     tf2::doTransform(*target_pose_, transformed_target_pose_, target_pose_transform_stamped_);
     if(odom_recieved_ && map_recieved_ && twist_cmd_recieved_)
     {
-        for (int i = 0; i < map_ptr_->info.height; i++) 
+        for (int i = 0; i < map_ptr_->info.height; i++)
         {
             for (int m = 0; m < map_ptr_->info.width; m++)
             {
