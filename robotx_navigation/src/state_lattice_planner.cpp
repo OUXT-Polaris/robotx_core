@@ -29,18 +29,17 @@ std::vector<geometry_msgs::Pose2D> state_lattice_planner::generate_path(nav_msgs
     geometry_msgs::Twist twist;
     twist = odom.twist.twist;
     std::vector<geometry_msgs::Pose2D> path;
-    double current_x = 0.0;
-    double current_y = 0.0;
-    double current_yaw = 0.0;
     geometry_msgs::Pose2D current_pose;
     current_pose.x = 0;
     current_pose.y = 0;
     current_pose.theta = 0;
+    path.push_back(current_pose);
     for(int i=0; i<params_.num_predictions; i++)
     {
-        current_yaw = current_yaw + twist.angular.z * params_.step_duration_;
-        current_x = current_x + twist.linear.x * params_.step_duration_ * std::cos(current_yaw);
-        current_y = current_y + twist.linear.x * params_.step_duration_ * std::sin(current_yaw);
+        current_pose.theta = current_pose.theta + twist.angular.z * params_.step_duration_;
+        current_pose.x = current_pose.x + twist.linear.x * params_.step_duration_ * std::cos(current_pose.theta);
+        current_pose.y = current_pose.y + twist.linear.x * params_.step_duration_ * std::sin(current_pose.theta);
+        path.push_back(current_pose);
     }
     return path;
 }

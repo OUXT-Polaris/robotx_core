@@ -4,7 +4,6 @@
 //headers in ROS
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
-#include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <tf2_ros/transform_listener.h>
@@ -21,7 +20,7 @@
 //headers in robotx_packages
 #include <robotx_msgs/State.h>
 #include <robotx_msgs/Event.h>
-
+#include <robotx_msgs/ObstacleMap.h>
 class obstacle_avoid
 {
 public:
@@ -41,11 +40,11 @@ private:
     void current_state_callback_(const robotx_msgs::State::ConstPtr msg);
     void twist_cmd_callback_(const geometry_msgs::Twist::ConstPtr msg);
     void odom_callback_(const nav_msgs::Odometry::ConstPtr msg);
-    void obstacle_map_callback_(const nav_msgs::OccupancyGrid::Ptr msg);
+    void obstacle_map_callback_(const robotx_msgs::ObstacleMap::ConstPtr msg);
     void target_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg);
-    bool obstacle_found_(const nav_msgs::Odometry::ConstPtr msg);
+    bool obstacle_found_();
     geometry_msgs::PoseStamped transformed_target_pose_;
-    boost::shared_ptr<nav_msgs::OccupancyGrid> map_ptr_;
+    robotx_msgs::ObstacleMap map_;
     boost::optional<geometry_msgs::PoseStamped> target_pose_;
     geometry_msgs::Twist raw_twist_cmd_;
     volatile bool odom_recieved_;

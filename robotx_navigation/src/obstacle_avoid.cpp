@@ -12,7 +12,7 @@ obstacle_avoid::obstacle_avoid() : tf_listener_(tf_buffer_)
     nh_.param<std::string>(ros::this_node::getName()+"/odom_topic", odom_topic_, "/odom");
     nh_.param<std::string>(ros::this_node::getName()+"/target_pose_topic", target_pose_topic_, ros::this_node::getName()+"/target_pose");
     nh_.param<std::string>(ros::this_node::getName()+"/current_state_topic", current_state_topic_, ros::this_node::getName()+"current_state");
-    nh_.param<std::string>(ros::this_node::getName()+"/trigger_event_topic", trigger_event_topic_, ros::this_node::getName()+"/trigger_event");  
+    nh_.param<std::string>(ros::this_node::getName()+"/trigger_event_topic", trigger_event_topic_, ros::this_node::getName()+"/trigger_event");
     nh_.param<double>(ros::this_node::getName()+"/search_radius", search_radius_, 3.0);
     nh_.param<double>(ros::this_node::getName()+"/search_angle", search_angle_, 0.3);
     twist_cmd_pub_ = nh_.advertise<geometry_msgs::Twist>(cmd_vel_topic_, 10);
@@ -52,48 +52,15 @@ void obstacle_avoid::twist_cmd_callback_(const geometry_msgs::Twist::ConstPtr ms
     return;
 }
 
-bool obstacle_avoid::obstacle_found_(const nav_msgs::Odometry::ConstPtr msg)
+bool obstacle_avoid::obstacle_found_()
 {
-    if(!target_pose_)
+    for(int i=0; i<map_.points.size(); i++)
     {
-        return false;
-    }
-    geometry_msgs::TransformStamped target_pose_transform_stamped_;
-    try
-    {
-        target_pose_transform_stamped_ = tf_buffer_.lookupTransform(msg->header.frame_id, target_pose_->header.frame_id, ros::Time(0));
-    }
-    catch (tf2::TransformException &ex)
-    {
-        ROS_WARN("%s",ex.what());
-        return false;
-    }
-    tf2::doTransform(*target_pose_, transformed_target_pose_, target_pose_transform_stamped_);
-    if(odom_recieved_ && map_recieved_ && twist_cmd_recieved_)
-    {
-        for (int i = 0; i < map_ptr_->info.height; i++)
+        double yaw = std::atan2(map_.points[i].y,map_.points[i].x);
+        double radius = std::sqrt(std::pow(map_.points[i].x,2)+std::pow(map_.points[i].y,2));
+        if(std::fabs(search_angle_) > std::fabs(yaw) && search_radius_ > radius)
         {
-            for (int m = 0; m < map_ptr_->info.width; m++)
-            {
-                if(map_ptr_->data[i * map_ptr_->info.height + m] > 0)
-                {
-                    double x = (double)m * map_ptr_->info.resolution - 0.5 * map_ptr_->info.resolution * map_ptr_->info.width;
-                    double y = (double)i * map_ptr_->info.resolution - 0.5 * map_ptr_->info.resolution * map_ptr_->info.height;
-                    if(x==0 && y==0)
-                    {
-
-                    }
-                    else
-                    {
-                        double theta = std::atan2(y,x);
-                        double r = std::sqrt(y*y+x*x);
-                        if(r<search_radius_ && std::fabs(theta) < search_angle_)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
+            return true;
         }
     }
     return false;
@@ -105,39 +72,27 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
     odom_recieved_ = true;
     odom_ = *msg;
     geometry_msgs::Twist twist_cmd;
-    if(obstacle_found_(msg))
+    if(obstacle_found_())
     {
         robotx_msgs::Event event_msg;
         event_msg.trigger_event_name = "obstacle_found";
         event_msg.header.stamp = ros::Time::now();
         trigger_event_pub_.publish(event_msg);
-        double x = transformed_target_pose_.pose.position.x;
-        double y = transformed_target_pose_.pose.position.y;
-        double theta = std::atan2(y,x);
-        if(theta > 0)
-        {
-            twist_cmd.linear.x = 0;
-            twist_cmd.angular.z = 0.3;
-        }
-        else
-        {
-            twist_cmd.linear.x = 0;
-            twist_cmd.angular.z = -0.3;
-        }
     }
-    twist_cmd_pub_.publish(twist_cmd);
+    /*
     std_msgs::Float32 linear_vel_msg,angular_vel_msg;
     linear_vel_msg.data = twist_cmd.linear.x;
     angular_vel_msg.data = twist_cmd.angular.z;
     linear_vel_pub_.publish(linear_vel_msg);
     angular_vel_pub_.publish(angular_vel_msg);
+    */
     return;
 }
 
-void obstacle_avoid::obstacle_map_callback_(const nav_msgs::OccupancyGrid::Ptr msg)
+void obstacle_avoid::obstacle_map_callback_(const robotx_msgs::ObstacleMap::ConstPtr msg)
 {
     std::lock_guard<std::mutex> lock(mtx_);
-    map_ptr_ = boost::shared_ptr<nav_msgs::OccupancyGrid>(msg);
+    map_ = *msg;
     map_recieved_ = true;
     return;
 }
