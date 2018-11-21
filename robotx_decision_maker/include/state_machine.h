@@ -64,6 +64,5 @@ private:
     std::mutex mtx_;
     graph_t state_graph_;
     vertex_t current_state_;
-    std::vector<std::string> state_names_;
 };
 #endif  //STATE_MACHINE_H_INCLUDED
