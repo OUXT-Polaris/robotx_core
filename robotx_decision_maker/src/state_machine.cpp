@@ -197,6 +197,16 @@ std::string state_machine::get_current_state()
     return state_graph_[current_state_].name;
 }
 
+std::string state_machine::get_dot_string()
+{
+    std::lock_guard<std::mutex> lock(mtx_);
+    std::string dot_string;
+    std::ofstream sstream(dot_string);
+    boost::write_graphviz(sstream, state_graph_, boost::make_label_writer(get(&state_property::name, state_graph_)),
+        boost::make_label_writer(get(&transition_property::trigger_event, state_graph_)));
+    return dot_string;
+}
+
 void state_machine::draw_state_machine(std::string dot_filename)
 {
     std::lock_guard<std::mutex> lock(mtx_);

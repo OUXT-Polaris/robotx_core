@@ -59,6 +59,7 @@ public:
     std::string get_current_state();
     state_info_t get_state_info();
     void draw_state_machine(std::string dot_filename);
+    std::string get_dot_string();
 private:
     void add_transition_(std::string from_state_name, std::string to_state_name, std::string trigger_event_name);
     std::mutex mtx_;
