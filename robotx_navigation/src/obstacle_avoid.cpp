@@ -16,8 +16,6 @@ obstacle_avoid::obstacle_avoid() : tf_listener_(tf_buffer_)
     nh_.param<double>(ros::this_node::getName()+"/search_radius", search_radius_, 3.0);
     nh_.param<double>(ros::this_node::getName()+"/search_angle", search_angle_, 0.3);
     twist_cmd_pub_ = nh_.advertise<geometry_msgs::Twist>(cmd_vel_topic_, 10);
-    angular_vel_pub_ = nh_.advertise<std_msgs::Float32>("/cmd_angular_vel", 1);
-    linear_vel_pub_ = nh_.advertise<std_msgs::Float32>("/cmd_linear_vel", 1);
     trigger_event_pub_ = nh_.advertise<robotx_msgs::Event>(trigger_event_topic_, 1);
     map_sub_ = nh_.subscribe(map_topic_, 3, &obstacle_avoid::obstacle_map_callback_, this);
     twist_cmd_sub_ = nh_.subscribe(raw_cmd_vel_topic_, 10, &obstacle_avoid::twist_cmd_callback_, this);
@@ -79,13 +77,11 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
         event_msg.header.stamp = ros::Time::now();
         trigger_event_pub_.publish(event_msg);
     }
-    /*
-    std_msgs::Float32 linear_vel_msg,angular_vel_msg;
-    linear_vel_msg.data = twist_cmd.linear.x;
-    angular_vel_msg.data = twist_cmd.angular.z;
-    linear_vel_pub_.publish(linear_vel_msg);
-    angular_vel_pub_.publish(angular_vel_msg);
-    */
+    else
+    {
+        twist_cmd = raw_twist_cmd_;
+        twist_cmd_pub_.publish(twist_cmd);
+    }
     return;
 }
 

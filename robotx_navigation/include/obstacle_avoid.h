@@ -35,8 +35,6 @@ private:
     ros::Subscriber current_state_sub_;
     ros::Publisher trigger_event_pub_;
     ros::Publisher twist_cmd_pub_;
-    ros::Publisher linear_vel_pub_;
-    ros::Publisher angular_vel_pub_;
     void current_state_callback_(const robotx_msgs::State::ConstPtr msg);
     void twist_cmd_callback_(const geometry_msgs::Twist::ConstPtr msg);
     void odom_callback_(const nav_msgs::Odometry::ConstPtr msg);

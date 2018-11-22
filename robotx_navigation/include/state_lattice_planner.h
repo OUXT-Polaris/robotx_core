@@ -37,7 +37,7 @@ public:
 private:
     state_lattice_parameters params_;
     std::vector<geometry_msgs::Pose2D> generate_path(nav_msgs::Odometry odom, double linear_acceleration, double angular_acceleration);
-    double evaluate_function_(robotx_msgs::ObstacleMap map, std::vector<geometry_msgs::Pose2D> path);
+    double get_nearest_obstacle_distance_(robotx_msgs::ObstacleMap map, std::vector<geometry_msgs::Pose2D> path);
 };
 
 #endif  //STATE_LATTICE_PLANNER
