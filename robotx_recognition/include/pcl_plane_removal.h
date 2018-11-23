@@ -46,7 +46,6 @@ class pcl_plane_removal {
   ros::NodeHandle nh_;
   ros::Publisher modified_pcl_pub_;
   ros::Subscriber pcl_input_sub_;
-
   void cloud_CB(const sensor_msgs::PointCloud2ConstPtr& msg);
 };
 #endif  // PCL_PLANE_REMOVAL_H_INCLUDED

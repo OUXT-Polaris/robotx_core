@@ -1,14 +1,13 @@
 #include <pcl_plane_removal.h>
 
 pcl_plane_removal::pcl_plane_removal() : params_() {
-  pcl_input_sub_ =
-      nh_.subscribe(params_.input_pcl_topic, 1, &pcl_plane_removal::cloud_CB, this);
-  modified_pcl_pub_ =
-      nh_.advertise<sensor_msgs::PointCloud2>(params_.output_pcl_topic, 1);
-  ROS_INFO("DistanceThreshold = %f",params_.DistanceThreshold);
-  ROS_INFO("MaxIterations = %d",params_.MaxIterations);
-  ROS_INFO("Probability = %f",params_.Probability);
-      
+    pcl_input_sub_ =
+        nh_.subscribe(params_.input_pcl_topic, 1, &pcl_plane_removal::cloud_CB, this);
+    modified_pcl_pub_ =
+        nh_.advertise<sensor_msgs::PointCloud2>(params_.output_pcl_topic, 1);
+    ROS_INFO("DistanceThreshold = %f",params_.DistanceThreshold);
+    ROS_INFO("MaxIterations = %d",params_.MaxIterations);
+    ROS_INFO("Probability = %f",params_.Probability);
 }
 
 pcl_plane_removal::~pcl_plane_removal() {}
