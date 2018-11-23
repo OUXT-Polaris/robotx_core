@@ -8,4 +8,6 @@
     <node name="coast_line_publisher_node" pkg="robotx_navigation" type="coast_line_publisher_node" args="" output="screen" respawn="true">
         <rosparam command="load" file="$(find robotx_navigation)/config/coast_line_publisher.yaml"/>
     </node>
+
+    <include file="$(find robotx_navigation)/launch/map_to_world.launch" />
 </launch>

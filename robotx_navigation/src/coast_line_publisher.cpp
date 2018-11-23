@@ -6,15 +6,37 @@ coast_line_publisher::coast_line_publisher(ros::NodeHandle nh, ros::NodeHandle p
     pnh_ = pnh;
     pnh_.param<double>("range", range_, 0.0);
     pnh_.param<std::string>("coast_line_csv_filename", coast_line_csv_filename_,"/coastline.csv");
-    coast_line_pub_ = pnh_.advertise<robotx_msgs::CoastLineArray>("coast_lines",10);
-    marker_pub_ = pnh_.advertise<visualization_msgs::Marker>("marker",10);
+    pnh_.param<std::string>("world_frame", world_frame_,"world");
+    coast_line_pub_ = pnh_.advertise<robotx_msgs::CoastLineArray>("coast_lines",1,true);
+    marker_pub_ = pnh_.advertise<visualization_msgs::Marker>("marker",1,true);
     coast_line_csv_filepath_ = ros::package::getPath("robotx_navigation")+"/data/"+coast_line_csv_filename_;
     std::ifstream ifs(coast_line_csv_filepath_.c_str());
     std::string line;
+    current_coast_lines_.header.frame_id = world_frame_;
     while (getline(ifs, line))
     {
         std::vector<std::string> strvec = split(line, ',');
+        robotx_msgs::CoastLine coast_line;
+        coast_line.header.frame_id = world_frame_;
+        try
+        {
+            coast_line.start_point.x = std::stod(strvec[0].c_str());
+            coast_line.start_point.y = std::stod(strvec[1].c_str());
+            coast_line.start_point.z = 0;
+            coast_line.end_point.x = std::stod(strvec[4].c_str());
+            coast_line.end_point.y = std::stod(strvec[5].c_str());
+            coast_line.end_point.z = 0;         
+        }
+        catch(...)
+        {
+            ROS_ERROR_STREAM("failed to load coastline.");
+            std::exit(-1);
+        }
+        current_coast_lines_.coast_lines.push_back(coast_line);
     }
+    coast_line_pub_.publish(current_coast_lines_);
+    generate_marker_();
+    publish_marker_();
 }
 
 coast_line_publisher::~coast_line_publisher()
