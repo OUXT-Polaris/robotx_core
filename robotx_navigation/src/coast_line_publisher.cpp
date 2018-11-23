@@ -89,7 +89,7 @@ void coast_line_publisher::generate_marker_()
     marker_.action = visualization_msgs::Marker::ADD;
     marker_.frame_locked = true;
     marker_.ns = "coast_line";
-    marker_.scale.x = 10;
+    marker_.scale.x = 1;
     for(auto coast_line_itr = current_coast_lines_.coast_lines.begin(); coast_line_itr != current_coast_lines_.coast_lines.end(); coast_line_itr++)
     {
         marker_.points.push_back(coast_line_itr->start_point);
@@ -102,21 +102,5 @@ void coast_line_publisher::generate_marker_()
         marker_.colors.push_back(color);
         marker_.colors.push_back(color);
     }
-    //ROS_ERROR_STREAM(marker_.points.size() << "," << marker_.colors.size());
-    /*
-    marker_.header.frame_id = "map";
-    geometry_msgs::Point p0;
-    p0.z = 1;
-    geometry_msgs::Point p1;
-    std_msgs::ColorRGBA color;
-    color.r = 1;
-    color.g = 0;
-    color.b = 0;
-    color.a = 1;
-    marker_.points.push_back(p0);
-    marker_.points.push_back(p1);
-    //marker_.colors.push_back(color);
-    //marker_.colors.push_back(color);
-    */
     return;
 }

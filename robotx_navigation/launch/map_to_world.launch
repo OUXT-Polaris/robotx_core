@@ -1,3 +1,3 @@
 <launch>
-    <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_world_publisher" args="614889.732811393 2356776.858148221 0 0 0 0 1 world map" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="map_to_world_publisher" args="615100 2356900 0 0 0 0 1 world map" />
 </launch>
