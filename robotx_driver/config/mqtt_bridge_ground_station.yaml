@@ -2,7 +2,7 @@ mqtt:
   client:
     protocol: 4      # MQTTv311
   connection:
-    host: localhost # set MQTT Server IP or URL
+    host: mosquitto.org # set MQTT Server IP or URL
     port: 1883
     keepalive: 60
   private_path: device/001
