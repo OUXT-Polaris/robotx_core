@@ -6,8 +6,6 @@ mqtt:
     port: 1883
     keepalive: 60
   private_path: device/001
-selializer: msgpack:dumps
-deselializer: msgpack:loads
 bridge:
   ## Topics to MQTT ##
   # diagnostic_agg
