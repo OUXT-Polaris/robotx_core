@@ -5,17 +5,21 @@ coast_line_publisher::coast_line_publisher(ros::NodeHandle nh, ros::NodeHandle p
     nh_ = nh;
     pnh_ = pnh;
     pnh_.param<double>("range", range_, 0.0);
+    pnh_.param<bool>("enable_publish_marker", enable_publish_marker_, true);
     pnh_.param<std::string>("coast_line_csv_filename", coast_line_csv_filename_,"/coastline.csv");
     pnh_.param<std::string>("world_frame", world_frame_,"world");
     coast_line_pub_ = pnh_.advertise<robotx_msgs::CoastLineArray>("coast_lines",1,true);
-    marker_pub_ = pnh_.advertise<visualization_msgs::Marker>("marker",1,true);
+    if(enable_publish_marker_ == true)
+    {
+        marker_pub_ = pnh_.advertise<visualization_msgs::Marker>("marker",1);
+    }
     coast_line_csv_filepath_ = ros::package::getPath("robotx_navigation")+"/data/"+coast_line_csv_filename_;
     std::ifstream ifs(coast_line_csv_filepath_.c_str());
     std::string line;
     current_coast_lines_.header.frame_id = world_frame_;
     while (getline(ifs, line))
     {
-        std::vector<std::string> strvec = split(line, ',');
+        std::vector<std::string> strvec = split_(line, ',');
         robotx_msgs::CoastLine coast_line;
         coast_line.header.frame_id = world_frame_;
         try
@@ -34,9 +38,6 @@ coast_line_publisher::coast_line_publisher(ros::NodeHandle nh, ros::NodeHandle p
         }
         current_coast_lines_.coast_lines.push_back(coast_line);
     }
-    coast_line_pub_.publish(current_coast_lines_);
-    generate_marker_();
-    publish_marker_();
 }
 
 coast_line_publisher::~coast_line_publisher()
@@ -44,7 +45,25 @@ coast_line_publisher::~coast_line_publisher()
 
 }
 
-std::vector<std::string> coast_line_publisher::split(std::string& input, char delimiter)
+void coast_line_publisher::run()
+{
+    coast_line_pub_.publish(current_coast_lines_);
+    if(enable_publish_marker_ == true)
+    {
+        generate_marker_();
+    }
+    ros::Rate rate(1);
+    while(ros::ok())
+    {
+        if(enable_publish_marker_ == true)
+        {
+            publish_marker_();
+        }
+        rate.sleep();
+    }
+}
+
+std::vector<std::string> coast_line_publisher::split_(std::string& input, char delimiter)
 {
     std::istringstream stream(input);
     std::string field;
@@ -65,12 +84,12 @@ void coast_line_publisher::publish_marker_()
 
 void coast_line_publisher::generate_marker_()
 {
-    marker_.type = marker_.LINE_LIST;
+    marker_.type = visualization_msgs::Marker::LINE_LIST;
     marker_.header.frame_id = world_frame_;
-    marker_.action = marker_.ADD;
+    marker_.action = visualization_msgs::Marker::ADD;
+    marker_.frame_locked = true;
     marker_.ns = "coast_line";
-    marker_.points.clear();
-    marker_.colors.clear();
+    marker_.scale.x = 10;
     for(auto coast_line_itr = current_coast_lines_.coast_lines.begin(); coast_line_itr != current_coast_lines_.coast_lines.end(); coast_line_itr++)
     {
         marker_.points.push_back(coast_line_itr->start_point);
@@ -81,6 +100,23 @@ void coast_line_publisher::generate_marker_()
         color.b = 0;
         color.a = 1;
         marker_.colors.push_back(color);
+        marker_.colors.push_back(color);
     }
+    //ROS_ERROR_STREAM(marker_.points.size() << "," << marker_.colors.size());
+    /*
+    marker_.header.frame_id = "map";
+    geometry_msgs::Point p0;
+    p0.z = 1;
+    geometry_msgs::Point p1;
+    std_msgs::ColorRGBA color;
+    color.r = 1;
+    color.g = 0;
+    color.b = 0;
+    color.a = 1;
+    marker_.points.push_back(p0);
+    marker_.points.push_back(p1);
+    //marker_.colors.push_back(color);
+    //marker_.colors.push_back(color);
+    */
     return;
 }

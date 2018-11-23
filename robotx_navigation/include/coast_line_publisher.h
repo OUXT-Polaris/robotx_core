@@ -25,7 +25,11 @@ class coast_line_publisher
 public:
     coast_line_publisher(ros::NodeHandle nh, ros::NodeHandle pnh);
     ~coast_line_publisher();
+    void run();
 private:
+    std::vector<std::string> split_(std::string& input, char delimiter);
+    void generate_marker_();
+    void publish_marker_();
     std::mutex mtx_;
     ros::NodeHandle nh_;
     ros::NodeHandle pnh_;
@@ -34,11 +38,9 @@ private:
     std::string fix_topic_;
     std::string coast_line_csv_filename_;
     std::string coast_line_csv_filepath_;
+    bool enable_publish_marker_;
     ros::Publisher coast_line_pub_;
     ros::Publisher marker_pub_;
-    std::vector<std::string> split(std::string& input, char delimiter);
-    void generate_marker_();
-    void publish_marker_();
     visualization_msgs::Marker marker_;
     robotx_msgs::CoastLineArray current_coast_lines_;
 };
