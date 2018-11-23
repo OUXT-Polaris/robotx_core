@@ -10,9 +10,10 @@ state_lattice_planner::~state_lattice_planner()
 
 }
 
-boost::optional<std::pair<nav_msgs::Path,geometry_msgs::Twist>> state_lattice_planner::plan(robotx_msgs::ObstacleMap map, nav_msgs::Odometry odom)
+boost::optional<geometry_msgs::Twist> state_lattice_planner::plan(robotx_msgs::ObstacleMap map, nav_msgs::Odometry odom, geometry_msgs::Pose2D target_pose)
 {
-    std::pair<nav_msgs::Path,geometry_msgs::Twist> ret;
+    geometry_msgs::Twist ret;
+    std::vector<std::pair<geometry_msgs::Twist,double> > result;
     for(int i=0; i< params_.num_samples_angular; i++)
     {
         for(int m=0; m<params_.num_samples_linear; m++)
@@ -23,8 +24,24 @@ boost::optional<std::pair<nav_msgs::Path,geometry_msgs::Twist>> state_lattice_pl
                 + params_.min_angular_acceleration;
             std::vector<geometry_msgs::Pose2D> path = generate_path(odom, linear_acceleration, angular_acceleration);
             double nearest_obstacle_distance = get_nearest_obstacle_distance_(map, path);
+            double evaluate_value = evaluate_function_(nearest_obstacle_distance, path[path.size()-1], target_pose);
         }
     }
+    return ret;
+}
+
+double state_lattice_planner::evaluate_function_(double nearest_obstacle_distance, geometry_msgs::Pose2D end_pose, geometry_msgs::Pose2D target_pose)
+{
+    double ret;
+    if(nearest_obstacle_distance < 0)
+    {
+        return 0;
+    }
+    if(std::pow(end_pose.x - target_pose.x,2) + std::pow(end_pose.y - target_pose.y,2) < 0.0001)
+    {
+        return 1000;
+    }
+    ret = 1/std::sqrt(std::pow(end_pose.x - target_pose.x,2) + std::pow(end_pose.y - target_pose.y,2));
     return ret;
 }
 

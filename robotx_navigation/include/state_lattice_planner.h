@@ -33,11 +33,12 @@ class state_lattice_planner
 public:
     state_lattice_planner(state_lattice_parameters params);
     ~state_lattice_planner();
-    boost::optional<std::pair<nav_msgs::Path,geometry_msgs::Twist> > plan(robotx_msgs::ObstacleMap map, nav_msgs::Odometry odom);
+    boost::optional<geometry_msgs::Twist> plan(robotx_msgs::ObstacleMap map, nav_msgs::Odometry odom, geometry_msgs::Pose2D target_pose);
 private:
     state_lattice_parameters params_;
     std::vector<geometry_msgs::Pose2D> generate_path(nav_msgs::Odometry odom, double linear_acceleration, double angular_acceleration);
     double get_nearest_obstacle_distance_(robotx_msgs::ObstacleMap map, std::vector<geometry_msgs::Pose2D> path);
+    double evaluate_function_(double nearest_obstacle_distance, geometry_msgs::Pose2D end_pose, geometry_msgs::Pose2D target_pose);
 };
 
 #endif  //STATE_LATTICE_PLANNER
