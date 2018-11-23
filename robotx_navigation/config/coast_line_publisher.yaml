@@ -1,3 +1,4 @@
 range : 300
 fix_topic : /sc30_driver_node/fix
-geographic_map_topic : /geographic_map
+#geographic_map_topic : /geographic_map
+coast_line_csv_filename : coastline.csv

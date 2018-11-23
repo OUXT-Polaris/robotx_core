@@ -45,9 +45,9 @@ include_directories(
 #add_document(twist_from_fix_velocity_node)
 #clang_format(twist_from_fix_velocity_node)
 
-add_executable(geographic_map_server_node src/geographic_map_server_node.cpp src/geographic_map_server.cpp)
-target_link_libraries(geographic_map_server_node ${catkin_LIBRARIES} -lyaml-cpp)
-add_dependencies(geographic_map_server_node robotx_msgs_generate_messages_cpp)
+#add_executable(geographic_map_server_node src/geographic_map_server_node.cpp src/geographic_map_server.cpp)
+#target_link_libraries(geographic_map_server_node ${catkin_LIBRARIES} -lyaml-cpp)
+#add_dependencies(geographic_map_server_node robotx_msgs_generate_messages_cpp)
 #add_document(geographic_map_server_node)
 #clang_format(geographic_map_server_node)
 
@@ -106,7 +106,7 @@ set(NODE_FILES
   obstacle_avoid_node
   waypoint_logger_node
   #twist_from_fix_velocity_node 
-  geographic_map_server_node 
+  #geographic_map_server_node 
   obstacle_map_server_node 
   robotx_localization_node 
   #costmap_clear_request_sender_node 
