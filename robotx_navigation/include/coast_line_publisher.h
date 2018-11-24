@@ -4,12 +4,13 @@
 //headers in ROS
 #include <ros/ros.h>
 #include <ros/package.h>
+#include <tf/tf.h>
 
 //headers in this package
 #include <UTM.h>
 #include <robotx_msgs/CoastLineArray.h>
 #include <sensor_msgs/NavSatFix.h>
-#include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
 
 //headers in STL
 #include <mutex>
@@ -41,7 +42,7 @@ private:
     bool enable_publish_marker_;
     ros::Publisher coast_line_pub_;
     ros::Publisher marker_pub_;
-    visualization_msgs::Marker marker_;
+    visualization_msgs::MarkerArray marker_;
     robotx_msgs::CoastLineArray current_coast_lines_;
 };
 
