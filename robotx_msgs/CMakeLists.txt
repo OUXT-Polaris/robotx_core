@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   jsk_recognition_msgs
-  geographic_msgs
+  #geographic_msgs
   robotx_build_flags
 )
 
@@ -30,9 +30,9 @@ add_message_files(
   ObjectRegionOfInterestArray.msg
   ObjectRegionOfInterest.msg
   ObjectType.msg
-  GeographicPoint.msg
-  GeographicLine.msg
-  GeographicMap.msg
+  #GeographicPoint.msg
+  #GeographicLine.msg
+  #GeographicMap.msg
   WayPointArray.msg
   WayPoint.msg
   NavigationStatus.msg
@@ -48,7 +48,7 @@ generate_messages(
   sensor_msgs#
   std_msgs
   jsk_recognition_msgs
-  geographic_msgs
+  #geographic_msgs
 )
 
 ###################################
@@ -60,7 +60,7 @@ catkin_package(CATKIN_DEPENDS
   sensor_msgs
   std_msgs
   jsk_recognition_msgs
-  geographic_msgs
+  #geographic_msgs
 )
 
 ###########
