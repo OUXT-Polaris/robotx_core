@@ -128,6 +128,10 @@ void waypoint_server::publish_marker_()
 
 void waypoint_server::navigation_status_callback_(robotx_msgs::State msg)
 {
+    if(msg.current_state == "heading_to_next_waypoint")
+    {
+        
+    }
     /*
     if(msg.status == msg.NAVIGATION_COMPLETE)
     {
