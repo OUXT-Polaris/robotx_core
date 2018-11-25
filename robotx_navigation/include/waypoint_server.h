@@ -38,7 +38,6 @@ private:
     std::mutex mutex_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
-    std::string navigation_status_topic_;
     int target_waypoint_index_;
     volatile bool first_waypoint_finded_;
     double search_angle_;

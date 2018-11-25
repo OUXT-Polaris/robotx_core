@@ -7,7 +7,6 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     nh_.param<std::string>(ros::this_node::getName()+"/waypoint_csv_filename", waypoint_csv_filename, "waypoints.csv");
     nh_.param<std::string>(ros::this_node::getName()+"/robot_frame", robot_frame_, "base_link");
     nh_.param<std::string>(ros::this_node::getName()+"/map_frame", map_frame_, "map");
-    nh_.param<std::string>(ros::this_node::getName()+"/navigation_status_topic", navigation_status_topic_, ros::this_node::getName()+"/navigation_status");
     nh_.param<std::string>(ros::this_node::getName()+"/robot_pose_topic", robot_pose_topic_, ros::this_node::getName()+"/robot_pose");
     nh_.param<double>(ros::this_node::getName()+"/search_angle", search_angle_, 1.57);
     waypoint_csv_file_path_ = ros::package::getPath("robotx_navigation") + "/data/" + waypoint_csv_filename;
@@ -37,7 +36,8 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker",1);
     waypoint_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(ros::this_node::getName()+"/next_waypoint",1);
     robot_pose_sub_ = nh_.subscribe(robot_pose_topic_, 1, &waypoint_server::robot_pose_callback_, this);
-    navigation_status_sub_ = nh_.subscribe(navigation_status_topic_, 1, &waypoint_server::navigation_status_callback_, this);
+    navigation_status_sub_ = nh_.subscribe("/robotx_state_machine_node/navigation_state_machine/current_state",
+        1, &waypoint_server::navigation_status_callback_, this);
     boost::thread marker_thread(boost::bind(&waypoint_server::publish_marker_, this));
 }
 
