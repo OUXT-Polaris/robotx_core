@@ -48,6 +48,10 @@ void world_pose_publisher::gnss_callback_(const sensor_msgs::NavSatFixConstPtr& 
     transform_stamped.transform.translation.z = 0;
     transform_stamped.transform.rotation = pose.orientation;
     broadcaster_.sendTransform(transform_stamped);
+    world_pose.pose.position.x = pose.position.x;
+    world_pose.pose.position.y = pose.position.y;
+    world_pose.pose.position.z = 0;
+    world_pose.pose.orientation = pose.orientation;
     world_odom.pose.pose = world_pose.pose;
     world_pose_pub_.publish(world_pose);
     world_odom_pub_.publish(world_odom);

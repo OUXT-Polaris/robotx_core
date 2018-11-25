@@ -4,8 +4,8 @@
 //headers in ROS
 #include <ros/ros.h>
 #include <ros/package.h>
-#include <rosbag/bag.h>
-#include <rosbag/view.h>
+#include <robotx_msgs/State.h>
+#include <robotx_msgs/Event.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <tf2_ros/transform_listener.h>
@@ -44,7 +44,7 @@ private:
     double search_angle_;
     void publish_marker_();
     void robot_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg);
-    //void navigation_status_callback_(robotx_msgs::NavigationStatus msg);
+    void navigation_status_callback_(robotx_msgs::State msg);
     void update_waypoint_();
     boost::optional<int> get_nearest_wayppoint_(const geometry_msgs::PoseStamped::ConstPtr msg);
     std::vector<std::string> split_(std::string& input, char delimiter);

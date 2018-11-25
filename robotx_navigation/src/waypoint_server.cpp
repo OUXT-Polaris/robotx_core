@@ -37,7 +37,7 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker",1);
     waypoint_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(ros::this_node::getName()+"/next_waypoint",1);
     robot_pose_sub_ = nh_.subscribe(robot_pose_topic_, 1, &waypoint_server::robot_pose_callback_, this);
-    //navigation_status_sub_ = nh_.subscribe(navigation_status_topic_, 1, &waypoint_server::navigation_status_callback_, this);
+    navigation_status_sub_ = nh_.subscribe(navigation_status_topic_, 1, &waypoint_server::navigation_status_callback_, this);
     boost::thread marker_thread(boost::bind(&waypoint_server::publish_marker_, this));
 }
 
@@ -68,9 +68,9 @@ void waypoint_server::publish_marker_()
         for(int i=0; i<waypoints_.size(); i++)
         {
             visualization_msgs::Marker marker;
-            marker.header.frame_id = map_frame_;
+            marker.header.frame_id = waypoints_[i].header.frame_id;
             marker.header.stamp = ros::Time::now();
-            marker.ns = "waypoint_marker";
+            marker.ns = "waypoint";
             marker.id = i;
             marker.type = marker.ARROW;
             marker.action = marker.MODIFY;
@@ -92,13 +92,13 @@ void waypoint_server::publish_marker_()
             marker.scale.y = 0.3;
             marker.scale.z = 0.3;
             marker.frame_locked = true;
-            marker.lifetime = ros::Duration(0.3);
+            //marker.lifetime = ros::Duration(0.3);
             marker_msg.markers.push_back(marker);
             visualization_msgs::Marker text_marker;
-            text_marker.header.frame_id = map_frame_;
+            text_marker.header.frame_id = waypoints_[i].header.frame_id;
             text_marker.header.stamp = ros::Time::now();
-            text_marker.ns = "waypoint_marker";
-            text_marker.id = i + waypoints_.size();
+            text_marker.ns = "id";
+            text_marker.id = i;
             text_marker.type = text_marker.TEXT_VIEW_FACING;
             text_marker.action = text_marker.MODIFY;
             text_marker.pose = waypoints_[i].pose;
@@ -116,7 +116,7 @@ void waypoint_server::publish_marker_()
             text_marker.scale.z = 1;
             text_marker.frame_locked = true;
             text_marker.text = std::to_string(i);
-            text_marker.lifetime = ros::Duration(0.3);
+            //text_marker.lifetime = ros::Duration(0.3);
             marker_msg.markers.push_back(text_marker);
             marker_pub_.publish(marker_msg);
             rate.sleep();
@@ -126,9 +126,9 @@ void waypoint_server::publish_marker_()
     return;
 }
 
-/*
-void waypoint_server::navigation_status_callback_(robotx_msgs::NavigationStatus msg)
+void waypoint_server::navigation_status_callback_(robotx_msgs::State msg)
 {
+    /*
     if(msg.status == msg.NAVIGATION_COMPLETE)
     {
         update_waypoint_();
@@ -139,9 +139,9 @@ void waypoint_server::navigation_status_callback_(robotx_msgs::NavigationStatus 
         pose_msg = waypoints_.waypoints[target_waypoint_index_].pose;
         waypoint_pub_.publish(pose_msg);
     }
+    */
     return;
 }
-*/
 
 void waypoint_server::update_waypoint_()
 {
