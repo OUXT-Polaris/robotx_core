@@ -33,8 +33,8 @@ add_message_files(
   #GeographicPoint.msg
   #GeographicLine.msg
   #GeographicMap.msg
-  WayPointArray.msg
-  WayPoint.msg
+  #WayPointArray.msg
+  #WayPoint.msg
   NavigationStatus.msg
   Event.msg
   State.msg

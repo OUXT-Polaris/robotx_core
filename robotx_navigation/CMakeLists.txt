@@ -82,9 +82,9 @@ add_executable(waypoint_server_node src/waypoint_server_node.cpp src/waypoint_se
 target_link_libraries(waypoint_server_node ${catkin_LIBRARIES})
 add_dependencies(waypoint_server_node robotx_msgs_generate_messages_cpp)
 
-add_executable(waypoint_logger_node src/waypoint_logger_node.cpp src/waypoint_logger.cpp)
-target_link_libraries(waypoint_logger_node ${catkin_LIBRARIES})
-add_dependencies(waypoint_logger_node robotx_msgs_generate_messages_cpp)
+#add_executable(waypoint_logger_node src/waypoint_logger_node.cpp src/waypoint_logger.cpp)
+#target_link_libraries(waypoint_logger_node ${catkin_LIBRARIES})
+#add_dependencies(waypoint_logger_node robotx_msgs_generate_messages_cpp)
 
 add_executable(obstacle_avoid_node src/obstacle_avoid_node.cpp src/obstacle_avoid.cpp src/state_lattice_planner.cpp)
 target_link_libraries(obstacle_avoid_node ${catkin_LIBRARIES})
@@ -105,7 +105,7 @@ add_dependencies(coast_line_publisher_node robotx_msgs_generate_messages_cpp)
 # CPP codes
 set(NODE_FILES 
   obstacle_avoid_node
-  waypoint_logger_node
+  #waypoint_logger_node
   #twist_from_fix_velocity_node 
   #geographic_map_server_node 
   obstacle_map_server_node 
