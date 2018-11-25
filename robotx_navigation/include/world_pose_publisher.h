@@ -13,9 +13,8 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <tf2_ros/transform_broadcaster.h>
-
-//headers in this package
-#include <UTM.h>
+#include <geodesy/wgs84.h>
+#include <geodesy/utm.h>
 
 //headers in Boost
 #include <boost/shared_ptr.hpp>
