@@ -1,3 +1,5 @@
 *.osm
 *.pcd
 *.bag
+clicked_waypoints.csv
+waypoints.csv
