@@ -19,9 +19,11 @@
 //headers in Boost
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
+#include <boost/optional.hpp>
 
 //headers in robotx_package
-#include <robotx_msgs/NavigationStatus.h>
+#include <robotx_msgs/State.h>
+#include <robotx_msgs/Event.h>
 
 class carrot_planner
 {
@@ -33,6 +35,7 @@ private:
     void _linear_velocity_callback(const std_msgs::Float64::ConstPtr msg);
     void _torelance_callback(const std_msgs::Float64::ConstPtr msg);
     void _angular_torelance_callback(const std_msgs::Float64::ConstPtr msg);
+    void _current_state_callback(const robotx_msgs::State::ConstPtr msg);
     void _goal_pose_callback(geometry_msgs::PoseStamped msg);
     void _publish_twist_cmd();
     std::string _goal_topic;
@@ -52,12 +55,14 @@ private:
     ros::Subscriber _tolerance_sub;
     ros::Subscriber _goal_pose_sub;
     ros::Subscriber _linear_velocity_sub;
+    ros::Subscriber _current_stete_sub;
+    ros::Subscriber _state_sub;
     ros::Publisher _twist_pub;
-    ros::Publisher _status_text_pub;
-    ros::Publisher _status_pub;
+    ros::Publisher _trigger_event_pub;
     geometry_msgs::PoseStamped _goal_pose;
     tf2_ros::Buffer _tf_buffer;
     tf2_ros::TransformListener _tf_listener;
     std::mutex _mtx;
+    boost::optional<robotx_msgs::State> _current_state;
 };
 #endif  //CARROT_PLANNER_H_INCLUDED
