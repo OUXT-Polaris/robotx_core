@@ -15,7 +15,7 @@
 
 struct transition_property
 {
-    std::vector<std::string> trigger_events;
+    std::string trigger_event;
     std::string from_state;
     std::string to_state;
 };
@@ -36,10 +36,10 @@ struct state_info_t
     const std::vector<std::string> possibe_transition_states;
     const std::vector<std::string> possibe_transitions;
     const std::string current_state;
-    state_info_t(std::string current_state_, 
+    state_info_t(std::string current_state_,
         std::vector<std::string> possibe_transition_states_,
         std::vector<std::string> possibe_transitions_)
-            : current_state(current_state_), 
+            : current_state(current_state_),
                 possibe_transition_states(possibe_transition_states_),
                 possibe_transitions(possibe_transitions_)
             {
@@ -59,11 +59,11 @@ public:
     std::string get_current_state();
     state_info_t get_state_info();
     void draw_state_machine(std::string dot_filename);
+    std::string get_dot_string();
 private:
     void add_transition_(std::string from_state_name, std::string to_state_name, std::string trigger_event_name);
     std::mutex mtx_;
     graph_t state_graph_;
     vertex_t current_state_;
-    std::vector<std::string> state_names_;
 };
 #endif  //STATE_MACHINE_H_INCLUDED

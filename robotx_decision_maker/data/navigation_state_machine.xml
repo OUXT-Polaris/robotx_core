@@ -10,6 +10,15 @@
     <transition from = "moving_to_next_waypoint" to="obstacle_avoid" name="obstacle_found"/>
 
     <transition from = "obstacle_avoid" to="go_straight" name="obstacle_not_found"/>
+    <transition from = "obstacle_avoid" to="stacked" name="obstacle_avoid_failed"/>
+
+    <transition from = "stacked" to="go_back" name="found_open_space_in_back"/>
+    <transition from = "stacked" to="turn_right" name="found_open_space_in_right"/>
+    <transition from = "stacked" to="turn_left" name="found_open_space_in_left"/>
+
+    <transition from = "go_back" to="obstacle_avoid" name="retry_obstacle_avoid"/>
+    <transition from = "turn_right" to="obstacle_avoid" name="found_open_space_in_right"/>
+    <transition from = "turn_left" to="obstacle_avoid" name="found_open_space_in_left"/>
 
     <transition from = "go_straight" to="heading_to_next_waypoint" name="go_straight_finished"/>
     <transition from = "go_straight" to="obstacle_avoid" name="go_straight_finished"/>

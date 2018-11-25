@@ -2,7 +2,11 @@
 #include <tf/transform_datatypes.h>
 
 obstacle_map_server::obstacle_map_server() : params_(), tf_listener_(tf_buffer_) {
-  map_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>("/obstacle_map", 1);
+  if(params_.publish_occupancy_grid)
+  {
+    grid_map_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>("/obstacle_map/grid_map", 1);
+  }
+  obstacle_map_pub_ = nh_.advertise<robotx_msgs::ObstacleMap>("/obstacle_map", 1);
   measurements_ = boost::circular_buffer<jsk_recognition_msgs::BoundingBoxArray>(params_.buffer_length);
   objects_bbox_sub_ =
       nh_.subscribe(params_.object_bbox_topic, 1, &obstacle_map_server::objects_bbox_callback_, this);
@@ -12,26 +16,13 @@ obstacle_map_server::~obstacle_map_server() {}
 
 void obstacle_map_server::objects_bbox_callback_(jsk_recognition_msgs::BoundingBoxArray msg) {
   measurements_.push_back(msg);
-  generate_occupancy_grid_map_();
+  generate_obstacle_map_();
 }
 
-nav_msgs::OccupancyGrid obstacle_map_server::generate_occupancy_grid_map_() {
-  nav_msgs::OccupancyGrid map;
-  map.header.frame_id = params_.robot_frame;
-  map.header.stamp = measurements_[measurements_.size() - 1].header.stamp;
-  map.info.map_load_time = ros::Time::now();
-  map.info.height = params_.map_height;
-  map.info.width = params_.map_width;
-  map.info.resolution = params_.resolution;
-  map.info.origin.position.x = -params_.map_height * params_.resolution / 2;
-  map.info.origin.position.y = -params_.map_width * params_.resolution / 2;
-  map.info.origin.position.z = params_.height_offset;
-  tf::Quaternion quaternion = tf::createQuaternionFromRPY(0, 0, 0);
-  map.info.origin.orientation.x = 0;
-  map.info.origin.orientation.y = 0;
-  map.info.origin.orientation.z = 0;
-  map.info.origin.orientation.w = 1;
-  std::vector<int8_t> map_data(params_.map_height * params_.map_width);
+void obstacle_map_server::generate_obstacle_map_() {
+  robotx_msgs::ObstacleMap obstacle_map;
+  obstacle_map.header.frame_id = params_.robot_frame;
+  obstacle_map.header.stamp = measurements_[measurements_.size() - 1].header.stamp;
   std::vector<jsk_recognition_msgs::BoundingBoxArray> transformed_measurements;
   for (int i = 0; i < measurements_.size(); i++) {
     if (i == measurements_.size() - 1) {
@@ -130,18 +121,47 @@ nav_msgs::OccupancyGrid obstacle_map_server::generate_occupancy_grid_map_() {
       objects_data.push_back(object_data);
     }
   }
-  for (int i = 0; i < params_.map_height; i++) {
-    for (int m = 0; m < params_.map_width; m++) {
-      double x = (double)m * params_.resolution - 0.5 * params_.resolution * params_.map_width;
-      double y = (double)i * params_.resolution - 0.5 * params_.resolution * params_.map_height;
-      for (int n = 0; n < objects_data.size(); n++) {
-        double distance =
-            std::sqrt(std::pow(objects_data[n][1] - x, 2) + std::pow(objects_data[n][2] - y, 2));
-        if (distance < objects_data[n][0]) map_data[i * params_.map_height + m] = 100;
+  for(auto object_data_itr = objects_data.begin(); object_data_itr != objects_data.end(); object_data_itr++)
+  {
+    geometry_msgs::Point p;
+    std::array<double, 3> object_data = *object_data_itr;
+    p.x = object_data[1];
+    p.y = object_data[2];
+    p.z = 0;
+    obstacle_map.points.push_back(p);
+    obstacle_map.radius.push_back(object_data[0]);
+  }
+  if(params_.publish_occupancy_grid)
+  {
+    nav_msgs::OccupancyGrid map;
+    map.header.frame_id = params_.robot_frame;
+    map.header.stamp = measurements_[measurements_.size() - 1].header.stamp;
+    map.info.map_load_time = ros::Time::now();
+    map.info.height = params_.map_height;
+    map.info.width = params_.map_width;
+    map.info.resolution = params_.resolution;
+    map.info.origin.position.x = -params_.map_height * params_.resolution / 2;
+    map.info.origin.position.y = -params_.map_width * params_.resolution / 2;
+    map.info.origin.position.z = params_.height_offset;
+    tf::Quaternion quaternion = tf::createQuaternionFromRPY(0, 0, 0);
+    map.info.origin.orientation.x = 0;
+    map.info.origin.orientation.y = 0;
+    map.info.origin.orientation.z = 0;
+    map.info.origin.orientation.w = 1;
+    std::vector<int8_t> map_data(params_.map_height * params_.map_width);
+    for (int i = 0; i < params_.map_height; i++) {
+      for (int m = 0; m < params_.map_width; m++) {
+        double x = (double)m * params_.resolution - 0.5 * params_.resolution * params_.map_width;
+        double y = (double)i * params_.resolution - 0.5 * params_.resolution * params_.map_height;
+        for (int n = 0; n < objects_data.size(); n++) {
+          double distance =
+              std::sqrt(std::pow(objects_data[n][1] - x, 2) + std::pow(objects_data[n][2] - y, 2));
+          if (distance < objects_data[n][0]) map_data[i * params_.map_height + m] = 100;
+        }
       }
     }
+    map.data = map_data;
+    grid_map_pub_.publish(map);
   }
-  map.data = map_data;
-  map_pub_.publish(map);
-  return map;
+  return;
 }
