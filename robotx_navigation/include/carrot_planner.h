@@ -34,7 +34,7 @@ public:
     ~carrot_planner();
     void run();
 private:
-    double _get_diff_yaw();
+    double _get_diff_yaw_to_target();
     void _robot_pose_callback(const geometry_msgs::PoseStamped::ConstPtr msg);
     void _linear_velocity_callback(const std_msgs::Float64::ConstPtr msg);
     void _torelance_callback(const std_msgs::Float64::ConstPtr msg);

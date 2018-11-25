@@ -141,9 +141,9 @@ void carrot_planner::_publish_twist_cmd()
         }
         if(_current_state->current_state == "heading_to_next_waypoint")
         {
-            if(std::fabs(_get_diff_yaw()) < 0.1)
+            if(std::fabs(_get_diff_yaw_to_target()) > 0.05)
             {
-                if(_get_diff_yaw() > 0)
+                if(_get_diff_yaw_to_target() > 0)
                 {
                     geometry_msgs::Twist twist_cmd;
                     twist_cmd.angular.z = 0.1;
@@ -160,9 +160,47 @@ void carrot_planner::_publish_twist_cmd()
                     continue;
                 }
             }
+            else
+            {
+                geometry_msgs::Twist twist_cmd;
+                _twist_pub.publish(twist_cmd);
+                robotx_msgs::Event event_msg;
+                event_msg.trigger_event_name = "head_to_next_target";
+                _trigger_event_pub.publish(event_msg);
+                rate.sleep();
+                continue;
+            }
         }
         if(_current_state->current_state == "moving_to_next_waypoint")
         {
+            if(std::sqrt(std::pow(_goal_pose_2d.x-_robot_pose_2d.x,2)-std::pow(_goal_pose_2d.y-_robot_pose_2d.y,2)) < _torelance)
+            {
+                geometry_msgs::Twist twist_cmd;
+                _twist_pub.publish(twist_cmd);
+                robotx_msgs::Event event_msg;
+                event_msg.trigger_event_name = "moved_to_next_target";
+                _trigger_event_pub.publish(event_msg);
+                rate.sleep();
+                continue;
+            }
+            else if(std::fabs(_get_diff_yaw_to_target()) > 0.1)
+            {
+                geometry_msgs::Twist twist_cmd;
+                _twist_pub.publish(twist_cmd);
+                robotx_msgs::Event event_msg;
+                event_msg.trigger_event_name = "heading_slipped";
+                _trigger_event_pub.publish(event_msg);
+                rate.sleep();
+                continue;
+            }
+            else
+            {
+                geometry_msgs::Twist twist_cmd;
+                twist_cmd.linear.x = _linear_velocity;
+                _twist_pub.publish(twist_cmd);
+                rate.sleep();
+                continue;
+            }
         }
         if(_current_state->current_state == "align_to_next_waypoint")
         {
@@ -172,34 +210,20 @@ void carrot_planner::_publish_twist_cmd()
     return;
 }
 
-double carrot_planner::_get_diff_yaw()
+double carrot_planner::_get_diff_yaw_to_target()
 {
-    double ret;
-    if(_robot_pose_2d.theta > _goal_pose_2d.theta)
+    geometry_msgs::TransformStamped transform_stamped;
+    geometry_msgs::PoseStamped transformed_goal_pose;
+    try
     {
-        double a1 = _robot_pose_2d.theta-_goal_pose_2d.theta;
-        double a2 = 2*M_PI - a1;
-        if(a1 < a2)
-        {
-            return a1;
-        }
-        else
-        {
-            return -1 * a2;
-        }
+        transform_stamped = _tf_buffer.lookupTransform(_robot_frame, _map_frame, ros::Time(0));
+        tf2::doTransform(_goal_pose, transformed_goal_pose, transform_stamped);
+        double yaw = std::atan2(transformed_goal_pose.pose.position.y,transformed_goal_pose.pose.position.x);
+        return yaw;
     }
-    else
+    catch(tf2::TransformException &ex)
     {
-        double a1 = _goal_pose_2d.theta - _robot_pose_2d.theta;
-        double a2 = 2*M_PI - a1;
-        if(a1 < a2)
-        {
-            return a1;
-        }
-        else
-        {
-            return -1 * a2;
-        }
+        ROS_WARN("%s",ex.what());
+        return 0;
     }
-    return ret;
 }

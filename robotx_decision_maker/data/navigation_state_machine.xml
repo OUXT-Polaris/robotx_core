@@ -9,6 +9,7 @@
     <transition from = "heading_to_next_waypoint" to="moving_to_next_waypoint" name="head_to_next_target"/>
     <transition from = "heading_to_next_waypoint" to="obstacle_avoid" name="obstacle_found"/>
 
+    <transition from = "moving_to_next_waypoint" to="heading_to_next_waypoint" name="heading_slipped"/>
     <transition from = "moving_to_next_waypoint" to="align_to_next_waypoint" name="moved_to_next_target"/>
     <transition from = "moving_to_next_waypoint" to="obstacle_avoid" name="obstacle_found"/>
 
