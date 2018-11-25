@@ -15,7 +15,6 @@
 #include <nav_msgs/Odometry.h>
 #include <visualization_msgs/Marker.h>
 #include <tf/transform_datatypes.h>
-#include <jsk_rviz_plugins/OverlayText.h>
 #include <geometry_msgs/Pose2D.h>
 
 //headers in Boost
