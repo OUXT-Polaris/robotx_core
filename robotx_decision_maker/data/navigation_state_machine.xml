@@ -4,7 +4,7 @@
     <transition from = "navigation_start" to="load_next_waypoint" name="navigation_start"/>
 
     <transition from = "load_next_waypoint" to="heading_to_next_waypoint" name="next_waypoint_found"/>
-    <transition from = "load_next_waypoint" to="navigation_finished" name="reach_last_waypoint"/>
+    <transition from = "load_next_waypoint" to="navigation_finished" name="next_waypoint_not_found"/>
 
     <transition from = "heading_to_next_waypoint" to="moving_to_next_waypoint" name="head_to_next_target"/>
     <transition from = "heading_to_next_waypoint" to="obstacle_avoid" name="obstacle_found"/>
@@ -27,5 +27,5 @@
     <transition from = "go_straight" to="obstacle_avoid" name="go_straight_finished"/>
 
     <transition from = "align_to_next_waypoint" to="obstacle_avoid" name="obstacle_found"/>
-    <transition from = "align_to_next_waypoint" to="load_next_waypoint" name="next_waypoint_found"/>
+    <transition from = "align_to_next_waypoint" to="load_next_waypoint" name="waypoint_reached"/>
 </state_machine>

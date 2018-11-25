@@ -35,6 +35,7 @@ private:
     ros::Subscriber robot_pose_sub_;
     ros::Publisher marker_pub_;
     ros::Publisher waypoint_pub_;
+    ros::Publisher trigger_event_pub_;
     std::mutex mutex_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
@@ -44,7 +45,7 @@ private:
     void publish_marker_();
     void robot_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg);
     void navigation_status_callback_(robotx_msgs::State msg);
-    void update_waypoint_();
+    bool load_next_waypoint_();
     boost::optional<int> get_nearest_wayppoint_(const geometry_msgs::PoseStamped::ConstPtr msg);
     std::vector<std::string> split_(std::string& input, char delimiter);
 };

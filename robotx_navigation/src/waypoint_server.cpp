@@ -33,8 +33,9 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
         }
         waypoints_.push_back(pose);
     }
+    trigger_event_pub_ = nh_.advertise<robotx_msgs::Event>("/robotx_state_machine_node/navigation_state_machine/trigger_event",1);
     marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker",1);
-    waypoint_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(ros::this_node::getName()+"/next_waypoint",1);
+    waypoint_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(ros::this_node::getName()+"/next_waypoint",1,true);
     robot_pose_sub_ = nh_.subscribe(robot_pose_topic_, 1, &waypoint_server::robot_pose_callback_, this);
     navigation_status_sub_ = nh_.subscribe("/robotx_state_machine_node/navigation_state_machine/current_state",
         1, &waypoint_server::navigation_status_callback_, this);
@@ -128,34 +129,33 @@ void waypoint_server::publish_marker_()
 
 void waypoint_server::navigation_status_callback_(robotx_msgs::State msg)
 {
-    if(msg.current_state == "heading_to_next_waypoint")
+    robotx_msgs::Event event_msg;
+    event_msg.header.stamp = ros::Time::now();
+    if(msg.current_state == "load_next_waypoint")
     {
-        
+        if(load_next_waypoint_())
+        {
+            event_msg.trigger_event_name = "next_waypoint_found";
+            trigger_event_pub_.publish(event_msg);
+            waypoint_pub_.publish(waypoints_[target_waypoint_index_]);
+        }
+        else
+        {
+            event_msg.trigger_event_name = "next_waypoint_not_found";
+            trigger_event_pub_.publish(event_msg);            
+        }
     }
-    /*
-    if(msg.status == msg.NAVIGATION_COMPLETE)
-    {
-        update_waypoint_();
-    }
-    if(first_waypoint_finded_)
-    {
-        geometry_msgs::PoseStamped pose_msg;
-        pose_msg = waypoints_.waypoints[target_waypoint_index_].pose;
-        waypoint_pub_.publish(pose_msg);
-    }
-    */
     return;
 }
 
-void waypoint_server::update_waypoint_()
+bool waypoint_server::load_next_waypoint_()
 {
-    /*
-    if(target_waypoint_index_ != (waypoints_.waypoints.size()-1))
+    if(target_waypoint_index_ != (waypoints_.size()-1))
     {
-        target_waypoint_index_ = target_waypoint_index_ + 1;
+        target_waypoint_index_++;
+        return true;
     }
-    */
-    return;
+    return false;
 }
 
 void waypoint_server::robot_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg)
