@@ -65,7 +65,7 @@ void carrot_planner::_goal_pose_callback(geometry_msgs::PoseStamped msg)
         }
         catch(tf2::TransformException &ex)
         {
-            ROS_ERROR("%s",ex.what());
+            ROS_WARN("%s",ex.what());
             lock.unlock();
             return;
         }
@@ -124,11 +124,11 @@ void carrot_planner::_publish_twist_cmd()
         {
             try
             {
-                transform_stamped = _tf_buffer.lookupTransform(_robot_frame, _map_frame,ros::Time(0));
+                transform_stamped = _tf_buffer.lookupTransform(_robot_frame, _map_frame, ros::Time(0), ros::Duration(3.0));
             }
             catch(tf2::TransformException &ex)
             {
-                ROS_ERROR("%s",ex.what());
+                ROS_WARN("%s",ex.what());
                 text.text = "failed to transform goal pose";
                 _status_text_pub.publish(text);
                 lock.unlock();
