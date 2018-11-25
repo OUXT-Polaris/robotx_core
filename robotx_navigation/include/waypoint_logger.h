@@ -2,8 +2,8 @@
 #define WAYPOINT_LOGGER_H_INCLUDED
 
 //headers in robotx_packages
-#include <robotx_msgs/WayPointArray.h>
-#include <robotx_msgs/WayPoint.h>
+//#include <robotx_msgs/WayPointArray.h>
+//#include <robotx_msgs/WayPoint.h>
 
 //headers in ROS
 #include <ros/ros.h>
