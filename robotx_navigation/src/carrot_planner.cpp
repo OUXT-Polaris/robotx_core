@@ -139,11 +139,12 @@ void carrot_planner::_publish_twist_cmd()
             rate.sleep();
             continue;
         }
+        boost::optional<double> diff_yaw_to_target = _get_diff_yaw_to_target();
         if(_current_state->current_state == "heading_to_next_waypoint")
         {
-            if(std::fabs(_get_diff_yaw_to_target()) > 0.05)
+            if(diff_yaw_to_target && std::fabs(*diff_yaw_to_target) > 0.05)
             {
-                if(_get_diff_yaw_to_target() > 0)
+                if(diff_yaw_to_target && *diff_yaw_to_target > 0)
                 {
                     geometry_msgs::Twist twist_cmd;
                     twist_cmd.angular.z = 0.1;
@@ -183,7 +184,7 @@ void carrot_planner::_publish_twist_cmd()
                 rate.sleep();
                 continue;
             }
-            else if(std::fabs(_get_diff_yaw_to_target()) > 0.1)
+            else if(diff_yaw_to_target && std::fabs(*diff_yaw_to_target > 0.1))
             {
                 geometry_msgs::Twist twist_cmd;
                 _twist_pub.publish(twist_cmd);
@@ -204,13 +205,61 @@ void carrot_planner::_publish_twist_cmd()
         }
         if(_current_state->current_state == "align_to_next_waypoint")
         {
+            boost::optional<double> diff_yaw = _get_diff_yaw();
+            if(diff_yaw && *diff_yaw > 0.1)
+            {
+                geometry_msgs::Twist twist_cmd;
+                twist_cmd.angular.z = -0.1;
+                _twist_pub.publish(twist_cmd);
+                rate.sleep();
+                continue;
+            }
+            if(diff_yaw && *diff_yaw < -0.1)
+            {
+                geometry_msgs::Twist twist_cmd;
+                twist_cmd.angular.z = 0.1;
+                _twist_pub.publish(twist_cmd);
+                rate.sleep();
+                continue;
+            }
+            if(diff_yaw && std::fabs(*diff_yaw) <= 0.1)
+            {
+                geometry_msgs::Twist twist_cmd;
+                _twist_pub.publish(twist_cmd);
+                robotx_msgs::Event event_msg;
+                event_msg.trigger_event_name = "waypoint_reached";
+                _trigger_event_pub.publish(event_msg);
+                rate.sleep();
+                continue;
+            }
         }
         rate.sleep();
     }
     return;
 }
 
-double carrot_planner::_get_diff_yaw_to_target()
+boost::optional<double> carrot_planner::_get_diff_yaw()
+{
+    geometry_msgs::TransformStamped transform_stamped;
+    geometry_msgs::PoseStamped transformed_goal_pose;
+    try
+    {
+        transform_stamped = _tf_buffer.lookupTransform(_robot_frame, _map_frame, ros::Time(0));
+        tf2::doTransform(_goal_pose, transformed_goal_pose, transform_stamped);
+        tf::Quaternion quat(transformed_goal_pose.pose.orientation.x,transformed_goal_pose.pose.orientation.y,
+            transformed_goal_pose.pose.orientation.z,transformed_goal_pose.pose.orientation.w);
+        double r,p,y;
+        tf::Matrix3x3(quat).getRPY(r, p, y);
+        return y;
+    }
+    catch(tf2::TransformException &ex)
+    {
+        ROS_WARN("%s",ex.what());
+        return boost::none;
+    }
+}
+
+boost::optional<double> carrot_planner::_get_diff_yaw_to_target()
 {
     geometry_msgs::TransformStamped transform_stamped;
     geometry_msgs::PoseStamped transformed_goal_pose;
@@ -224,6 +273,6 @@ double carrot_planner::_get_diff_yaw_to_target()
     catch(tf2::TransformException &ex)
     {
         ROS_WARN("%s",ex.what());
-        return 0;
+        return boost::none;
     }
 }

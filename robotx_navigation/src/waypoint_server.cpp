@@ -142,7 +142,7 @@ void waypoint_server::navigation_status_callback_(robotx_msgs::State msg)
         else
         {
             event_msg.trigger_event_name = "next_waypoint_not_found";
-            trigger_event_pub_.publish(event_msg);            
+            trigger_event_pub_.publish(event_msg);
         }
     }
     return;

@@ -1,7 +1,7 @@
 goal_topic: /waypoint_server_node/next_waypoint
 linear_velocity_topic: /carrot_planner_node/linear_velocity
 twist_topic: /carrot_planner_node/cmd_vel
-default_torelance: 3.0
+default_torelance: 1.0
 default_linear_velocity: 1.5
 robot_frame: base_link
 map_frame: map
