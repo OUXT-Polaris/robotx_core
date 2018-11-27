@@ -2,4 +2,3 @@ waypoint_csv_filename: waypoints.csv
 robot_frame: base_link
 map_frame: map
 robot_pose_topic: /robot_pose
-search_angle: 1.57

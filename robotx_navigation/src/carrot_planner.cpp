@@ -209,7 +209,7 @@ void carrot_planner::_publish_twist_cmd()
             if(diff_yaw && *diff_yaw > 0.1)
             {
                 geometry_msgs::Twist twist_cmd;
-                twist_cmd.angular.z = -0.1;
+                twist_cmd.angular.z = 0.1;
                 _twist_pub.publish(twist_cmd);
                 rate.sleep();
                 continue;
@@ -217,7 +217,7 @@ void carrot_planner::_publish_twist_cmd()
             if(diff_yaw && *diff_yaw < -0.1)
             {
                 geometry_msgs::Twist twist_cmd;
-                twist_cmd.angular.z = 0.1;
+                twist_cmd.angular.z = -0.1;
                 _twist_pub.publish(twist_cmd);
                 rate.sleep();
                 continue;
@@ -272,7 +272,7 @@ boost::optional<double> carrot_planner::_get_diff_yaw_to_target()
     }
     catch(tf2::TransformException &ex)
     {
-        ROS_WARN("%s",ex.what());
+        //ROS_WARN("%s",ex.what());
         return boost::none;
     }
 }
