@@ -130,6 +130,10 @@ void waypoint_server::navigation_status_callback_(robotx_msgs::State msg)
 {
     robotx_msgs::Event event_msg;
     event_msg.header.stamp = ros::Time::now();
+    if(msg.current_state == "navigation_start")
+    {
+        target_waypoint_index_ = -1;
+    }
     if(msg.current_state == "load_next_waypoint")
     {
         if(load_next_waypoint_())
