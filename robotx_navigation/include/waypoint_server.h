@@ -41,7 +41,6 @@ private:
     tf2_ros::TransformListener tf_listener_;
     int target_waypoint_index_;
     volatile bool first_waypoint_finded_;
-    double search_angle_;
     void publish_marker_();
     void robot_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg);
     void navigation_status_callback_(robotx_msgs::State msg);
