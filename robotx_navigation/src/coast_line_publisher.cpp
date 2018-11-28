@@ -5,13 +5,39 @@ coast_line_publisher::coast_line_publisher(ros::NodeHandle nh, ros::NodeHandle p
     nh_ = nh;
     pnh_ = pnh;
     pnh_.param<double>("range", range_, 0.0);
-    pnh_.param<std::string>("fix_topic", fix_topic_, ros::this_node::getName()+"/fix");
-    pnh_.param<std::string>("geographic_map_topic", geographic_map_topic_, ros::this_node::getName()+"/geographic_map");
-    coast_line_pub_ = pnh_.advertise<robotx_msgs::CoastLineArray>("coast_lines",10);
-    marker_pub_ = pnh_.advertise<visualization_msgs::Marker>("marker",10);
-    utm_area_buf_ = boost::circular_buffer<int>(2);
-    fix_sub_ = nh_.subscribe(fix_topic_,10,&coast_line_publisher::fix_callback_,this);
-    geographic_map_sub_ = nh_.subscribe(geographic_map_topic_,10,&coast_line_publisher::map_callback_,this);
+    pnh_.param<bool>("enable_publish_marker", enable_publish_marker_, true);
+    pnh_.param<std::string>("coast_line_csv_filename", coast_line_csv_filename_,"/coastline.csv");
+    pnh_.param<std::string>("world_frame", world_frame_,"world");
+    coast_line_pub_ = pnh_.advertise<robotx_msgs::CoastLineArray>("coast_lines",1,true);
+    if(enable_publish_marker_ == true)
+    {
+        marker_pub_ = pnh_.advertise<visualization_msgs::MarkerArray>("marker",1);
+    }
+    coast_line_csv_filepath_ = ros::package::getPath("robotx_navigation")+"/data/"+coast_line_csv_filename_;
+    std::ifstream ifs(coast_line_csv_filepath_.c_str());
+    std::string line;
+    current_coast_lines_.header.frame_id = world_frame_;
+    while (getline(ifs, line))
+    {
+        std::vector<std::string> strvec = split_(line, ',');
+        robotx_msgs::CoastLine coast_line;
+        coast_line.header.frame_id = world_frame_;
+        try
+        {
+            coast_line.start_point.x = std::stod(strvec[0].c_str());
+            coast_line.start_point.y = std::stod(strvec[1].c_str());
+            coast_line.start_point.z = 0;
+            coast_line.end_point.x = std::stod(strvec[4].c_str());
+            coast_line.end_point.y = std::stod(strvec[5].c_str());
+            coast_line.end_point.z = 0;
+        }
+        catch(...)
+        {
+            ROS_ERROR_STREAM("failed to load coastline.");
+            std::exit(-1);
+        }
+        current_coast_lines_.coast_lines.push_back(coast_line);
+    }
 }
 
 coast_line_publisher::~coast_line_publisher()
@@ -19,142 +45,77 @@ coast_line_publisher::~coast_line_publisher()
 
 }
 
-boost::optional<point_with_area> coast_line_publisher::query_point_(int node_id, std::vector<point_with_area> points_in_area)
+void coast_line_publisher::run()
 {
-    point_with_area point;
-    for(auto point_itr = points_in_area.begin(); point_itr != points_in_area.end(); point_itr++)
-    {
-        if(point_itr->node_id == node_id)
-        {
-            return point;
-        }
-    }
-    return boost::none;
-}
-
-point_with_area coast_line_publisher::convert_geopoint_(robotx_msgs::GeographicPoint geopoint)
-{
-    point_with_area point;
-    point.area = LatLonToUTMXY(geopoint.geographic_point.latitude,geopoint.geographic_point.longitude,
-        0,point.point.x,point.point.y);
-    point.node_id = geopoint.node_id;
-    return point;
-}
-
-void coast_line_publisher::fix_callback_(const sensor_msgs::NavSatFixConstPtr msg)
-{
-    std::lock_guard<std::mutex> lock(mtx_);
-    double x,y;
-    utm_area_buf_.push_back(LatLonToUTMXY(msg->latitude,msg->longitude,0,x,y));
-    /*
-    if(utm_area_buf_.size() == 1)
-    {
-        current_coast_lines_ = get_coast_lines_();
-        generate_marker_();
-    }
-    else if(utm_area_buf_[1] != utm_area_buf_[0])
-    {
-        current_coast_lines_ = get_coast_lines_();
-        generate_marker_();
-    }
-    */
-    current_coast_lines_ = get_coast_lines_();
-    generate_marker_();
     coast_line_pub_.publish(current_coast_lines_);
-    publish_marker_();
-    return;
+    if(enable_publish_marker_ == true)
+    {
+        generate_marker_();
+    }
+    ros::Rate rate(1);
+    while(ros::ok())
+    {
+        if(enable_publish_marker_ == true)
+        {
+            publish_marker_();
+        }
+        rate.sleep();
+    }
+}
+
+std::vector<std::string> coast_line_publisher::split_(std::string& input, char delimiter)
+{
+    std::istringstream stream(input);
+    std::string field;
+    std::vector<std::string> result;
+    while (getline(stream, field, delimiter))
+    {
+        result.push_back(field);
+    }
+    return result;
 }
 
 void coast_line_publisher::publish_marker_()
 {
-    marker_.header.stamp = ros::Time::now();
+    ros::Time now = ros::Time::now();
+    for(auto marker_itr = marker_.markers.begin(); marker_itr != marker_.markers.end(); marker_itr++)
+    {
+        marker_itr->header.stamp = now;
+    }
     marker_pub_.publish(marker_);
     return;
 }
 
 void coast_line_publisher::generate_marker_()
 {
-    marker_.type = marker_.LINE_LIST;
-    marker_.header.frame_id = world_frame_;
-    marker_.action = marker_.ADD;
-    marker_.ns = "coast_line";
-    marker_.points.clear();
-    marker_.colors.clear();
+    marker_.markers.clear();
+   int current_id = 0;
     for(auto coast_line_itr = current_coast_lines_.coast_lines.begin(); coast_line_itr != current_coast_lines_.coast_lines.end(); coast_line_itr++)
     {
-        marker_.points.push_back(coast_line_itr->start_point);
-        marker_.points.push_back(coast_line_itr->end_point);
-        std_msgs::ColorRGBA color;
-        color.r = 0;
-        color.g = 1;
-        color.b = 0;
-        color.a = 1;
-        marker_.colors.push_back(color);
+        visualization_msgs::Marker single_marker;
+        single_marker.header.frame_id = world_frame_;
+        single_marker.type = visualization_msgs::Marker::CYLINDER;
+        single_marker.action = visualization_msgs::Marker::ADD;
+        single_marker.frame_locked = true;
+        single_marker.ns = "coast_line";
+        single_marker.id = current_id;
+        single_marker.pose.position.x = (coast_line_itr->start_point.x + coast_line_itr->end_point.x)/2;
+        single_marker.pose.position.y = (coast_line_itr->start_point.y + coast_line_itr->end_point.y)/2;
+        single_marker.pose.position.z = 0;
+        double yaw = std::atan2(coast_line_itr->start_point.y - coast_line_itr->end_point.y, 
+            coast_line_itr->start_point.x - coast_line_itr->end_point.x);
+        tf::Quaternion quaternion = tf::createQuaternionFromRPY(0,M_PI/2,yaw);
+        quaternionTFToMsg(quaternion, single_marker.pose.orientation);
+        single_marker.scale.x = 1.0;
+        single_marker.scale.y = 1.0;
+        single_marker.scale.z = std::sqrt(std::pow(coast_line_itr->start_point.y-coast_line_itr->end_point.y,2)
+            +std::pow(coast_line_itr->start_point.x-coast_line_itr->end_point.x,2));
+        single_marker.color.r = 1;
+        single_marker.color.g = 0;
+        single_marker.color.b = 0;
+        single_marker.color.a = 1;
+        marker_.markers.push_back(single_marker);
+        current_id++;
     }
     return;
-}
-
-void coast_line_publisher::map_callback_(const robotx_msgs::GeographicMapConstPtr msg)
-{
-    std::lock_guard<std::mutex> lock(mtx_);
-    world_frame_ = msg->header.frame_id;
-    all_lines_ = msg->lines;
-    std::vector<robotx_msgs::GeographicPoint> all_geo_points = msg->points;
-    for(auto geo_point_itr = all_geo_points.begin(); geo_point_itr != all_geo_points.end(); geo_point_itr++)
-    {
-        all_points_.push_back(convert_geopoint_(*geo_point_itr));
-    }
-    utm_area_buf_.clear();
-    return;
-}
-
-robotx_msgs::CoastLineArray coast_line_publisher::get_coast_lines_()
-{
-    robotx_msgs::CoastLineArray coast_lines;
-    std::vector<point_with_area> points_in_area = filter_points_();
-    ros::Time now = ros::Time::now();
-    coast_lines.header.frame_id = world_frame_;
-    coast_lines.header.stamp = now;
-    for(auto line_itr = all_lines_.begin(); line_itr != all_lines_.end(); line_itr++)
-    {
-        boost::optional<point_with_area> start_point = query_point_(line_itr->start_node_id,points_in_area);
-        boost::optional<point_with_area> end_point = query_point_(line_itr->end_node_id,points_in_area);
-        if(start_point && end_point)
-        {
-            robotx_msgs::CoastLine line;
-            line.header.frame_id = world_frame_;
-            line.header.stamp = now; 
-            line.start_point = start_point->point;
-            line.end_point = end_point->point;
-            coast_lines.coast_lines.push_back(line);
-        }
-    }
-    return coast_lines;
-}
-
-std::vector<point_with_area> coast_line_publisher::filter_points_()
-{
-    std::vector<point_with_area> points_in_area_;
-    if(utm_area_buf_.size() == 0)
-    {
-        return points_in_area_;
-    }
-    for(auto point_itr = all_points_.begin(); point_itr != all_points_.end(); point_itr++)
-    {
-        if(utm_area_buf_.size() == 1)
-        {
-            if(point_itr->area != utm_area_buf_[0])
-            {
-                points_in_area_.push_back(*point_itr);
-            }
-        }
-        if(utm_area_buf_.size() == 2)
-        {
-            if(point_itr->area != utm_area_buf_[1])
-            {
-                points_in_area_.push_back(*point_itr);
-            }
-        }
-    }
-    return points_in_area_;
 }

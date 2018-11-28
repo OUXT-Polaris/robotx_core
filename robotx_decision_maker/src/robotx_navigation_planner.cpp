@@ -32,17 +32,30 @@ void robotx_navigation_planner::publish_cmd_vel_()
     while(ros::ok())
     {
         mtx_.lock();
-        //if(waypoint_planner_cmd_ && obstacle_avoid_cmd_)
-        //{
-            if(current_state_ && current_state_->current_state == "obstacle_avoid")
+        if(current_state_)
+        {
+            if(current_state_->current_state == "navigation_start"
+                || current_state_->current_state == "navigation_finished")
             {
-                cmd_vel_pub_.publish(*obstacle_avoid_cmd_);
             }
-            else
+            if(current_state_->current_state == "obstacle_avoid")
             {
-                cmd_vel_pub_.publish(*waypoint_planner_cmd_);                
+                if(obstacle_avoid_cmd_)
+                {
+                    cmd_vel_pub_.publish(*obstacle_avoid_cmd_);
+                }
             }
-        //}
+            if(current_state_->current_state == "heading_to_next_waypoint"
+                || current_state_->current_state == "moving_to_next_waypoint"
+                || current_state_->current_state == "align_to_next_waypoint"
+                || current_state_->current_state == "go_straight")
+            {
+                if(waypoint_planner_cmd_)
+                {
+                    cmd_vel_pub_.publish(*waypoint_planner_cmd_);
+                }
+            }
+        }
         mtx_.unlock();
         rate.sleep();
     }

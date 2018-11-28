@@ -132,6 +132,10 @@ target_link_libraries(pointcloud_merger_node ${catkin_LIBRARIES})
 #target_link_libraries(pointcloud_merger_nodelet ${catkin_LIBRARIES})
 #clang_format(pointcloud_merger_nodelet)
 
+set(pcl_plane_removal_src src/pcl_plane_removal.cpp)
+add_executable(pcl_plane_removal_node src/pcl_plane_removal_node.cpp ${pcl_plane_removal_src})
+target_link_libraries(pcl_plane_removal_node ${catkin_LIBRARIES})
+
 option(USE_CNN "Use CNN" OFF)
 
 # cnn_prediction
@@ -171,7 +175,7 @@ endif()
 # CPP Execution programs
 if(USE_CNN)
   set(CPP_EXEC_NAMES
-    euclidean_clustering_node passthrough_filter_node pointcloud_merger_node object_bbox_extractor_node cnn_prediction_node
+    euclidean_clustering_node passthrough_filter_node pointcloud_merger_node object_bbox_extractor_node cnn_prediction_node pcl_plane_removal_node
     #object_recognition_node hsv_buoy_detector_node bing_object_detection_node
     )
   foreach(cpp_exec_names ${CPP_EXEC_NAMES})
@@ -181,7 +185,7 @@ if(USE_CNN)
   endforeach(cpp_exec_names)
 else()
 set(CPP_EXEC_NAMES
-  euclidean_clustering_node passthrough_filter_node pointcloud_merger_node object_bbox_extractor_node #cnn_prediction_node
+  euclidean_clustering_node passthrough_filter_node pointcloud_merger_node object_bbox_extractor_node pcl_plane_removal_node #cnn_prediction_node
   #object_recognition_node hsv_buoy_detector_node bing_object_detection_node
   )
   foreach(cpp_exec_names ${CPP_EXEC_NAMES})

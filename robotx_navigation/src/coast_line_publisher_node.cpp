@@ -10,6 +10,6 @@ int main(int argc, char *argv[])
     ros::NodeHandle nh_;
     ros::NodeHandle pnh_("~");
     coast_line_publisher publisher(nh_,pnh_);
-    ros::spin();
+    publisher.run();
     return 0;
 }

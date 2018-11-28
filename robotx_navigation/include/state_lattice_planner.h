@@ -1,0 +1,44 @@
+#ifndef STATE_LATTICE_PLANNER
+#define STATE_LATTICE_PLANNER
+
+//headers in ROS
+#include <nav_msgs/Path.h>
+#include <nav_msgs/Odometry.h>
+#include <geometry_msgs/Pose2D.h>
+#include <tf2_ros/transform_listener.h>
+
+//headers in this message
+#include <robotx_msgs/ObstacleMap.h>
+
+//headers in boost
+#include <boost/optional.hpp>
+
+struct state_lattice_parameters
+{
+    double max_angular_acceleration;
+    double min_angular_acceleration;
+    double max_linear_acceleration;
+    double min_linear_acceleration;
+    double max_linear_velocity;
+    double min_linear_velocity;
+    double max_angular_velocity;
+    double step_duration_;
+    int num_predictions;
+    int num_samples_angular;
+    int num_samples_linear;
+};
+
+class state_lattice_planner
+{
+public:
+    state_lattice_planner(state_lattice_parameters params);
+    ~state_lattice_planner();
+    boost::optional<geometry_msgs::Twist> plan(robotx_msgs::ObstacleMap map, nav_msgs::Odometry odom, geometry_msgs::Pose2D target_pose);
+private:
+    state_lattice_parameters params_;
+    std::vector<geometry_msgs::Pose2D> generate_path(nav_msgs::Odometry odom, double linear_acceleration, double angular_acceleration);
+    double get_nearest_obstacle_distance_(robotx_msgs::ObstacleMap map, std::vector<geometry_msgs::Pose2D> path);
+    double evaluate_function_(double nearest_obstacle_distance, geometry_msgs::Pose2D end_pose, geometry_msgs::Pose2D target_pose);
+};
+
+#endif  //STATE_LATTICE_PLANNER
