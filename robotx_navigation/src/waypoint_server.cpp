@@ -2,7 +2,7 @@
 
 waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
 {
-    first_waypoint_finded_ = false;
+    target_waypoint_index_ = -1;
     std::string waypoint_csv_filename;
     nh_.param<std::string>(ros::this_node::getName()+"/waypoint_csv_filename", waypoint_csv_filename, "waypoints.csv");
     nh_.param<std::string>(ros::this_node::getName()+"/robot_frame", robot_frame_, "base_link");
@@ -36,7 +36,7 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker",1);
     waypoint_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(ros::this_node::getName()+"/next_waypoint",1,true);
     robot_pose_sub_ = nh_.subscribe(robot_pose_topic_, 1, &waypoint_server::robot_pose_callback_, this);
-    navigation_status_sub_ = nh_.subscribe("/robotx_state_machine_node/navigation_state_machine/current_state",
+    navigation_status_sub_ = nh_.subscribe("/robotx_state_machine_node/navigation_state_machine/state_changed",
         1, &waypoint_server::navigation_status_callback_, this);
     boost::thread marker_thread(boost::bind(&waypoint_server::publish_marker_, this));
 }
@@ -75,7 +75,7 @@ void waypoint_server::publish_marker_()
             marker.type = marker.ARROW;
             marker.action = marker.MODIFY;
             marker.pose = waypoints_[i].pose;
-            if(first_waypoint_finded_ && target_waypoint_index_ == i)
+            if(target_waypoint_index_ == i)
             {
                 marker.color.r = 1;
                 marker.color.g = 0;
@@ -126,14 +126,10 @@ void waypoint_server::publish_marker_()
     return;
 }
 
-void waypoint_server::navigation_status_callback_(robotx_msgs::State msg)
+void waypoint_server::navigation_status_callback_(robotx_msgs::StateChanged msg)
 {
     robotx_msgs::Event event_msg;
     event_msg.header.stamp = ros::Time::now();
-    if(msg.current_state == "navigation_start")
-    {
-        target_waypoint_index_ = -1;
-    }
     if(msg.current_state == "load_next_waypoint")
     {
         if(load_next_waypoint_())
@@ -163,14 +159,10 @@ bool waypoint_server::load_next_waypoint_()
 
 void waypoint_server::robot_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg)
 {
-    if(first_waypoint_finded_ == false)
+    boost::optional<int> nearest_wayppoint_index = get_nearest_wayppoint_(msg);
+    if(nearest_wayppoint_index)
     {
-        boost::optional<int> nearest_wayppoint_index = get_nearest_wayppoint_(msg);
-        if(nearest_wayppoint_index)
-        {
-            target_waypoint_index_ = nearest_wayppoint_index.get();
-            first_waypoint_finded_ = true;
-        }
+        target_waypoint_index_ = nearest_wayppoint_index.get();
     }
     return;
 }

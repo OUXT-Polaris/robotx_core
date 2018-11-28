@@ -4,6 +4,7 @@
 //headers in robotx_packages
 #include "state_machine.h"
 #include <robotx_msgs/State.h>
+#include <robotx_msgs/StateChanged.h>
 #include <robotx_msgs/Event.h>
 
 //headers in STL
@@ -28,6 +29,7 @@ private:
     std::shared_ptr<state_machine> state_machine_ptr_;
     ros::NodeHandle nh_;
     ros::Publisher current_state_pub_;
+    ros::Publisher state_changed_pub_;
     ros::Subscriber trigger_event_sub_;
     std::string state_machine_name_;
     double publish_rate_;

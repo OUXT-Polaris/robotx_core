@@ -38,6 +38,7 @@ add_message_files(
   #NavigationStatus.msg
   Event.msg
   State.msg
+  StateChanged.msg
   CoastLine.msg
   CoastLineArray.msg
   ObstacleMap.msg
