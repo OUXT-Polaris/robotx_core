@@ -42,6 +42,7 @@ add_message_files(
   CoastLine.msg
   CoastLineArray.msg
   ObstacleMap.msg
+  FieldMap.msg
 )
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
