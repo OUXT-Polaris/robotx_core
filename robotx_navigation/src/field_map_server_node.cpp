@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
     ros::NodeHandle nh;
     ros::NodeHandle pnh("~");
     field_map_server server(nh,pnh);
+    server.run();
     ros::spin();
     return 0;
 }
