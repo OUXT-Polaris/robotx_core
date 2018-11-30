@@ -6,6 +6,7 @@ field_map_server::field_map_server(ros::NodeHandle nh,ros::NodeHandle pnh)
     pnh_ = pnh;
     pnh_.param<std::string>("map_frame", map_frame_, "map");
     field_map_pub_ = nh_.advertise<robotx_msgs::FieldMap>("/field_map",1,true);
+    marker_pub_ = nh_.advertise<robotx_msgs::FieldMap>("/field_map/marker",1,true);
 }
 
 field_map_server::~field_map_server()
@@ -17,6 +18,7 @@ void field_map_server::run()
 {
     load_();
     field_map_pub_.publish(field_map_);
+    marker_pub_.publish(markers_);
     return;
 }
 
@@ -28,17 +30,37 @@ void field_map_server::load_()
     field_map_.header.frame_id = map_frame_;
     std::ifstream green_ifs(green_buoy_csv.c_str());
     std::string green_line;
+    int i = 0;
     while (getline(green_ifs, green_line))
     {
+        visualization_msgs::Marker marker_msg;
         std::vector<std::string> strvec = split_(green_line, ',');
         geometry_msgs::Point p;
         p.x = std::stod(strvec[0]);
         p.y = std::stod(strvec[1]);
         p.z = std::stod(strvec[2]);
         field_map_.green_buoys.push_back(p);
+        marker_msg.header.frame_id = map_frame_;
+        marker_msg.ns = "green_buoy";
+        marker_msg.action = marker_msg.ADD;
+        marker_msg.type = marker_msg.MESH_RESOURCE;
+        marker_msg.id = i;
+        marker_msg.pose.position = p;
+        marker_msg.pose.orientation.x = 0;
+        marker_msg.pose.orientation.y = 0;
+        marker_msg.pose.orientation.z = 0;
+        marker_msg.pose.orientation.w = 1;
+        marker_msg.scale.x = 1;
+        marker_msg.scale.y = 1;
+        marker_msg.scale.z = 1;
+        marker_msg.frame_locked = true;
+        marker_msg.mesh_resource = "package://robotx_gazebo/models/surmark950400/mesh/surmark950400.dae";
+        markers_.markers.push_back(marker_msg);
+        i++;
     }
     std::ifstream red_ifs(red_buoy_csv.c_str());
     std::string red_line;
+    i = 0;
     while (getline(red_ifs, red_line))
     {
         std::vector<std::string> strvec = split_(red_line, ',');
@@ -50,6 +72,7 @@ void field_map_server::load_()
     }
     std::ifstream white_ifs(white_buoy_csv.c_str());
     std::string white_line;
+    i = 0;
     while (getline(white_ifs, white_line))
     {
         std::vector<std::string> strvec = split_(white_line, ',');

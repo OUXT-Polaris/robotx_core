@@ -4,6 +4,7 @@
 //headers in ROS
 #include <ros/ros.h>
 #include <ros/package.h>
+#include <visualization_msgs/MarkerArray.h>
 
 //headers in this package
 #include <robotx_msgs/FieldMap.h>
@@ -21,10 +22,12 @@ private:
     ros::NodeHandle nh_;
     ros::NodeHandle pnh_;
     ros::Publisher field_map_pub_;
+    ros::Publisher marker_pub_;
     robotx_msgs::FieldMap field_map_;
     std::string map_frame_;
     void load_();
     std::vector<std::string> split_(std::string& input, char delimiter);
+    visualization_msgs::MarkerArray markers_;
 };
 
 #endif  //FIELD_MAP_SERVER_H_INCLUDED
