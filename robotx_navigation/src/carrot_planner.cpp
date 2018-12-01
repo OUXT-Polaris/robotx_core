@@ -19,6 +19,7 @@ carrot_planner::carrot_planner() : _tf_listener(_tf_buffer)
     _current_stete_sub = _nh.subscribe("/robotx_state_machine_node/navigation_state_machine/current_state",1,&carrot_planner::_current_state_callback,this);
     _configure_sub = _nh.subscribe(ros::this_node::getName()+"/configure",1,&carrot_planner::_configure_callback,this);
     _robot_pose_sub = _nh.subscribe("/robot_pose",1,&carrot_planner::_robot_pose_callback,this);
+    _goal_pose_sub = _nh.subscribe(_goal_topic,1,&carrot_planner::_goal_pose_callback,this);
 }
 
 carrot_planner::~carrot_planner()
@@ -80,7 +81,7 @@ void carrot_planner::_goal_pose_callback(geometry_msgs::PoseStamped msg)
     {
         try
         {
-            transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg.header.frame_id,ros::Time(0));
+            transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg.header.frame_id,ros::Time(0),ros::Duration(1));
             tf2::doTransform(msg, _goal_pose, transform_stamped);
         }
         catch(tf2::TransformException &ex)
@@ -116,24 +117,21 @@ void carrot_planner::_publish_twist_cmd()
     ros::Rate rate(_publish_rate);
     while(ros::ok())
     {
-        if(!_current_state)
+        if(!_current_state || !_goal_recieved)
         {
             rate.sleep();
             continue;
         }
+        /*
+        if()
+        {
+            rate.sleep();
+            continue;
+        }
+        */
         double diff_yaw_to_target = _get_diff_yaw_to_target();
         if(_current_state->current_state == "heading_to_next_waypoint")
         {
-            if(std::sqrt(std::pow(_goal_pose_2d.x-_robot_pose_2d.x,2)-std::pow(_goal_pose_2d.y-_robot_pose_2d.y,2)) < _torelance)
-            {
-                geometry_msgs::Twist twist_cmd;
-                _twist_pub.publish(twist_cmd);
-                robotx_msgs::Event event_msg;
-                event_msg.trigger_event_name = "moved_to_next_target";
-                _trigger_event_pub.publish(event_msg);
-                rate.sleep();
-                continue;
-            }
             if(std::fabs(diff_yaw_to_target) > 0.05)
             {
                 if(diff_yaw_to_target > 0)
