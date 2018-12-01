@@ -122,13 +122,6 @@ void carrot_planner::_publish_twist_cmd()
             rate.sleep();
             continue;
         }
-        /*
-        if()
-        {
-            rate.sleep();
-            continue;
-        }
-        */
         double diff_yaw_to_target = _get_diff_yaw_to_target();
         if(_current_state->current_state == "heading_to_next_waypoint")
         {

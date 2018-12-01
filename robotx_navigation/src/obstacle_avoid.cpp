@@ -14,7 +14,7 @@ obstacle_avoid::obstacle_avoid() : tf_listener_(tf_buffer_)
     nh_.param<std::string>(ros::this_node::getName()+"/current_state_topic", current_state_topic_, ros::this_node::getName()+"current_state");
     nh_.param<std::string>(ros::this_node::getName()+"/trigger_event_topic", trigger_event_topic_, ros::this_node::getName()+"/trigger_event");
     nh_.param<double>(ros::this_node::getName()+"/search_radius", search_radius_, 3.0);
-    nh_.param<double>(ros::this_node::getName()+"/search_angle", search_angle_, 0.3);
+    nh_.param<double>(ros::this_node::getName()+"/search_angle", search_angle_, 1.57);
     twist_cmd_pub_ = nh_.advertise<geometry_msgs::Twist>(cmd_vel_topic_, 10);
     trigger_event_pub_ = nh_.advertise<robotx_msgs::Event>(trigger_event_topic_, 1);
     map_sub_ = nh_.subscribe(map_topic_, 3, &obstacle_avoid::obstacle_map_callback_, this);
@@ -55,8 +55,9 @@ bool obstacle_avoid::obstacle_found_()
     for(int i=0; i<map_.points.size(); i++)
     {
         double yaw = std::atan2(map_.points[i].y,map_.points[i].x);
+        ROS_ERROR_STREAM(yaw);
         double radius = std::sqrt(std::pow(map_.points[i].x,2)+std::pow(map_.points[i].y,2));
-        if(std::fabs(search_angle_) > std::fabs(yaw) && search_radius_ > radius)
+        if(std::fabs(search_angle_) > std::fabs(yaw)) //&& search_radius_ > radius)
         {
             return true;
         }

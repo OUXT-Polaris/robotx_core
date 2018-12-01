@@ -50,6 +50,18 @@ void obstacle_map_server::objects_bbox_callback_(jsk_recognition_msgs::BoundingB
 void obstacle_map_server::generate_obstacle_map_()
 {
   robotx_msgs::ObstacleMap map;
+  geometry_msgs::TransformStamped transform_stamped;
+  try
+  {
+    transform_stamped = tf_buffer_.lookupTransform(params_.map_frame, params_.robot_frame, ros::Time(0), ros::Duration(1));
+  }
+  catch(tf2::TransformException &ex)
+  {
+    ROS_WARN("%s",ex.what());
+    return;
+  }
+  map.header.frame_id = params_.robot_frame;
+  map.header.stamp = ros::Time::now();
   jsk_recognition_msgs::BoundingBoxArray bbox_msg;
   bbox_msg.header.frame_id = params_.map_frame;
   bbox_msg.header.stamp = ros::Time::now();
@@ -58,8 +70,23 @@ void obstacle_map_server::generate_obstacle_map_()
     for(auto bbox_itr = measurements_itr->boxes.begin(); bbox_itr != measurements_itr->boxes.end(); bbox_itr++)
     {
       bbox_msg.boxes.push_back(*bbox_itr);
+      geometry_msgs::PoseStamped transformed_pose;
+      geometry_msgs::PoseStamped obstacle_pose;
+      obstacle_pose.header = measurements_itr->header;
+      obstacle_pose.pose = bbox_itr->pose;
+      tf2::doTransform(obstacle_pose, transformed_pose, transform_stamped);
+      if(bbox_itr->dimensions.x > bbox_itr->dimensions.y)
+      {
+        map.radius.push_back(bbox_itr->dimensions.x);
+      }
+      else
+      {
+        map.radius.push_back(bbox_itr->dimensions.y);
+      }
+      map.points.push_back(transformed_pose.pose.position);
     }
   }
   obstacle_bbox_pub_.publish(bbox_msg);
+  obstacle_map_pub_.publish(map);
   return;
 }
