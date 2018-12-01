@@ -33,8 +33,8 @@ void state_lattice_planner::update_params(robotx_msgs::ObstacleAvoidConfigure pa
 
 boost::optional<geometry_msgs::Twist> state_lattice_planner::plan(robotx_msgs::ObstacleMap map, nav_msgs::Odometry odom, geometry_msgs::Pose2D target_pose)
 {
-    geometry_msgs::Twist ret;
-    std::vector<std::pair<geometry_msgs::Twist,double> > result;
+    std::vector<double> evaluate_values(params_.num_samples_angular*params_.num_samples_linear);
+    std::vector<geometry_msgs::Twist> twists(params_.num_samples_angular*params_.num_samples_linear);
     for(int i=0; i< params_.num_samples_angular; i++)
     {
         for(int m=0; m<params_.num_samples_linear; m++)
@@ -46,9 +46,19 @@ boost::optional<geometry_msgs::Twist> state_lattice_planner::plan(robotx_msgs::O
             std::vector<geometry_msgs::Pose2D> path = generate_path(odom, linear_acceleration, angular_acceleration);
             double nearest_obstacle_distance = get_nearest_obstacle_distance_(map, path);
             double evaluate_value = evaluate_function_(nearest_obstacle_distance, path[path.size()-1], target_pose);
+            evaluate_values[i*params_.num_samples_linear+m] = evaluate_value;
+            geometry_msgs::Twist twist_cmd = odom.twist.twist;
+            twist_cmd.linear.x = twist_cmd.linear.x + linear_acceleration;
+            twist_cmd.angular.z = twist_cmd.angular.z + angular_acceleration;
+            twists[i*params_.num_samples_linear+m] = twist_cmd;
         }
     }
-    return ret;
+    int index = *std::max_element(evaluate_values.begin(), evaluate_values.end());
+    if(evaluate_values[index] == 0)
+    {
+        return boost::none;
+    }
+    return twists[index];
 }
 
 double state_lattice_planner::evaluate_function_(double nearest_obstacle_distance, geometry_msgs::Pose2D end_pose, geometry_msgs::Pose2D target_pose)

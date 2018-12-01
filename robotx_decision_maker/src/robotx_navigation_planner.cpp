@@ -44,6 +44,11 @@ void robotx_navigation_planner::publish_cmd_vel_()
                 {
                     cmd_vel_pub_.publish(*obstacle_avoid_cmd_);
                 }
+                else
+                {
+                    geometry_msgs::Twist empty_cmd;
+                    cmd_vel_pub_.publish(empty_cmd);
+                }
             }
             if(current_state_->current_state == "heading_to_next_waypoint"
                 || current_state_->current_state == "moving_to_next_waypoint"

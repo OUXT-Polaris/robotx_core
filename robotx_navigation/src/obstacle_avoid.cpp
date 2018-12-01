@@ -33,6 +33,13 @@ void obstacle_avoid::current_state_callback_(robotx_msgs::State msg)
 {
     std::lock_guard<std::mutex> lock(mtx_);
     current_state_ = msg;
+    if(!obstacle_found_() && current_state_->current_state == "obstacle_avoid")
+    {
+        robotx_msgs::Event event_msg;
+        event_msg.trigger_event_name = "obstacle_not_found";
+        event_msg.header.stamp = ros::Time::now();
+        trigger_event_pub_.publish(event_msg);
+    }
     return;
 }
 
@@ -48,6 +55,27 @@ void obstacle_avoid::twist_cmd_callback_(const geometry_msgs::Twist::ConstPtr ms
     std::lock_guard<std::mutex> lock(mtx_);
     twist_cmd_recieved_ = true;
     raw_twist_cmd_ = *msg;
+    return;
+}
+
+bool obstacle_avoid::obstacle_found_()
+{
+    for(int i=0; i<map_.points.size(); i++)
+    {
+        double yaw = std::atan2(map_.points[i].y,map_.points[i].x);
+        if(std::fabs(search_angle_) > std::fabs(yaw))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
+{
+    std::lock_guard<std::mutex> lock(mtx_);
+    odom_recieved_ = true;
+    odom_ = *msg;
     if(!current_state_)
     {
         return;
@@ -71,29 +99,25 @@ void obstacle_avoid::twist_cmd_callback_(const geometry_msgs::Twist::ConstPtr ms
             ROS_WARN("%s",ex.what());
             return;
         }
-        //boost::optional<geometry_msgs::Twist> planner_cmd = planner_.plan(map_,odom_,target_pose_2d);
-    }
-    return;
-}
-
-bool obstacle_avoid::obstacle_found_()
-{
-    for(int i=0; i<map_.points.size(); i++)
-    {
-        double yaw = std::atan2(map_.points[i].y,map_.points[i].x);
-        if(std::fabs(search_angle_) > std::fabs(yaw))
+        target_pose_2d.x = target_pose.pose.position.x;
+        target_pose_2d.y = target_pose.pose.position.y;
+        tf2::Quaternion quat(target_pose.pose.orientation.x,target_pose.pose.orientation.y,target_pose.pose.orientation.z,target_pose.pose.orientation.w);
+        double r,p,y;
+        tf2::Matrix3x3(quat).getRPY(r, p, y);
+        target_pose_2d.theta = y;
+        boost::optional<geometry_msgs::Twist> planner_cmd = planner_.plan(map_,odom_,target_pose_2d);
+        if(!planner_cmd)
         {
-            return true;
+            ROS_ERROR_STREAM("All planed path was failed.");
+            geometry_msgs::Twist stop_cmd;
+            twist_cmd_pub_.publish(stop_cmd);
+        }
+        else
+        {
+            ROS_INFO_STREAM("Local path planning succeed.");
+            twist_cmd_pub_.publish(*planner_cmd);
         }
     }
-    return false;
-}
-
-void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
-{
-    std::lock_guard<std::mutex> lock(mtx_);
-    odom_recieved_ = true;
-    odom_ = *msg;
     return;
 }
 
