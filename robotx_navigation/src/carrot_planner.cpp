@@ -3,13 +3,12 @@
 
 carrot_planner::carrot_planner() : _tf_listener(_tf_buffer)
 {
+    _enable_backword = false;
     _goal_recieved = false;
     _nh.param<std::string>(ros::this_node::getName()+"/goal_topic", _goal_topic, ros::this_node::getName()+"/goal_pose");
-    _nh.param<std::string>(ros::this_node::getName()+"/tolerance_topic", _tolerance_topic, ros::this_node::getName()+"/tolerance");
-    _nh.param<std::string>(ros::this_node::getName()+"/angular_tolerance_topic", _angular_tolerance_topic, ros::this_node::getName()+"/angular_tolerance");
     _nh.param<std::string>(ros::this_node::getName()+"/map_frame", _map_frame, "map");
-    _nh.param<std::string>(ros::this_node::getName()+"/linear_velocity_topic", _linear_velocity_topic, ros::this_node::getName()+"/linear_velocity");
     _nh.param<double>(ros::this_node::getName()+"/default_linear_velocity", _linear_velocity, 0.1);
+    _nh.param<double>(ros::this_node::getName()+"/default_angular_velocity", _angular_velocity, 0.1);
     _nh.param<double>(ros::this_node::getName()+"/default_torelance", _torelance, 1.0);
     _nh.param<double>(ros::this_node::getName()+"/default_angular_tolerance", _angular_tolerance, 1.57);
     _nh.param<double>(ros::this_node::getName()+"/publish_rate", _publish_rate, 10);
@@ -18,15 +17,22 @@ carrot_planner::carrot_planner() : _tf_listener(_tf_buffer)
     _twist_pub = _nh.advertise<geometry_msgs::Twist>(_twist_topic,1);
     _trigger_event_pub = _nh.advertise<robotx_msgs::Event>("/robotx_state_machine_node/navigation_state_machine/trigger_event",1);
     _current_stete_sub = _nh.subscribe("/robotx_state_machine_node/navigation_state_machine/current_state",1,&carrot_planner::_current_state_callback,this);
+    _configure_sub = _nh.subscribe(ros::this_node::getName()+"/configure",1,&carrot_planner::_configure_callback,this);
     _robot_pose_sub = _nh.subscribe("/robot_pose",1,&carrot_planner::_robot_pose_callback,this);
-    _tolerance_sub = _nh.subscribe(_tolerance_topic,1,&carrot_planner::_torelance_callback,this);
-    _goal_pose_sub = _nh.subscribe(_goal_topic,1,&carrot_planner::_goal_pose_callback,this);
-    _linear_velocity_sub = _nh.subscribe(_linear_velocity_topic,1,&carrot_planner::_linear_velocity_callback,this);
 }
 
 carrot_planner::~carrot_planner()
 {
 
+}
+
+void carrot_planner::_configure_callback(const robotx_msgs::CarrotPlannerConfigure::ConstPtr msg)
+{
+    _linear_velocity = msg->linear_velocity;
+    _angular_tolerance = msg->angular_torelance;
+    _torelance = msg->radius_torelance;
+    _enable_backword = msg->enable_backword;
+    return;
 }
 
 void carrot_planner::_robot_pose_callback(const geometry_msgs::PoseStamped::ConstPtr msg)
@@ -62,30 +68,6 @@ void carrot_planner::_current_state_callback(const robotx_msgs::State::ConstPtr 
 {
     std::unique_lock<std::mutex> lock(_mtx);
     _current_state = *msg;
-    lock.unlock();
-    return;
-}
-
-void carrot_planner::_linear_velocity_callback(const std_msgs::Float64::ConstPtr msg)
-{
-    std::unique_lock<std::mutex> lock(_mtx);
-    _linear_velocity = msg->data;
-    lock.unlock();
-    return;
-}
-
-void carrot_planner::_torelance_callback(const std_msgs::Float64::ConstPtr msg)
-{
-    std::unique_lock<std::mutex> lock(_mtx);
-    _torelance = msg->data;
-    lock.unlock();
-    return;
-}
-
-void carrot_planner::_angular_torelance_callback(const std_msgs::Float64::ConstPtr msg)
-{
-    std::unique_lock<std::mutex> lock(_mtx);
-    _angular_tolerance = msg->data;
     lock.unlock();
     return;
 }
@@ -157,7 +139,7 @@ void carrot_planner::_publish_twist_cmd()
                 if(diff_yaw_to_target > 0)
                 {
                     geometry_msgs::Twist twist_cmd;
-                    twist_cmd.angular.z = 0.1;
+                    twist_cmd.angular.z = _angular_velocity;
                     _twist_pub.publish(twist_cmd);
                     rate.sleep();
                     continue;
@@ -165,7 +147,7 @@ void carrot_planner::_publish_twist_cmd()
                 else
                 {
                     geometry_msgs::Twist twist_cmd;
-                    twist_cmd.angular.z = -0.1;
+                    twist_cmd.angular.z = -1 * _angular_velocity;
                     _twist_pub.publish(twist_cmd);
                     rate.sleep();
                     continue;
@@ -219,7 +201,7 @@ void carrot_planner::_publish_twist_cmd()
             if(diff_yaw > 0.1)
             {
                 geometry_msgs::Twist twist_cmd;
-                twist_cmd.angular.z = 0.1;
+                twist_cmd.angular.z = _angular_velocity;
                 _twist_pub.publish(twist_cmd);
                 rate.sleep();
                 continue;
@@ -227,7 +209,7 @@ void carrot_planner::_publish_twist_cmd()
             if(diff_yaw < -0.1)
             {
                 geometry_msgs::Twist twist_cmd;
-                twist_cmd.angular.z = -0.1;
+                twist_cmd.angular.z = -1 * _angular_velocity;
                 _twist_pub.publish(twist_cmd);
                 rate.sleep();
                 continue;
