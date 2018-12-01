@@ -18,7 +18,6 @@ obstacle_avoid::obstacle_avoid() : tf_listener_(tf_buffer_)
     twist_cmd_pub_ = nh_.advertise<geometry_msgs::Twist>(cmd_vel_topic_, 10);
     trigger_event_pub_ = nh_.advertise<robotx_msgs::Event>(trigger_event_topic_, 1);
     map_sub_ = nh_.subscribe(map_topic_, 3, &obstacle_avoid::obstacle_map_callback_, this);
-    twist_cmd_sub_ = nh_.subscribe(raw_cmd_vel_topic_, 10, &obstacle_avoid::twist_cmd_callback_, this);
     odom_sub_ = nh_.subscribe(odom_topic_, 10, &obstacle_avoid::odom_callback_, this);
     target_pose_sub_ = nh_.subscribe(target_pose_topic_, 10, &obstacle_avoid::target_pose_callback_, this);
     current_state_sub_ = nh_.subscribe(current_state_topic_, 10, &obstacle_avoid::current_state_callback_, this);
@@ -47,14 +46,6 @@ void obstacle_avoid::target_pose_callback_(const geometry_msgs::PoseStamped::Con
 {
     std::lock_guard<std::mutex> lock(mtx_);
     target_pose_ = *msg;
-    return;
-}
-
-void obstacle_avoid::twist_cmd_callback_(const geometry_msgs::Twist::ConstPtr msg)
-{
-    std::lock_guard<std::mutex> lock(mtx_);
-    twist_cmd_recieved_ = true;
-    raw_twist_cmd_ = *msg;
     return;
 }
 

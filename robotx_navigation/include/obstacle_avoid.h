@@ -39,7 +39,6 @@ private:
     ros::Publisher trigger_event_pub_;
     ros::Publisher twist_cmd_pub_;
     void current_state_callback_(robotx_msgs::State msg);
-    void twist_cmd_callback_(const geometry_msgs::Twist::ConstPtr msg);
     void odom_callback_(const nav_msgs::Odometry::ConstPtr msg);
     void obstacle_map_callback_(const robotx_msgs::ObstacleMap::ConstPtr msg);
     void target_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg);
@@ -47,7 +46,6 @@ private:
     geometry_msgs::PoseStamped transformed_target_pose_;
     robotx_msgs::ObstacleMap map_;
     boost::optional<geometry_msgs::PoseStamped> target_pose_;
-    geometry_msgs::Twist raw_twist_cmd_;
     volatile bool odom_recieved_;
     volatile bool twist_cmd_recieved_;
     volatile bool map_recieved_;
