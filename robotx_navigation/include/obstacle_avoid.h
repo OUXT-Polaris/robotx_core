@@ -38,7 +38,7 @@ private:
     ros::Subscriber current_state_sub_;
     ros::Publisher trigger_event_pub_;
     ros::Publisher twist_cmd_pub_;
-    void current_state_callback_(const robotx_msgs::State::ConstPtr msg);
+    void current_state_callback_(robotx_msgs::State msg);
     void twist_cmd_callback_(const geometry_msgs::Twist::ConstPtr msg);
     void odom_callback_(const nav_msgs::Odometry::ConstPtr msg);
     void obstacle_map_callback_(const robotx_msgs::ObstacleMap::ConstPtr msg);
@@ -60,10 +60,10 @@ private:
     std::string target_pose_topic_;
     std::string current_state_topic_;
     std::string trigger_event_topic_;
+    std::string robot_frame_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
     boost::optional<robotx_msgs::State> current_state_;
-    double search_radius_;
     double search_angle_;
     state_lattice_planner planner_;
 };
