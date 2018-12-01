@@ -1,8 +1,10 @@
 <state_machine>
     <init_state name="mission_start"/>
 
-    <transition from = "mission_start" to="demonstrate_navigation_and_control" name="mission_start"/>
+    <transition from = "mission_start" to="go_to_start_position" name="mission_start"/>
 
+    <transition from = "go_to_start_position" to="go_to_start_position" name="task_failed"/>
+    <transition from = "go_to_start_position" to="demonstrate_navigation_and_control" name="task_succeed"/>
 
     <transition from = "demonstrate_navigation_and_control" to="demonstrate_navigation_and_control" name="task_failed"/>
     <transition from = "demonstrate_navigation_and_control" to="entrance_gates" name="task_succeed"/>
@@ -27,5 +29,8 @@
 
 
     <transition from = "identify_symbols_and_dock" to="identify_symbols_and_dock" name="task_failed"/>
-    <transition from = "identify_symbols_and_dock" to="mission_complete" name="task_succeed"/>
+    <transition from = "identify_symbols_and_dock" to="return_to_home" name="task_succeed"/>
+
+    <transition from = "return_to_home" to="return_to_home" name="task_failed"/>
+    <transition from = "return_to_home" to="mission_complete" name="task_succeed"/>
 </state_machine>
