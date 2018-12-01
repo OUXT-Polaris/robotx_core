@@ -47,6 +47,17 @@ void obstacle_avoid::twist_cmd_callback_(const geometry_msgs::Twist::ConstPtr ms
     std::lock_guard<std::mutex> lock(mtx_);
     twist_cmd_recieved_ = true;
     raw_twist_cmd_ = *msg;
+    if(!current_state_)
+    {
+        return;
+    }
+    if(obstacle_found_())
+    {
+        robotx_msgs::Event event_msg;
+        event_msg.trigger_event_name = "obstacle_found";
+        event_msg.header.stamp = ros::Time::now();
+        trigger_event_pub_.publish(event_msg);
+    }
     return;
 }
 
@@ -55,9 +66,8 @@ bool obstacle_avoid::obstacle_found_()
     for(int i=0; i<map_.points.size(); i++)
     {
         double yaw = std::atan2(map_.points[i].y,map_.points[i].x);
-        ROS_ERROR_STREAM(yaw);
         double radius = std::sqrt(std::pow(map_.points[i].x,2)+std::pow(map_.points[i].y,2));
-        if(std::fabs(search_angle_) > std::fabs(yaw)) //&& search_radius_ > radius)
+        if(std::fabs(search_angle_) > std::fabs(yaw) && search_radius_ > radius)
         {
             return true;
         }
@@ -70,19 +80,6 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
     std::lock_guard<std::mutex> lock(mtx_);
     odom_recieved_ = true;
     odom_ = *msg;
-    geometry_msgs::Twist twist_cmd;
-    if(obstacle_found_())
-    {
-        robotx_msgs::Event event_msg;
-        event_msg.trigger_event_name = "obstacle_found";
-        event_msg.header.stamp = ros::Time::now();
-        trigger_event_pub_.publish(event_msg);
-    }
-    else
-    {
-        twist_cmd = raw_twist_cmd_;
-        twist_cmd_pub_.publish(twist_cmd);
-    }
     return;
 }
 

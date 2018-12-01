@@ -44,6 +44,7 @@ add_message_files(
   ObstacleMap.msg
   FieldMap.msg
   CarrotPlannerConfigure.msg
+  ObstacleAvoidConfigure.msg
 )
 ## Generate added messages and services with any dependencies listed here
 generate_messages(

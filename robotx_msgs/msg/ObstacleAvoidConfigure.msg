@@ -1,0 +1,11 @@
+float64 max_angular_acceleration
+float64 min_angular_acceleration
+float64 max_linear_acceleration
+float64 min_linear_acceleration
+float64 max_linear_velocity
+float64 min_linear_velocity
+float64 max_angular_velocity
+float64 step_duration
+int32 num_predictions
+int32 num_samples_angular
+int32 num_samples_linear

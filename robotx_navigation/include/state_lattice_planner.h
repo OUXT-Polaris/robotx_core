@@ -9,6 +9,7 @@
 
 //headers in this message
 #include <robotx_msgs/ObstacleMap.h>
+#include <robotx_msgs/ObstacleAvoidConfigure.h>
 
 //headers in boost
 #include <boost/optional.hpp>
@@ -34,6 +35,7 @@ public:
     state_lattice_planner(state_lattice_parameters params);
     ~state_lattice_planner();
     boost::optional<geometry_msgs::Twist> plan(robotx_msgs::ObstacleMap map, nav_msgs::Odometry odom, geometry_msgs::Pose2D target_pose);
+    void update_params(state_lattice_parameters params);
 private:
     state_lattice_parameters params_;
     std::vector<geometry_msgs::Pose2D> generate_path(nav_msgs::Odometry odom, double linear_acceleration, double angular_acceleration);

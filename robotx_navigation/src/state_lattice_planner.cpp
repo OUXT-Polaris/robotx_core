@@ -10,6 +10,12 @@ state_lattice_planner::~state_lattice_planner()
 
 }
 
+void state_lattice_planner::update_params(state_lattice_parameters params)
+{
+    params_ = params;
+    return;
+}
+
 boost::optional<geometry_msgs::Twist> state_lattice_planner::plan(robotx_msgs::ObstacleMap map, nav_msgs::Odometry odom, geometry_msgs::Pose2D target_pose)
 {
     geometry_msgs::Twist ret;
