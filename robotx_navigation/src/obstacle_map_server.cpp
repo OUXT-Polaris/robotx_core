@@ -63,7 +63,7 @@ void obstacle_map_server::generate_obstacle_map_() {
       try {
         geometry_msgs::TransformStamped transform_stemped;
         transform_stemped = tf_buffer_.lookupTransform(measurements_[i].header.frame_id, params_.world_frame,
-                                                       measurements_[i].header.stamp);
+                                                       measurements_[i].header.stamp,ros::Duration(1));
         jsk_recognition_msgs::BoundingBoxArray transformed_measurement;
         transformed_measurement.header.frame_id = params_.world_frame;
         transformed_measurement.header.stamp = measurements_[i].header.stamp;

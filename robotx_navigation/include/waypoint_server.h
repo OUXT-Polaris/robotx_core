@@ -4,7 +4,7 @@
 //headers in ROS
 #include <ros/ros.h>
 #include <ros/package.h>
-#include <robotx_msgs/State.h>
+#include <robotx_msgs/StateChanged.h>
 #include <robotx_msgs/Event.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -40,10 +40,9 @@ private:
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
     int target_waypoint_index_;
-    volatile bool first_waypoint_finded_;
     void publish_marker_();
     void robot_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg);
-    void navigation_status_callback_(robotx_msgs::State msg);
+    void navigation_status_callback_(robotx_msgs::StateChanged msg);
     bool load_next_waypoint_();
     boost::optional<int> get_nearest_wayppoint_(const geometry_msgs::PoseStamped::ConstPtr msg);
     std::vector<std::string> split_(std::string& input, char delimiter);

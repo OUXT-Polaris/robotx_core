@@ -38,9 +38,11 @@ add_message_files(
   #NavigationStatus.msg
   Event.msg
   State.msg
+  StateChanged.msg
   CoastLine.msg
   CoastLineArray.msg
   ObstacleMap.msg
+  FieldMap.msg
 )
 ## Generate added messages and services with any dependencies listed here
 generate_messages(

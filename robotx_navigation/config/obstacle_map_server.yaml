@@ -5,5 +5,6 @@ map_height: 200
 map_width: 200
 height_offset: -2.5
 buffer_length: 5
-world_frame: world
+world_frame: map
 robot_frame: velodyne
+publish_occupancy_grid : true

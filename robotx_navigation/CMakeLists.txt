@@ -97,6 +97,9 @@ add_executable(coast_line_publisher_node src/coast_line_publisher_node.cpp src/c
 target_link_libraries(coast_line_publisher_node ${catkin_LIBRARIES})
 add_dependencies(coast_line_publisher_node robotx_msgs_generate_messages_cpp)
 
+add_executable(field_map_server_node src/field_map_server.cpp src/field_map_server_node.cpp)
+target_link_libraries(field_map_server_node ${catkin_LIBRARIES})
+add_dependencies(field_map_server_node robotx_msgs_generate_messages_cpp)
 
 #############
 ## Install ##
@@ -108,7 +111,8 @@ set(NODE_FILES
   #twist_from_fix_velocity_node 
   #geographic_map_server_node 
   obstacle_map_server_node 
-  robotx_localization_node 
+  robotx_localization_node
+  field_map_server_node
   #costmap_clear_request_sender_node 
   carrot_planner_node
   waypoint_server_node
