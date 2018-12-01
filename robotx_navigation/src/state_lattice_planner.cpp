@@ -1,6 +1,6 @@
 #include <state_lattice_planner.h>
 
-state_lattice_planner::state_lattice_planner(state_lattice_parameters params)
+state_lattice_planner::state_lattice_planner(robotx_msgs::ObstacleAvoidConfigure params)
 {
     params_ = params;
 }
@@ -10,7 +10,7 @@ state_lattice_planner::~state_lattice_planner()
 
 }
 
-void state_lattice_planner::update_params(state_lattice_parameters params)
+void state_lattice_planner::update_params(robotx_msgs::ObstacleAvoidConfigure params)
 {
     params_ = params;
     return;
@@ -63,8 +63,8 @@ std::vector<geometry_msgs::Pose2D> state_lattice_planner::generate_path(nav_msgs
     path.push_back(current_pose);
     for(int i=0; i<params_.num_predictions; i++)
     {
-        twist.linear.x = twist.linear.x + linear_acceleration * params_.step_duration_;
-        twist.angular.z = twist.angular.z + angular_acceleration * params_.step_duration_;
+        twist.linear.x = twist.linear.x + linear_acceleration * params_.step_duration;
+        twist.angular.z = twist.angular.z + angular_acceleration * params_.step_duration;
         if(twist.angular.z > 0 && twist.angular.z > params_.max_angular_velocity)
         {
             twist.angular.z = params_.max_angular_velocity;
@@ -81,9 +81,9 @@ std::vector<geometry_msgs::Pose2D> state_lattice_planner::generate_path(nav_msgs
         {
             twist.linear.x = params_.min_linear_velocity;
         }
-        current_pose.theta = current_pose.theta + twist.angular.z * params_.step_duration_;
-        current_pose.x = current_pose.x + twist.linear.x * params_.step_duration_ * std::cos(current_pose.theta);
-        current_pose.y = current_pose.y + twist.linear.x * params_.step_duration_ * std::sin(current_pose.theta);
+        current_pose.theta = current_pose.theta + twist.angular.z * params_.step_duration;
+        current_pose.x = current_pose.x + twist.linear.x * params_.step_duration * std::cos(current_pose.theta);
+        current_pose.y = current_pose.y + twist.linear.x * params_.step_duration * std::sin(current_pose.theta);
         path.push_back(current_pose);
     }
     return path;
