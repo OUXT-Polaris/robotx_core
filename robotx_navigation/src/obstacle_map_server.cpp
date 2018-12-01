@@ -53,7 +53,7 @@ void obstacle_map_server::generate_obstacle_map_()
   geometry_msgs::TransformStamped transform_stamped;
   try
   {
-    transform_stamped = tf_buffer_.lookupTransform(params_.map_frame, params_.robot_frame, ros::Time(0), ros::Duration(1));
+    transform_stamped = tf_buffer_.lookupTransform(params_.robot_frame, params_.map_frame, ros::Time(0), ros::Duration(1));
   }
   catch(tf2::TransformException &ex)
   {
