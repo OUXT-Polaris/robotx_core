@@ -65,7 +65,7 @@ private:
     boost::optional<robotx_msgs::State> current_state_;
     double search_radius_;
     double search_angle_;
-    boost::shared_ptr<state_lattice_planner> planner_;
+    state_lattice_planner planner_;
 };
 
 #endif  //OBSTACLE_AVOID_H_INCLUDED

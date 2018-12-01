@@ -1,5 +1,20 @@
 #include <state_lattice_planner.h>
 
+state_lattice_planner::state_lattice_planner()
+{
+    params_.max_angular_acceleration = params_.DEFAULT_MAX_ANGULAR_ACCERALATION;
+    params_.min_angular_acceleration = params_.DEFAULT_MIN_ANGULAR_ACCERALATION;
+    params_.max_linear_acceleration  = params_.DEFAULT_MAX_LINEAR_ACCERALATION;
+    params_.min_linear_acceleration  = params_.DEFAULT_MIN_LINEAR_ACCERALATION;
+    params_.max_linear_velocity      = params_.DEFAULT_MAX_LINEAR_VELOCITY;
+    params_.min_linear_velocity      = params_.DEFAULT_MIN_LINEAR_VELOCITY;
+    params_.max_angular_velocity     = params_.DEFAULT_MAX_ANGULAR_VELOCITY;
+    params_.step_duration            = params_.DEFAULT_STEP_DURATION;
+    params_.num_predictions          = params_.DEFAULT_NUM_PREDICTIONS;
+    params_.num_samples_angular      = params_.DEFAULT_NUM_SAMPLES_ANGULAR;
+    params_.num_samples_linear       = params_.DEFAULT_NUM_SAMPLES_LINEAR;
+}
+
 state_lattice_planner::state_lattice_planner(robotx_msgs::ObstacleAvoidConfigure params)
 {
     params_ = params;

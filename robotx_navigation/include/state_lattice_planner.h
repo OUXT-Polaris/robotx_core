@@ -17,6 +17,7 @@
 class state_lattice_planner
 {
 public:
+    state_lattice_planner();
     state_lattice_planner(robotx_msgs::ObstacleAvoidConfigure params);
     ~state_lattice_planner();
     boost::optional<geometry_msgs::Twist> plan(robotx_msgs::ObstacleMap map, nav_msgs::Odometry odom, geometry_msgs::Pose2D target_pose);
