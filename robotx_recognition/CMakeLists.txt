@@ -7,12 +7,39 @@ project(robotx_recognition)
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
+option(GPU_PCL "Use Compiled PCL with GPU module" OFF)
+
 ## for tensor rt compile flag with cuda
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 set(CUDA_NVCC_FLAGS -std c++11)
 set(CMAKE_CXX_STANDARD 11)
 
-find_package(catkin REQUIRED COMPONENTS
+if(GPU_PCL)
+  add_definitions(-DGPU_CLUSTERING)
+  find_package(catkin REQUIRED COMPONENTS
+  geometry_msgs
+  roscpp
+  rospy
+  sensor_msgs
+  std_msgs
+  robotx_msgs
+  image_transport
+  cv_bridge
+  visualization_msgs
+  tf2
+  tf2_ros
+  tf2_msgs
+  tf2_sensor_msgs
+  jsk_recognition_msgs
+  nodelet
+  robotx_build_flags
+  )
+  find_package(PCL REQUIRED)
+  include_directories(${PCL_INCLUDE_DIRS})
+  link_directories(${PCL_LIBRARY_DIRS})
+  add_definitions(${PCL_DEFINITIONS})
+else()
+  find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   pcl_ros
   roscpp
@@ -30,7 +57,8 @@ find_package(catkin REQUIRED COMPONENTS
   jsk_recognition_msgs
   nodelet
   robotx_build_flags
-)
+  )
+endif()
 
 find_package(Boost REQUIRED COMPONENTS system thread)
 
@@ -75,12 +103,6 @@ include_directories(
 #clang_format(object_recognition_nodelet)
 
 # euclidean_clustering
-
-option(GPU_CLUSTERING "Use GPU Clustering" OFF)
-if(GPU_CLUSTERING)
-  add_definitions(-DGPU_CLUSTERING)
-endif()
-
 set(euclidean_clustering_src src/euclidean_clustering.cpp)
 add_executable(euclidean_clustering_node src/euclidean_clustering_node.cpp ${euclidean_clustering_src})
 add_dependencies(euclidean_clustering_node robotx_msgs_generate_messages_cpp)
