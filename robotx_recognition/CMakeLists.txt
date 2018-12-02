@@ -75,6 +75,12 @@ include_directories(
 #clang_format(object_recognition_nodelet)
 
 # euclidean_clustering
+
+option(GPU_CLUSTERING "Use GPU Clustering" OFF)
+if(GPU_CLUSTERING)
+  add_definitions(-DGPU_CLUSTERING)
+endif()
+
 set(euclidean_clustering_src src/euclidean_clustering.cpp)
 add_executable(euclidean_clustering_node src/euclidean_clustering_node.cpp ${euclidean_clustering_src})
 add_dependencies(euclidean_clustering_node robotx_msgs_generate_messages_cpp)
