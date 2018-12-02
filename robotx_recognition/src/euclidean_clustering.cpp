@@ -68,9 +68,8 @@ void euclidean_clustering::make_cluster(sensor_msgs::PointCloud2 msg) {
       voxel_grid.setDownsampleAllData(true);
       voxel_grid.filter(*pcl_pointcloud);
     }
-    pcl::gpu::EuclideanClusterExtraction::GPUTreePtr tree;
-    tree->setInputCloud(pcl_pointcloud);
-    std::vector<pcl::PointIndices> cluster_indices;
+    pcl::gpu::Octree::PointCloud cloud_device;
+    cloud_device.upload(pcl_pointcloud->points); 
 #else
   if (clustering_method_ == CONDITIONAL_EUCLIDIAN_CLUSTERING) {
     pcl::PCLPointCloud2 pcl_pc2;
