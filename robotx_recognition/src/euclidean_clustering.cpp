@@ -55,6 +55,26 @@ bool euclidean_clustering::enforce_intensity_similarity(const pcl::PointXYZINorm
 }
 
 void euclidean_clustering::make_cluster(sensor_msgs::PointCloud2 msg) {
+#ifdef GPU_CLUSTERING
+    pcl::PCLPointCloud2 pcl_pc2;
+    pcl_conversions::toPCL(msg, pcl_pc2);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr pcl_pointcloud(new pcl::PointCloud<pcl::PointXYZI>);
+    pcl::fromPCLPointCloud2(pcl_pc2, *pcl_pointcloud);
+    pcl::PointCloud<pcl::PointXYZINormal>::Ptr pcl_cloud_with_normals(
+        new pcl::PointCloud<pcl::PointXYZINormal>);
+    if (donwsample_) {
+      // Downsample pointcloud
+      pcl::VoxelGrid<pcl::PointXYZI> voxel_grid;
+      voxel_grid.setInputCloud(pcl_pointcloud);
+      voxel_grid.setLeafSize(leaf_size_x, leaf_size_y, leaf_size_z);
+      voxel_grid.setDownsampleAllData(true);
+      voxel_grid.filter(*pcl_pointcloud);
+    }
+    // Set up a Normal Estimation class and merge data in cloud_with_normals
+    pcl::copyPointCloud(*pcl_pointcloud, *pcl_cloud_with_normals);
+    pcl::NormalEstimation<pcl::PointXYZI, pcl::PointXYZINormal> normal_estimation;
+    normal_estimation.setInputCloud(pcl_pointcloud);
+#else
   if (clustering_method_ == CONDITIONAL_EUCLIDIAN_CLUSTERING) {
     pcl::PCLPointCloud2 pcl_pc2;
     pcl_conversions::toPCL(msg, pcl_pc2);
@@ -195,4 +215,5 @@ void euclidean_clustering::make_cluster(sensor_msgs::PointCloud2 msg) {
     }
     marker_pub_.publish(markers);
   }
+#endif
 }
