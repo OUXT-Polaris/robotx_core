@@ -9,7 +9,6 @@
 // headers in gpu module pcl 
 #ifdef GPU_CLUSTERING
   #include <pcl/gpu/segmentation/gpu_extract_clusters.h>
-  #include <pcl/cuda/filters/voxel_grid.h>
 #endif
 
 // headers in pcl 
