@@ -33,6 +33,7 @@ if(GPU_PCL)
   jsk_recognition_msgs
   nodelet
   robotx_build_flags
+  pcl_ros
   )
   find_package(PCL REQUIRED)
   include_directories(${PCL_INCLUDE_DIRS})
