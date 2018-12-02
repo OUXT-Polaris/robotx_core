@@ -102,6 +102,10 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
             ROS_ERROR_STREAM("All planed path was failed.");
             geometry_msgs::Twist stop_cmd;
             twist_cmd_pub_.publish(stop_cmd);
+            robotx_msgs::Event event_msg;
+            event_msg.header.stamp = ros::Time::now();
+            event_msg.trigger_event_name = "obstacle_avoid_failed";
+            trigger_event_pub_.publish(event_msg);
         }
         else
         {
