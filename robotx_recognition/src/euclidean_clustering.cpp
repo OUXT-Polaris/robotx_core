@@ -15,11 +15,11 @@ euclidean_clustering::euclidean_clustering()
   ros::param::param<int>(ros::this_node::getName() + "/max_cluster_size", max_cluster_size_, 1000);
   ros::param::param<bool>(ros::this_node::getName() + "/donwsample/enable", donwsample_, true);
   ros::param::param<double>(ros::this_node::getName() + "/donwsample/voxel_grid/leaf_size/x", leaf_size_x,
-                            0.01);
+                            0.1);
   ros::param::param<double>(ros::this_node::getName() + "/donwsample/voxel_grid/leaf_size/y", leaf_size_y,
-                            0.01);
+                            0.1);
   ros::param::param<double>(ros::this_node::getName() + "/donwsample/voxel_grid/leaf_size/z", leaf_size_z,
-                            0.01);
+                            0.1);
   ros::param::param<std::string>(ros::this_node::getName() + "/input_cloud", input_cloud_,
                                  ros::this_node::getName() + "/input_cloud");
   ros::param::param<int>(ros::this_node::getName() + "/clustering_method", clustering_method_,

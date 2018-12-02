@@ -4,7 +4,12 @@ input_cloud: /pointcloud_merger_node/merged_points
 clustering_method: 1
 
 downsample:
-  enable: false
+  enable: true
+  voxel_grid:
+    leaf_size:
+      x: 0.1
+      y: 0.1
+      z: 0.1
 
 euclidean_clustering:
   cluster_tolerance: 1.0

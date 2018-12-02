@@ -157,6 +157,10 @@ if(CUDA_FOUND)
     include/gpu_euclidean_clustering.h
     src/gpu_euclidean_clustering.cu
   )
+  add_executable(gpu_euclidean_clustering_node src/gpu_euclidean_clustering_node.cpp)
+  target_link_libraries(gpu_euclidean_clustering_node ${catkin_LIBRARIES} gpu_euclidean_clustering)
+  add_dependencies(gpu_euclidean_clustering_node robotx_msgs_generate_messages_cpp)
+
   if(USE_CNN)
     cuda_add_executable(cnn_prediction_node src/infer.cu src/cnn_prediction.cpp src/cnn_prediction_node.cpp)  # main
     add_dependencies(cnn_prediction_node
@@ -185,7 +189,7 @@ endif()
 # CPP Execution programs
 if(USE_CNN)
   set(CPP_EXEC_NAMES
-    euclidean_clustering_node passthrough_filter_node pointcloud_merger_node object_bbox_extractor_node cnn_prediction_node pcl_plane_removal_node
+    euclidean_clustering_node passthrough_filter_node pointcloud_merger_node object_bbox_extractor_node cnn_prediction_node pcl_plane_removal_node gpu_euclidean_clustering
     #object_recognition_node hsv_buoy_detector_node bing_object_detection_node
     )
   foreach(cpp_exec_names ${CPP_EXEC_NAMES})
