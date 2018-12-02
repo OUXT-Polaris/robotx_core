@@ -141,11 +141,21 @@ option(USE_CNN "Use CNN" OFF)
 # cnn_prediction
 # If found cuda, build infer.cu. If not found cuda , build infer.cpp
 if(CUDA_FOUND)
+  INCLUDE(FindCUDA)
+  message("-- USING ACCELERATED CLUSTERING --")
+  message("Version: " ${CUDA_VERSION})
+  message("Library: " ${CUDA_CUDA_LIBRARY})
+  message("Runtime: " ${CUDA_CUDART_LIBRARY})
+  set(ROS_VERSION $ENV{ROS_DISTRO})
   include_directories(
     include
     ${catkin_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
     ${CUDA_INCLUDE_DIRS}
+  )
+  cuda_add_library(gpu_euclidean_clustering
+    include/gpu_euclidean_clustering.h
+    src/gpu_euclidean_clustering.cu
   )
   if(USE_CNN)
     cuda_add_executable(cnn_prediction_node src/infer.cu src/cnn_prediction.cpp src/cnn_prediction_node.cpp)  # main
