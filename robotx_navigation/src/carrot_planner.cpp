@@ -157,7 +157,7 @@ void carrot_planner::_publish_twist_cmd()
         }
         if(_current_state->current_state == "moving_to_next_waypoint")
         {
-            if(std::sqrt(std::pow(_goal_pose_2d.x-_robot_pose_2d.x,2)-std::pow(_goal_pose_2d.y-_robot_pose_2d.y,2)) < _torelance)
+            if(std::sqrt(std::pow(_goal_pose_2d.x-_robot_pose_2d.x,2)+std::pow(_goal_pose_2d.y-_robot_pose_2d.y,2)) < _torelance)
             {
                 geometry_msgs::Twist twist_cmd;
                 _twist_pub.publish(twist_cmd);

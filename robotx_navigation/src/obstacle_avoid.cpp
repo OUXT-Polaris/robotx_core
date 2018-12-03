@@ -72,9 +72,17 @@ bool obstacle_avoid::obstacle_found_()
     {
         double yaw = std::atan2(map_.points[i].y,map_.points[i].x);
         double dist = std::sqrt(map_.points[i].x*map_.points[i].x + map_.points[i].y*map_.points[i].y);
+        if(std::fabs(search_angle_) > std::fabs(yaw) && search_radius_ > dist)
+        {
+            return true;
+        }
+        if(std::fabs(search_angle_) < std::fabs(yaw) && search_radius_behind_ > dist)
+        {
+            return true;
+        }
+        /*
         if(current_state_->current_state == "turn_left" || current_state_->current_state == "turn_right")
         {
-            //ROS_ERROR_STREAM(yaw << "," << search_angle_);
             if(std::fabs(search_angle_) > std::fabs(yaw))
             {
                 return true;
@@ -91,6 +99,7 @@ bool obstacle_avoid::obstacle_found_()
                 return true;
             }
         }
+        */
     }
     return false;
 }
