@@ -39,7 +39,7 @@ boost::optional<geometry_msgs::Twist> state_lattice_planner::plan(robotx_msgs::O
     {
         for(int m=0; m<params_.num_samples_linear; m++)
         {
-            double linear_acceleration = (params_.max_linear_acceleration-params_.min_linear_acceleration)/(params_.num_samples_linear-1)*i
+            double linear_acceleration = (params_.max_linear_acceleration-params_.min_linear_acceleration)/(params_.num_samples_linear-1)*m
                 + params_.min_linear_acceleration;
             double angular_acceleration = (params_.max_angular_acceleration-params_.min_angular_acceleration)/(params_.num_samples_angular-1)*i
                 + params_.min_angular_acceleration;
@@ -72,7 +72,7 @@ double state_lattice_planner::evaluate_function_(double nearest_obstacle_distanc
     {
         return 1000;
     }
-    ret = 1/std::sqrt(std::pow(end_pose.x - target_pose.x,2) + std::pow(end_pose.y - target_pose.y,2));
+    ret = nearest_obstacle_distance/std::sqrt(std::pow(end_pose.x - target_pose.x,2) + std::pow(end_pose.y - target_pose.y,2));
     return ret;
 }
 
