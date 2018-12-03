@@ -104,7 +104,7 @@ void robotx_navigation_planner::state_changed_callback_(robotx_msgs::StateChange
 
 void robotx_navigation_planner::publish_timer_event_()
 {
-    ros::Duration sleep_time(5);
+    ros::Duration sleep_time(10);
     sleep_time.sleep();
     robotx_msgs::Event event;
     event.header.stamp = ros::Time::now();

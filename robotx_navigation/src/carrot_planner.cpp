@@ -189,7 +189,7 @@ void carrot_planner::_publish_twist_cmd()
         if(_current_state->current_state == "align_to_next_waypoint")
         {
             double diff_yaw = _get_diff_yaw();
-            if(diff_yaw > 0.1)
+            if(diff_yaw > _angular_tolerance)
             {
                 geometry_msgs::Twist twist_cmd;
                 twist_cmd.angular.z = _angular_velocity;
@@ -197,7 +197,7 @@ void carrot_planner::_publish_twist_cmd()
                 rate.sleep();
                 continue;
             }
-            if(diff_yaw < -0.1)
+            else if(diff_yaw < -1*_angular_tolerance)
             {
                 geometry_msgs::Twist twist_cmd;
                 twist_cmd.angular.z = -1 * _angular_velocity;
@@ -205,7 +205,7 @@ void carrot_planner::_publish_twist_cmd()
                 rate.sleep();
                 continue;
             }
-            if(std::fabs(diff_yaw) <= 0.1)
+            else
             {
                 geometry_msgs::Twist twist_cmd;
                 _twist_pub.publish(twist_cmd);

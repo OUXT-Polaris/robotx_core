@@ -39,27 +39,19 @@ void obstacle_avoid::current_state_callback_(robotx_msgs::State msg)
         event_msg.header.stamp = ros::Time::now();
         trigger_event_pub_.publish(event_msg);
     }
-    if(current_state_->current_state == "trun_right")
+    if(!obstacle_found_() && current_state_->current_state == "trun_right")
     {
-        if(!obstacle_found_())
-        {
-            robotx_msgs::Event event_msg;
-            event_msg.header.stamp = ros::Time::now();
-            event_msg.trigger_event_name = "obstacle_not_found";
-            trigger_event_pub_.publish(event_msg);
-        }
-        return;
+        robotx_msgs::Event event_msg;
+        event_msg.trigger_event_name = "obstacle_not_found";
+        event_msg.header.stamp = ros::Time::now();
+        trigger_event_pub_.publish(event_msg);
     }
-    if(current_state_->current_state == "trun_left")
+    if(!obstacle_found_() && current_state_->current_state == "trun_left")
     {
-        if(!obstacle_found_())
-        {
-            robotx_msgs::Event event_msg;
-            event_msg.header.stamp = ros::Time::now();
-            event_msg.trigger_event_name = "obstacle_not_found";
-            trigger_event_pub_.publish(event_msg);
-        }
-        return;
+        robotx_msgs::Event event_msg;
+        event_msg.trigger_event_name = "obstacle_not_found";
+        event_msg.header.stamp = ros::Time::now();
+        trigger_event_pub_.publish(event_msg);
     }
     return;
 }
@@ -131,12 +123,14 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
         geometry_msgs::Twist twist_cmd;
         twist_cmd.angular.z = 0.1;
         twist_cmd_pub_.publish(twist_cmd);
+        return;
     }
     if(current_state_->current_state == "turn_right")
     {
         geometry_msgs::Twist twist_cmd;
         twist_cmd.angular.z = -0.1;
         twist_cmd_pub_.publish(twist_cmd);
+        return;
     }
     if(obstacle_found_())
     {
