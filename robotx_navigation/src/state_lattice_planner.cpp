@@ -68,11 +68,14 @@ double state_lattice_planner::evaluate_function_(double nearest_obstacle_distanc
     {
         return 0;
     }
+    /*
     if(std::pow(end_pose.x - target_pose.x,2) + std::pow(end_pose.y - target_pose.y,2) < 0.0001)
     {
         return 1000;
     }
     ret = nearest_obstacle_distance/std::sqrt(std::pow(end_pose.x - target_pose.x,2) + std::pow(end_pose.y - target_pose.y,2));
+    */
+    ret = nearest_obstacle_distance;
     return ret;
 }
 

@@ -38,6 +38,8 @@ private:
     ros::Subscriber current_state_sub_;
     ros::Publisher trigger_event_pub_;
     ros::Publisher twist_cmd_pub_;
+    ros::Publisher nearest_obstacle_range_pub_;
+    void publish_nearest_obstacle_range_();
     void current_state_callback_(robotx_msgs::State msg);
     void odom_callback_(const nav_msgs::Odometry::ConstPtr msg);
     void obstacle_map_callback_(const robotx_msgs::ObstacleMap::ConstPtr msg);
@@ -63,6 +65,8 @@ private:
     tf2_ros::TransformListener tf_listener_;
     boost::optional<robotx_msgs::State> current_state_;
     double search_angle_;
+    double search_radius_;
+    double search_radius_behind_;
     state_lattice_planner planner_;
 };
 

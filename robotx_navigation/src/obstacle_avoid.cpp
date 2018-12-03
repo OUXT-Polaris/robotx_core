@@ -15,7 +15,10 @@ obstacle_avoid::obstacle_avoid() : tf_listener_(tf_buffer_)
     nh_.param<std::string>(ros::this_node::getName()+"/current_state_topic", current_state_topic_, ros::this_node::getName()+"current_state");
     nh_.param<std::string>(ros::this_node::getName()+"/trigger_event_topic", trigger_event_topic_, ros::this_node::getName()+"/trigger_event");
     nh_.param<double>(ros::this_node::getName()+"/search_angle", search_angle_, 1.57);
+    nh_.param<double>(ros::this_node::getName()+"/search_radius", search_radius_, 5.0);
+    nh_.param<double>(ros::this_node::getName()+"/search_radius_behind", search_radius_behind_, 3.0);
     twist_cmd_pub_ = nh_.advertise<geometry_msgs::Twist>(cmd_vel_topic_, 10);
+    nearest_obstacle_range_pub_ = nh_.advertise<std_msgs::Float32>(ros::this_node::getName()+"/nearest_obstacle_range", 10);
     trigger_event_pub_ = nh_.advertise<robotx_msgs::Event>(trigger_event_topic_, 1);
     map_sub_ = nh_.subscribe(map_topic_, 3, &obstacle_avoid::obstacle_map_callback_, this);
     odom_sub_ = nh_.subscribe(odom_topic_, 10, &obstacle_avoid::odom_callback_, this);
@@ -39,14 +42,14 @@ void obstacle_avoid::current_state_callback_(robotx_msgs::State msg)
         event_msg.header.stamp = ros::Time::now();
         trigger_event_pub_.publish(event_msg);
     }
-    if(!obstacle_found_() && current_state_->current_state == "trun_right")
+    if(!obstacle_found_() && current_state_->current_state == "turn_right")
     {
         robotx_msgs::Event event_msg;
         event_msg.trigger_event_name = "obstacle_not_found";
         event_msg.header.stamp = ros::Time::now();
         trigger_event_pub_.publish(event_msg);
     }
-    if(!obstacle_found_() && current_state_->current_state == "trun_left")
+    if(!obstacle_found_() && current_state_->current_state == "turn_left")
     {
         robotx_msgs::Event event_msg;
         event_msg.trigger_event_name = "obstacle_not_found";
@@ -68,12 +71,48 @@ bool obstacle_avoid::obstacle_found_()
     for(int i=0; i<map_.points.size(); i++)
     {
         double yaw = std::atan2(map_.points[i].y,map_.points[i].x);
-        if(std::fabs(search_angle_) > std::fabs(yaw))
+        double dist = std::sqrt(map_.points[i].x*map_.points[i].x + map_.points[i].y*map_.points[i].y);
+        if(current_state_->current_state == "turn_left" || current_state_->current_state == "turn_right")
         {
-            return true;
+            //ROS_ERROR_STREAM(yaw << "," << search_angle_);
+            if(std::fabs(search_angle_) > std::fabs(yaw))
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if(std::fabs(search_angle_) > std::fabs(yaw) && search_radius_ > dist)
+            {
+                return true;
+            }
+            if(std::fabs(search_angle_) < std::fabs(yaw) && search_radius_behind_ > dist)
+            {
+                return true;
+            }
         }
     }
     return false;
+}
+
+void obstacle_avoid::publish_nearest_obstacle_range_()
+{
+    std_msgs::Float32 nearest_obstacle_range;
+    nearest_obstacle_range.data = -1;
+    for(auto obstacle_itr = map_.points.begin(); obstacle_itr != map_.points.end(); obstacle_itr++)
+    {
+        double dist = std::sqrt(obstacle_itr->x*obstacle_itr->x + obstacle_itr->y*obstacle_itr->y);
+        if(nearest_obstacle_range.data == -1)
+        {
+            nearest_obstacle_range.data = dist;
+        }
+        else if(nearest_obstacle_range.data < dist)
+        {
+            nearest_obstacle_range.data = dist;
+        }
+    }
+    nearest_obstacle_range_pub_.publish(nearest_obstacle_range);
+    return;
 }
 
 void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
@@ -180,6 +219,7 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
 void obstacle_avoid::obstacle_map_callback_(const robotx_msgs::ObstacleMap::ConstPtr msg)
 {
     std::lock_guard<std::mutex> lock(mtx_);
+    publish_nearest_obstacle_range_();
     map_ = *msg;
     map_recieved_ = true;
     return;
