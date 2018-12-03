@@ -51,7 +51,10 @@ void robotx_navigation_planner::publish_cmd_vel_()
                 rate.sleep();
                 continue;
             }
-            if(current_state_->current_state == "obstacle_avoid")
+            if(current_state_->current_state == "obstacle_avoid"
+                || current_state_->current_state == "stacked"
+                || current_state_->current_state == "turn_right"
+                || current_state_->current_state == "turn_left")
             {
                 if(obstacle_avoid_cmd_)
                 {

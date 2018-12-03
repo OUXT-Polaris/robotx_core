@@ -39,6 +39,28 @@ void obstacle_avoid::current_state_callback_(robotx_msgs::State msg)
         event_msg.header.stamp = ros::Time::now();
         trigger_event_pub_.publish(event_msg);
     }
+    if(current_state_->current_state == "trun_right")
+    {
+        if(!obstacle_found_())
+        {
+            robotx_msgs::Event event_msg;
+            event_msg.header.stamp = ros::Time::now();
+            event_msg.trigger_event_name = "obstacle_not_found";
+            trigger_event_pub_.publish(event_msg);
+        }
+        return;
+    }
+    if(current_state_->current_state == "trun_left")
+    {
+        if(!obstacle_found_())
+        {
+            robotx_msgs::Event event_msg;
+            event_msg.header.stamp = ros::Time::now();
+            event_msg.trigger_event_name = "obstacle_not_found";
+            trigger_event_pub_.publish(event_msg);
+        }
+        return;
+    }
     return;
 }
 
@@ -70,6 +92,51 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
     if(!current_state_)
     {
         return;
+    }
+    if(current_state_->current_state == "stacked")
+    {
+        geometry_msgs::Twist stop_cmd;
+        twist_cmd_pub_.publish(stop_cmd);
+        int num_left_obstacles = 0;
+        int num_right_obstacles = 0;
+        for(auto obstacle_itr = map_.points.begin(); obstacle_itr != map_.points.end(); obstacle_itr++)
+        {
+            if(obstacle_itr->y > 0)
+            {
+                num_left_obstacles++;
+            }
+            else
+            {
+                num_right_obstacles++;
+            }
+        }
+        if(num_left_obstacles > num_right_obstacles)
+        {
+            robotx_msgs::Event event_msg;
+            event_msg.header.stamp = ros::Time::now();
+            event_msg.trigger_event_name = "found_open_space_in_right";
+            trigger_event_pub_.publish(event_msg);
+        }
+        else
+        {
+            robotx_msgs::Event event_msg;
+            event_msg.header.stamp = ros::Time::now();
+            event_msg.trigger_event_name = "found_open_space_in_left";
+            trigger_event_pub_.publish(event_msg);
+        }
+        return;
+    }
+    if(current_state_->current_state == "turn_left")
+    {
+        geometry_msgs::Twist twist_cmd;
+        twist_cmd.angular.z = 0.1;
+        twist_cmd_pub_.publish(twist_cmd);
+    }
+    if(current_state_->current_state == "turn_right")
+    {
+        geometry_msgs::Twist twist_cmd;
+        twist_cmd.angular.z = -0.1;
+        twist_cmd_pub_.publish(twist_cmd);
     }
     if(obstacle_found_())
     {

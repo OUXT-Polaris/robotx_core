@@ -19,8 +19,8 @@
     <transition from = "stacked" to="turn_right" name="found_open_space_in_right"/>
     <transition from = "stacked" to="turn_left" name="found_open_space_in_left"/>
 
-    <transition from = "turn_right" to="obstacle_avoid" name="found_open_space_in_right"/>
-    <transition from = "turn_left" to="obstacle_avoid" name="found_open_space_in_left"/>
+    <transition from = "turn_right" to="go_straight" name="obstacle_not_found"/>
+    <transition from = "turn_left" to="go_straight" name="obstacle_not_found"/>
 
     <transition from = "go_straight" to="heading_to_next_waypoint" name="go_straight_finished"/>
     <transition from = "go_straight" to="obstacle_avoid" name="obstacle_found"/>
