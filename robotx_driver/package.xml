@@ -56,6 +56,7 @@
   <exec_depend>robotx_decision_maker</exec_depend>
   <exec_depend>nmea_msgs</exec_depend>
   <exec_depend>image_proc</exec_depend>
+  <exec_depend>camera_calibration</exec_depend>
   
   <!-- The export tag contains other, unspecified, tags -->
   <export>
