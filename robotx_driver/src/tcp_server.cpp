@@ -1,10 +1,13 @@
 #include <tcp_server.h>
 
-tcp_server::tcp_server(int server_port, boost::asio::io_service& io_service)
+tcp_server::tcp_server(int server_port, boost::asio::io_service& io_service, std::function<void(std::string)> callback_func)
     : io_service_(io_service),
       port(server_port),
       socket_(io_service),
-      acceptor_(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), server_port)) {}
+      acceptor_(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), server_port))
+      {
+        callback_func_ = callback_func;
+      }
 
 tcp_server::~tcp_server() { std::cout << "close connection" << std::endl; }
 
@@ -37,8 +40,8 @@ void tcp_server::on_receive_(const boost::system::error_code& error, size_t byte
     std::cout << "receive failed: " << error.message() << std::endl;
   } else {
     const char* data = boost::asio::buffer_cast<const char*>(receive_buff_.data());
-    std::cout << data << std::endl;
-
+    //std::cout << data << std::endl;
     receive_buff_.consume(receive_buff_.size());
+    callback_func_(std::string(data));
   }
 }

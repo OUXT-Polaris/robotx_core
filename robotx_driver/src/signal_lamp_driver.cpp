@@ -6,9 +6,9 @@ singal_lamp_driver::singal_lamp_driver(ros::NodeHandle nh, ros::NodeHandle pnh)
     pnh_ = pnh;
     pnh_.param<std::string>("cmd_topic", cmd_topic_, ros::this_node::getName()+"/cmd");
     pnh_.param<std::string>("ip_address", ip_address_, "127.0.0.1");
+    pnh_.param<int>("port", port_, 5000);
     pnh_.param<double>("timeout", timeout_, 10.0);
     pnh_.param<double>("publish_rate", publish_rate_, 10.0);
-    pnh_.param<int>("port", port_, 5000);
     tcp_client_ptr_ = boost::make_shared<tcp_client>(io_service_, ip_address_, port_, timeout_);
     io_service_.run();
     command_sub_ = nh_.subscribe(cmd_topic_,1,&singal_lamp_driver::command_callback_,this);

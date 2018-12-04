@@ -4,10 +4,11 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <iostream>
+#include <functional>
 
 class tcp_server {
  public:
-  tcp_server(int server_port, boost::asio::io_service& io_service);
+  tcp_server(int server_port, boost::asio::io_service& io_service, std::function<void(std::string)> callback_func);
   ~tcp_server();
   const int port;
   void start();
@@ -21,5 +22,6 @@ class tcp_server {
   void on_accept_(const boost::system::error_code& error);
   void start_receive_();
   void on_receive_(const boost::system::error_code& error, size_t bytes_transferred);
+  std::function<void(std::string)> callback_func_;
 };
 #endif  // TCP_SERVER_H_INCLUDED
