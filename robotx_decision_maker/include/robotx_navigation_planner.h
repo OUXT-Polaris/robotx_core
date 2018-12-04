@@ -8,6 +8,7 @@
 //headers in this package
 #include <robotx_msgs/State.h>
 #include <robotx_msgs/Event.h>
+#include <robotx_msgs/StateChanged.h>
 
 //headers in boost
 #include <boost/optional.hpp>
@@ -25,6 +26,8 @@ public:
 private:
     void publish_cmd_vel_();
     void current_state_callback_(robotx_msgs::State msg);
+    void state_changed_callback_(robotx_msgs::StateChanged msg);
+    void publish_timer_event_();
     void waypoint_planner_cmd_callback_(const geometry_msgs::Twist::ConstPtr msg);
     void obstacle_avoid_cmd_callback_(const geometry_msgs::Twist::ConstPtr msg);
     ros::NodeHandle nh_;
@@ -33,6 +36,7 @@ private:
     ros::Subscriber current_state_sub_;
     ros::Subscriber waypoint_planner_cmd_sub_;
     ros::Subscriber obstacle_avoid_cmd_sub_;
+    ros::Subscriber state_changed_sub_;
     std::string current_state_topic_;
     std::string trigger_event_topic_;
     std::string waypoint_planner_cmd_topic_;

@@ -18,6 +18,10 @@
 
 //headers in Boost
 #include <boost/shared_ptr.hpp>
+#include <boost/thread.hpp>
+
+//headers in STL
+#include <mutex>
 
 typedef message_filters::sync_policies::ApproximateTime
     <sensor_msgs::NavSatFix, geometry_msgs::TwistStamped, geometry_msgs::QuaternionStamped> sync_policy;
@@ -27,7 +31,9 @@ class world_pose_publisher
 public:
     world_pose_publisher(ros::NodeHandle nh,ros::NodeHandle pnh);
     ~world_pose_publisher();
+    void run();
 private:
+    std::mutex mtx_;
     ros::NodeHandle nh_;
     ros::NodeHandle pnh_;
     boost::shared_ptr<message_filters::Synchronizer<sync_policy> > sync_ptr_;
@@ -43,6 +49,13 @@ private:
     ros::Publisher world_pose_pub_;
     std::string world_odom_topic_;
     ros::Publisher world_odom_pub_;
+    double publish_rate_;
+    bool data_recieved_;
+    sensor_msgs::NavSatFix fix_;
+    geometry_msgs::TwistStamped twist_;
+    geometry_msgs::QuaternionStamped true_course_;
+    std_msgs::Header twist_header_;
+    void publish_world_frame_();
     void gnss_callback_(const sensor_msgs::NavSatFixConstPtr& fix,
         const geometry_msgs::TwistStampedConstPtr& twist,
         const geometry_msgs::QuaternionStampedConstPtr true_course);
