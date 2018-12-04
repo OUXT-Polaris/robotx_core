@@ -50,15 +50,15 @@ void singal_lamp_driver::publish_cmd_()
         ptree pt;
         if(command_->mode == robotx_msgs::SignalLamp::MODE_AUTO)
         {
-            pt.put("Mode", "auto");
+            pt.put("mode", "auto");
         }
         else if(command_->mode == robotx_msgs::SignalLamp::MODE_MANUAL)
         {
-            pt.put("Mode", "manual");
+            pt.put("mode", "manual");
         }
-        else if(command_->mode == robotx_msgs::SignalLamp::MODE_STOP)
+        else if(command_->mode == robotx_msgs::SignalLamp::MODE_EMERGENCY)
         {
-            pt.put("Mode", "stop");
+            pt.put("mode", "emergency");
         }
         else
         {
