@@ -7,12 +7,14 @@
 
 //headers in this package
 #include <tcp_server.h>
-
-//headers in STL
-#include <map>
+#include <robotx_msgs/PowerStatus.h>
 
 //headers in boost
 #include <boost/shared_ptr.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/foreach.hpp>
+#include <boost/optional.hpp>
 
 class battery_monitor_driver
 {
@@ -20,13 +22,15 @@ public:
     battery_monitor_driver(ros::NodeHandle nh, ros::NodeHandle pnh);
     ~battery_monitor_driver();
 private:
-    void publish_battery_state_();
+    void publish_battery_state_(std::string data);
     boost::asio::io_service io_service_;
     std::string ip_address_;
     int port_;
+    ros::Publisher control_battery_pub_;
+    ros::Publisher motor_battery_pub_;
+    ros::Publisher power_state_pub_;
     ros::NodeHandle nh_;
     ros::NodeHandle pnh_;
-    std::map<std::string,ros::Publisher> battery_state_pubs_;
     boost::shared_ptr<tcp_server> tcp_server_ptr_;
 };
 #endif  //BATTERY_MONITOR_DRIVER_H_INCLUDED
