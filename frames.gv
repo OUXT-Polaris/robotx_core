@@ -1,0 +1,12 @@
+digraph G {
+"world" -> "map"[label="Broadcaster: /map_to_world_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1544050172.734 sec old)\nBuffer length: 0.000 sec\n"];
+"base_link" -> "velodyne"[label="Broadcaster: /baselink_to_velodyne\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1544050172.734 sec old)\nBuffer length: 0.000 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1544050172.734"[ shape=plaintext ] ;
+ }->"world";
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1544050172.734"[ shape=plaintext ] ;
+ }->"base_link";
+}

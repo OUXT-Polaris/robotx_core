@@ -58,14 +58,14 @@ void world_pose_publisher::publish_world_frame_()
         geometry_msgs::PoseStamped world_pose;
         nav_msgs::Odometry world_odom;
         ros::Time now = ros::Time::now();
-        world_pose.header.stamp = now;//fix_.header.stamp;
-        world_odom.header.stamp = now;//fix_.header.stamp;
+        world_pose.header.stamp = fix_.header.stamp;
+        world_odom.header.stamp = fix_.header.stamp;
         world_pose.header.frame_id = world_frame_;
         world_odom.header.frame_id = world_frame_;
         world_odom.child_frame_id = twist_header_.frame_id;
         world_odom.twist.twist = twist_.twist;
         geometry_msgs::TransformStamped transform_stamped;
-        transform_stamped.header.stamp = now;//fix_.header.stamp;
+        transform_stamped.header.stamp = fix_.header.stamp;
         transform_stamped.header.frame_id = "world";
         transform_stamped.child_frame_id = fix_.header.frame_id;
         geographic_msgs::GeoPose geo_pose = geodesy::toMsg(fix_,true_course_.quaternion);
@@ -75,6 +75,7 @@ void world_pose_publisher::publish_world_frame_()
 
         geometry_msgs::Pose2D pose2d = convert_to_pose2d_(pose);
         pose2d.theta = pose2d.theta + imu_data_[1].angular_velocity.z * (now - fix_.header.stamp).toSec();
+        pose = convert_to_pose3d_(pose2d);
 
         transform_stamped.transform.translation.x = pose.position.x;
         transform_stamped.transform.translation.y = pose.position.y;
@@ -121,6 +122,10 @@ void world_pose_publisher::gnss_callback_(const sensor_msgs::NavSatFixConstPtr& 
 geometry_msgs::Pose world_pose_publisher::convert_to_pose3d_(geometry_msgs::Pose2D pose2d)
 {
     geometry_msgs::Pose pose;
+    pose.position.x = pose2d.x;
+    pose.position.y = pose2d.y;
+    tf::Quaternion quaternion = tf::createQuaternionFromRPY(0,0,pose2d.theta);
+    quaternionTFToMsg(quaternion,pose.orientation);
     return pose;
 }
 
