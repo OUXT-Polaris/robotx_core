@@ -4,3 +4,4 @@ twist_topic : /sc30_driver_node/twist
 world_frame : world
 world_pose_topic : /robot_pose #/world_pose_publisher_node/world_pose
 world_odom_topic : /world_pose_publisher_node/odom
+imu_topic : /imu/data
