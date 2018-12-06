@@ -2,6 +2,7 @@
 string htc_time_hh
 string htc_time_mm
 string htc_time_ss
+
 float32 latitude
 
 bool north_or_south
