@@ -213,6 +213,7 @@ void robotx_hardware_interface::publish_heartbeat_() {
   ros::Rate rate(1);
   while (ros::ok()) {
     robotx_msgs::Heartbeat heartbeat_msg;
+    /*
     time_t t;
     struct tm *tm;
     tm = localtime(&t);
@@ -228,6 +229,7 @@ void robotx_hardware_interface::publish_heartbeat_() {
       heartbeat_msg.htc_time_ss = "0" + std::to_string(tm->tm_sec);
     else
       heartbeat_msg.htc_time_ss = std::to_string(tm->tm_sec);
+    */
     if (last_fix_msg_.latitude > 0)
       heartbeat_msg.north_or_south = heartbeat_msg.NORTH;
     else

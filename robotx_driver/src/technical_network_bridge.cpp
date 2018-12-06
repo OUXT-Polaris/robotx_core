@@ -56,8 +56,11 @@ std::string technical_network_bridge::generate_checksum(const char *data) {
 
 void technical_network_bridge::update_heartbeat_message() {
   tcp_send_msg_ = "RXHRT,";
+  /*
   tcp_send_msg_ = tcp_send_msg_ + heartbeat_msg_.htc_time_hh + heartbeat_msg_.htc_time_mm +
                   heartbeat_msg_.htc_time_ss + ",";
+                  */
+  
   tcp_send_msg_ = tcp_send_msg_ + std::to_string(heartbeat_msg_.latitude) + ",";
   if (heartbeat_msg_.north_or_south == heartbeat_msg_.NORTH) {
     tcp_send_msg_ = tcp_send_msg_ + "N,";
@@ -88,3 +91,23 @@ void technical_network_bridge::publish_connection_status_message() {
   connection_status_msg.ip_address = ip_address_;
   connection_status_pub_.publish(connection_status_msg);
 }
+
+void technical_network_bridge::get_local_time_(std::string& hst_hh, std::string& hst_mm, std::string& hst_ss)
+{
+  time_t t;
+  struct tm *tm;
+  tm = localtime(&t);
+  if (tm->tm_hour < 9)
+    hst_hh = "0" + std::to_string(tm->tm_hour);
+  else
+    hst_hh = std::to_string(tm->tm_hour);
+  if (tm->tm_min < 9)
+    hst_mm = "0" + std::to_string(tm->tm_min);
+  else
+    hst_mm = std::to_string(tm->tm_min);
+  if (tm->tm_sec < 9)
+    hst_ss = "0" + std::to_string(tm->tm_sec);
+  else
+    hst_ss = std::to_string(tm->tm_sec);
+}
+

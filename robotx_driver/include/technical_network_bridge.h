@@ -134,6 +134,8 @@ class technical_network_bridge {
    *
    */
   volatile bool message_recieved_;
+
+  void get_local_time_(std::string& hst_hh, std::string& hst_mm, std::string& hst_ss);
 };
 
 #endif  // HEARTBEAT_PUBLISHER_H_INCLUDED
