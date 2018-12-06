@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robotx_driver)/config/calibrate_tf.rviz"/>
+    <node pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_reconfigure"/>
+    <include file="$(find robotx_driver)/launch/frame_publisher.launch" />
+</launch>
