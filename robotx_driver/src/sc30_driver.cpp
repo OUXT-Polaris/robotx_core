@@ -4,6 +4,7 @@ sc30_driver::sc30_driver(ros::NodeHandle nh, ros::NodeHandle pnh)
 {
     nh_ = nh;
     pnh_ = pnh;
+    true_course_buf_ = boost::circular_buffer<std::pair<ros::Time,double> >(2);
     pnh_.param<std::string>("twist_topic", twist_topic_, ros::this_node::getName()+"/twist");
     pnh_.param<std::string>("fix_topic", fix_topic_, ros::this_node::getName()+"/fix");
     pnh_.param<std::string>("true_course_topic", true_course_topic_, ros::this_node::getName()+"/true_course");
@@ -16,6 +17,23 @@ sc30_driver::sc30_driver(ros::NodeHandle nh, ros::NodeHandle pnh)
 sc30_driver::~sc30_driver()
 {
     
+}
+
+double sc30_driver::get_diff_angle_(double from,double to)
+{
+    double ans = 0;
+    double inner_prod = std::cos(from)*std::cos(to)+std::sin(from)*std::sin(to);
+    double theta = std::acos(inner_prod);
+    double outer_prod = std::cos(from)*std::sin(to)-std::sin(from)*std::cos(to);
+    if(outer_prod > 0)
+    {
+        ans = theta;
+    }
+    else
+    {
+        ans = -1 * theta;
+    }
+    return ans;
 }
 
 void sc30_driver::nmea_cakkback_(const nmea_msgs::Sentence::ConstPtr msg)
@@ -62,6 +80,10 @@ boost::optional<geometry_msgs::QuaternionStamped> sc30_driver::get_true_course_(
     try
     {
         double true_course_value = std::stod(true_course_str);
+        std::pair<ros::Time,double> data;
+        data.first = sentence->header.stamp;
+        data.second = true_course_value;
+        true_course_buf_.push_back(data);
         true_course.header = sentence->header;
         tf::Quaternion quat;
         quat.setRPY(0,0,-1*true_course_value);
@@ -88,7 +110,14 @@ boost::optional<geometry_msgs::TwistStamped> sc30_driver::get_twist_(const nmea_
         twist.twist.linear.z = 0;
         twist.twist.angular.x = 0;
         twist.twist.angular.y = 0;
-        twist.twist.angular.z = 0;
+        if(true_course_buf_.size() != 2)
+        {
+            twist.twist.angular.z = 0;
+        }
+        else
+        {
+            twist.twist.angular.z = get_diff_angle_(true_course_buf_[1].second,true_course_buf_[0].second)/(true_course_buf_[1].first,true_course_buf_[0].first).toSec();
+        }
     }
     catch(...)
     {
