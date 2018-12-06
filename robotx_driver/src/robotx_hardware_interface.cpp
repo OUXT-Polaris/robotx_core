@@ -213,23 +213,6 @@ void robotx_hardware_interface::publish_heartbeat_() {
   ros::Rate rate(1);
   while (ros::ok()) {
     robotx_msgs::Heartbeat heartbeat_msg;
-    /*
-    time_t t;
-    struct tm *tm;
-    tm = localtime(&t);
-    if (tm->tm_hour < 9)
-      heartbeat_msg.htc_time_hh = "0" + std::to_string(tm->tm_hour);
-    else
-      heartbeat_msg.htc_time_hh = std::to_string(tm->tm_hour);
-    if (tm->tm_min < 9)
-      heartbeat_msg.htc_time_mm = "0" + std::to_string(tm->tm_min);
-    else
-      heartbeat_msg.htc_time_mm = std::to_string(tm->tm_min);
-    if (tm->tm_sec < 9)
-      heartbeat_msg.htc_time_ss = "0" + std::to_string(tm->tm_sec);
-    else
-      heartbeat_msg.htc_time_ss = std::to_string(tm->tm_sec);
-    */
     if (last_fix_msg_.latitude > 0)
       heartbeat_msg.north_or_south = heartbeat_msg.NORTH;
     else
@@ -240,7 +223,6 @@ void robotx_hardware_interface::publish_heartbeat_() {
     else
       heartbeat_msg.east_or_west = heartbeat_msg.WEST;
     heartbeat_msg.longitude = std::fabs(last_fix_msg_.longitude);
-    heartbeat_msg.team_id = params_.team_id;
     if (current_control_state_.current_state == "remote_operated") heartbeat_msg.vehicle_mode = heartbeat_msg.REMOTE_OPERATED;
     if (current_control_state_.current_state == "autonomous") heartbeat_msg.vehicle_mode = heartbeat_msg.AUTONOMOUS;
     if (current_control_state_.current_state == "emergency") heartbeat_msg.vehicle_mode = heartbeat_msg.EMERGENCY;

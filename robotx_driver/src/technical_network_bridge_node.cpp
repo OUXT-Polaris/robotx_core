@@ -15,6 +15,7 @@
 int main(int argc, char *argv[]) {
   ros::init(argc, argv, "heartbeat_publisher_node");
   technical_network_bridge bridge;
+  bridge.run();
   ros::spin();
   return 0;
 }

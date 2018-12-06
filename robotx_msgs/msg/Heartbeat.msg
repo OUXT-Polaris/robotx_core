@@ -10,8 +10,6 @@ bool east_or_west
 bool EAST = 0
 bool WEST = 1
 
-string team_id
-
 uint8 vehicle_mode
 uint8 REMOTE_OPERATED = 0
 uint8 AUTONOMOUS = 1

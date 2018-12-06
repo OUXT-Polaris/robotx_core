@@ -33,7 +33,7 @@ class technical_network_bridge {
    *
    */
   ~technical_network_bridge();
-
+  void run();
  private:
   /**
    * @brief boost::thread object for TCP/IP thread.
@@ -127,7 +127,7 @@ class technical_network_bridge {
    * @brief message publish rate of TCP/IP client.
    *
    */
-  double publish_rate_;
+  double heartbeat_publish_rate_;
   // flags
   /**
    * @brief parameter for checking message recieved.
@@ -136,6 +136,7 @@ class technical_network_bridge {
   volatile bool message_recieved_;
 
   void get_local_time_(std::string& hst_hh, std::string& hst_mm, std::string& hst_ss);
+  std::string team_id_;
 };
 
 #endif  // HEARTBEAT_PUBLISHER_H_INCLUDED

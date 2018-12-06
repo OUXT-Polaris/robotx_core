@@ -1,0 +1,1 @@
+int8 color #Color of the shape in the docking bay

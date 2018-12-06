@@ -72,11 +72,6 @@ class robotx_hardware_interface {
      */
     int left_motor_port;
     /**
-     * @brief parameter for team ID (default: OUXT Polaris)
-     *
-     */
-    std::string team_id;
-    /**
      * @brief set parameters
      *
      */
@@ -90,7 +85,6 @@ class robotx_hardware_interface {
                                      "127.0.0.1");
       ros::param::param<int>(ros::this_node::getName() + "/left_motor_port", left_motor_port, 50000);
       ros::param::param<int>(ros::this_node::getName() + "/right_motor_port", right_motor_port, 50001);
-      ros::param::param<std::string>(ros::this_node::getName() + "/team_id", team_id, "OUXT Polaris");
     };
   };
   robotx_hardware_interface();

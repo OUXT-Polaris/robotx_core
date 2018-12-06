@@ -6,21 +6,25 @@
 
 technical_network_bridge::technical_network_bridge() {
   message_recieved_ = false;
+  nh_.param<std::string>(ros::this_node::getName() + "/team_id", team_id_, "OUXT Polaris");
   nh_.param<std::string>(ros::this_node::getName() + "/ip_address", ip_address_, "127.0.0.1");
   nh_.param<int>(ros::this_node::getName() + "/port", port_, 31400);
-  nh_.param<double>(ros::this_node::getName() + "/publish_rate", publish_rate_, 1);
+  nh_.param<double>(ros::this_node::getName() + "/heartbeat_publish_rate", heartbeat_publish_rate_, 1);
   client_ = new tcp_client(io_service_, ip_address_, port_);
   io_service_.run();
   connection_status_pub_ = nh_.advertise<robotx_msgs::TechnicalDirectorNetworkStatus>(
       ros::this_node::getName() + "/connection_status", 1);
-  tcp_thread = boost::thread(&technical_network_bridge::publish_heartbeat_message, this);
   heartbeat_sub_ = nh_.subscribe("/heartbeat", 1, &technical_network_bridge::heartbeat_callback, this);
 }
 
 technical_network_bridge::~technical_network_bridge() {}
 
+void technical_network_bridge::run(){
+  tcp_thread = boost::thread(&technical_network_bridge::publish_heartbeat_message, this);
+}
+
 void technical_network_bridge::publish_heartbeat_message() {
-  ros::Rate loop_rate(publish_rate_);
+  ros::Rate loop_rate(heartbeat_publish_rate_);
   while (ros::ok()) {
     publish_connection_status_message();
     mtx_.lock();
@@ -56,11 +60,9 @@ std::string technical_network_bridge::generate_checksum(const char *data) {
 
 void technical_network_bridge::update_heartbeat_message() {
   tcp_send_msg_ = "RXHRT,";
-  /*
-  tcp_send_msg_ = tcp_send_msg_ + heartbeat_msg_.htc_time_hh + heartbeat_msg_.htc_time_mm +
-                  heartbeat_msg_.htc_time_ss + ",";
-                  */
-  
+  std::string hh,mm,ss;
+  get_local_time_(hh,mm,ss);
+  tcp_send_msg_ = tcp_send_msg_ + hh + mm + ss;
   tcp_send_msg_ = tcp_send_msg_ + std::to_string(heartbeat_msg_.latitude) + ",";
   if (heartbeat_msg_.north_or_south == heartbeat_msg_.NORTH) {
     tcp_send_msg_ = tcp_send_msg_ + "N,";
@@ -73,7 +75,7 @@ void technical_network_bridge::update_heartbeat_message() {
   } else {
     tcp_send_msg_ = tcp_send_msg_ + "W,";
   }
-  tcp_send_msg_ = tcp_send_msg_ + heartbeat_msg_.team_id;
+  tcp_send_msg_ = tcp_send_msg_ + team_id_;
   tcp_send_msg_ = tcp_send_msg_ + std::to_string(heartbeat_msg_.vehicle_mode) + ",";
   tcp_send_msg_ = tcp_send_msg_ + std::to_string(heartbeat_msg_.current_task_number);
   tcp_send_msg_ = "$" + tcp_send_msg_ + "*" + generate_checksum(tcp_send_msg_.c_str());
