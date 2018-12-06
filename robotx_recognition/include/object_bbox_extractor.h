@@ -3,6 +3,7 @@
 
 // headers in this package
 #include <robotx_msgs/ObjectRegionOfInterestArray.h>
+#include <robotx_recognition/object_bbox_extractorConfig.h>
 
 // headers in ROS
 #include <cv_bridge/cv_bridge.h>
@@ -14,6 +15,7 @@
 #include <sensor_msgs/CameraInfo.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
+#include <dynamic_reconfigure/server.h>
 
 class object_bbox_extractor {
  public:
@@ -31,7 +33,7 @@ class object_bbox_extractor {
       ros::param::param<std::string>(ros::this_node::getName() + "/euclidean_cluster_topic",
                                      euclidean_cluster_topic,
                                      ros::this_node::getName() + "/euclidean_cluster/bbox");
-      ros::param::param<double>(ros::this_node::getName() + "/horizontal_fov", horizontal_fov, 1.3962634);
+      //ros::param::param<double>(ros::this_node::getName() + "/horizontal_fov", horizontal_fov, 1.3962634);
       ros::param::param<bool>(ros::this_node::getName() + "/publish_rect_image", publish_rect_image, false);
       ros::param::param<bool>(ros::this_node::getName() + "/enable_roi_image_publisher",
                               enable_roi_image_publisher, false);
@@ -48,7 +50,7 @@ class object_bbox_extractor {
                         geometry_msgs::TransformStamped transform_stamped,
                         std_msgs::Header header,
                         cv::Rect& image_bbox);
-  const parameters params_;
+  parameters params_;
   image_transport::Subscriber image_sub_;
   image_transport::Publisher image_pub_;
   image_transport::Publisher roi_image_pub_;
@@ -59,5 +61,8 @@ class object_bbox_extractor {
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
   jsk_recognition_msgs::BoundingBoxArray last_bbox_msg_;
+  dynamic_reconfigure::Server<robotx_recognition::object_bbox_extractorConfig> server_;
+  dynamic_reconfigure::Server<robotx_recognition::object_bbox_extractorConfig>::CallbackType callback_func_type_;
+  void configure_callback_(robotx_recognition::object_bbox_extractorConfig &config, uint32_t level);
 };
 #endif  // OBJECT_BBOX_EXTRACTOR_H_INCLUDED

@@ -78,6 +78,8 @@ find_package(Eigen3 REQUIRED)
 # for tensorrt
 find_package(CUDA)
 
+generate_dynamic_reconfigure_options(cfg/object_bbox_extractor.cfg)
+
 ###################################
 ## catkin specific configuration ##
 ###################################

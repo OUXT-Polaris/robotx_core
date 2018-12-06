@@ -10,11 +10,18 @@ object_bbox_extractor::object_bbox_extractor() : it_(nh_), params_(), tf_listene
     roi_image_pub_ = it_.advertise(ros::this_node::getName() + "/roi_image", 1);
   }
   image_sub_ = it_.subscribe(params_.image_topic, 1, &object_bbox_extractor::image_callback_, this);
+  callback_func_type_ = boost::bind(&object_bbox_extractor::configure_callback_, this, _1, _2);
+  server_.setCallback(callback_func_type_);
   euclidean_cluster_sub_ = nh_.subscribe(params_.euclidean_cluster_topic, 1,
                                          &object_bbox_extractor::euclidean_cluster_callback_, this);
 }
 
 object_bbox_extractor::~object_bbox_extractor() {}
+
+void object_bbox_extractor::configure_callback_(robotx_recognition::object_bbox_extractorConfig &config, uint32_t level){
+  params_.horizontal_fov = config.horizontal_fov;
+  return;
+}
 
 void object_bbox_extractor::image_callback_(const sensor_msgs::ImageConstPtr& msg) {
   cv::Mat image = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8)->image;
