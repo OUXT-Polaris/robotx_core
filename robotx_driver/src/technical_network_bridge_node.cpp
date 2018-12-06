@@ -7,7 +7,7 @@
  */
 
 // headers in this package
-#include <heartbeat_publisher.h>
+#include <technical_network_bridge.h>
 
 // headers for ros
 #include <ros/ros.h>

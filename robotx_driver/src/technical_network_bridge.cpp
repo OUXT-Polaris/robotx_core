@@ -1,4 +1,4 @@
-#include <heartbeat_publisher.h>
+#include <technical_network_bridge.h>
 
 // hearers in stl
 #include <stdio.h>
@@ -14,8 +14,7 @@ heartbeat_publisher::heartbeat_publisher() {
   connection_status_pub_ = nh_.advertise<robotx_msgs::TechnicalDirectorNetworkStatus>(
       ros::this_node::getName() + "/connection_status", 1);
   tcp_thread = boost::thread(&heartbeat_publisher::publish_heartbeat_message, this);
-  heartbeat_sub_ = nh_.subscribe(ros::this_node::getName() + "/heartbeat", 1,
-                                 &heartbeat_publisher::heartbeat_callback, this);
+  heartbeat_sub_ = nh_.subscribe("/heartbeat", 1, &heartbeat_publisher::heartbeat_callback, this);
 }
 
 heartbeat_publisher::~heartbeat_publisher() {}
