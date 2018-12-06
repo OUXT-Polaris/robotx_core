@@ -34,6 +34,7 @@ if(GPU_PCL)
   nodelet
   robotx_build_flags
   pcl_ros
+  dynamic_reconfigure
   )
   find_package(PCL REQUIRED)
   include_directories(${PCL_INCLUDE_DIRS})
@@ -58,6 +59,7 @@ else()
   jsk_recognition_msgs
   nodelet
   robotx_build_flags
+  dynamic_reconfigure
   )
 endif()
 
