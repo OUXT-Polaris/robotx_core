@@ -16,6 +16,7 @@
 
 //headers in boost
 #include <boost/optional.hpp>
+#include <boost/circular_buffer.hpp>
 
 #define SENTENCE_UNDEFINED 0
 #define SENTENCE_GPRMC 1
@@ -34,6 +35,7 @@ private:
     boost::optional<geometry_msgs::QuaternionStamped> get_true_course_(const nmea_msgs::Sentence::ConstPtr sentence);
     boost::optional<geometry_msgs::TwistStamped> get_twist_(const nmea_msgs::Sentence::ConstPtr sentence);
     bool is_valid_status_(const nmea_msgs::Sentence::ConstPtr sentence);
+    double get_diff_angle_(double from,double to);
     std::vector<std::string> split_(const std::string &s, char delim);
     ros::Subscriber nmea_sub_;
     ros::Publisher twist_pub_;
@@ -42,6 +44,7 @@ private:
     std::string twist_topic_;
     std::string fix_topic_;
     std::string true_course_topic_;
+    boost::circular_buffer<std::pair<ros::Time,double> > true_course_buf_;
 };
 
 #endif  //SC30_DRIVER_H_INCLUDED
