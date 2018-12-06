@@ -1,0 +1,19 @@
+<robot name="wamv_simple">
+
+    <link name="base_link"/>
+
+    <joint name="base_link_joint" type="fixed">
+        <origin xyz="0 0 -0.9"/>
+        <parent link="base_link"/>
+        <child link="base_footprint"/>
+    </joint>
+
+    <link name="base_footprint">
+        <visual>
+            <geometry>
+                <mesh filename="package://wamv_description/mesh/wamv-simple.dae"/>
+            </geometry>
+        </visual>
+    </link>
+
+</robot>
