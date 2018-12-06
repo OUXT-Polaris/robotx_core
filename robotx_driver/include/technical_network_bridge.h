@@ -18,21 +18,21 @@
 #include <mutex>
 
 /**
- * @brief heartbeat_publisher class
+ * @brief technical_network_bridge class
  *
  */
-class heartbeat_publisher {
+class technical_network_bridge {
  public:
   /**
    * @brief Construct a new heartbeat publisher object
    *
    */
-  heartbeat_publisher();
+  technical_network_bridge();
   /**
    * @brief Destroy the heartbeat publisher object
    *
    */
-  ~heartbeat_publisher();
+  ~technical_network_bridge();
 
  private:
   /**
@@ -110,17 +110,17 @@ class heartbeat_publisher {
   tcp_client *client_;
   /**
    * @brief io_service for tcp_ip client
-   * @sa heartbeat_publisher::client_
+   * @sa technical_network_bridge::client_
    */
   boost::asio::io_service io_service_;
   /**
    * @brief target TCP/IP server IP address.
-   * @sa heartbeat_publisher::client_
+   * @sa technical_network_bridge::client_
    */
   std::string ip_address_;
   /**
    * @brief target TCP/IP server network port
-   * @sa heartbeat_publisher::client_
+   * @sa technical_network_bridge::client_
    */
   int port_;
   /**
