@@ -3,6 +3,8 @@
 
 // headers in this package
 #include <robotx_msgs/Heartbeat.h>
+#include <robotx_msgs/EntranceAndExitGatesReport.h>
+#include <robotx_msgs/IdentifySymbolsAndDockReport.h>
 #include <robotx_msgs/TechnicalDirectorNetworkStatus.h>
 #include <tcp_client.h>
 

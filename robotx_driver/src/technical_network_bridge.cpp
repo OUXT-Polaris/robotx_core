@@ -15,6 +15,7 @@ technical_network_bridge::technical_network_bridge() {
   connection_status_pub_ = nh_.advertise<robotx_msgs::TechnicalDirectorNetworkStatus>(
       ros::this_node::getName() + "/connection_status", 1);
   heartbeat_sub_ = nh_.subscribe("/heartbeat", 1, &technical_network_bridge::heartbeat_callback, this);
+  
 }
 
 technical_network_bridge::~technical_network_bridge() {}
