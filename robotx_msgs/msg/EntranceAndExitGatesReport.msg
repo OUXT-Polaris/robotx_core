@@ -1,8 +1,3 @@
-#int32 htc_time #hhmmss
-string htc_time_hh
-string htc_time_mm
-string htc_time_ss
-
 string team_id
 
 int8 active_entrance_gate
