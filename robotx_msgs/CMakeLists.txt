@@ -47,6 +47,8 @@ add_message_files(
   ObstacleAvoidConfigure.msg
   SignalLamp.msg
   PowerStatus.msg
+  DetectedMarker.msg
+  DetectedMarkerArray.msg
 )
 ## Generate added messages and services with any dependencies listed here
 generate_messages(

@@ -13,6 +13,7 @@
 #include <image_transport/subscriber_filter.h>
 #include <image_transport/image_transport.h>
 #include <sensor_msgs/Image.h>
+#include <cv_bridge/cv_bridge.h>
 
 // headers in opencv
 #include <opencv2/highgui/highgui.hpp>
@@ -47,7 +48,7 @@ private:
     double hu_circle_[7];
     double hu_rectangle_[7];
     double hu_triangle_[7];
-    boost::optional<std::pair<double,std::vector<cv::Point> > > match_(cv::Mat input, double hu_ref[7]);
+    std::pair<double,std::vector<cv::Point> > match_(cv::Mat input, double hu_ref[7]);
 
     // subscriber and synchronizer
     message_filters::Subscriber<robotx_msgs::ObjectRegionOfInterestArray> roi_sub_;
@@ -58,7 +59,8 @@ private:
       sensor_msgs::Image,
       robotx_msgs::ObjectRegionOfInterestArray> SyncPolicy;
     message_filters::Synchronizer<SyncPolicy> sync_;
-    void callback(const sensor_msgs::ImageConstPtr& image_msg,const robotx_msgs::ObjectRegionOfInterestArrayConstPtr& rois_msg);
+    void callback_(const sensor_msgs::ImageConstPtr& image_msg,const robotx_msgs::ObjectRegionOfInterestArrayConstPtr& rois_msg);
+    std::vector<cv::Rect> get_rois_(const robotx_msgs::ObjectRegionOfInterestArrayConstPtr& rois_msg);
 };
 
 #endif  //HUE_MOMENTS_METCHER_H_INCLUDED
