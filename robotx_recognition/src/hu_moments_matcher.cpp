@@ -1,11 +1,16 @@
 #include <hu_moments_matcher.h>
 
-hu_moments_matcher::hu_moments_matcher(ros::NodeHandle nh,ros::NodeHandle pnh)
+hu_moments_matcher::hu_moments_matcher(ros::NodeHandle nh,ros::NodeHandle pnh) :
+  it_(nh),
+  nh_(nh),
+  pnh_(pnh),
+  params(),
+  image_sub_(it_, params.image_topic, 1),
+  roi_sub_(nh_, params.roi_topic, 1),
+  sync_(SyncPolicy(1), image_sub_, roi_sub_)
 {
-    nh_ = nh;
-    pnh_ = pnh;
-    pnh_.param<std::string>("robot_frame", image_topic_, ros::this_node::getName()+"/image_raw");
-    
+    sync_.registerCallback(boost::bind(&hu_moments_matcher::callback, this, _1, _2));
+
     cv::Mat circle_ref_image;
     cv::cvtColor(circle_ref_image, circle_ref_image, CV_RGB2GRAY);
     cv::adaptiveThreshold(circle_ref_image, circle_ref_image, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, 7, 0);
@@ -34,6 +39,11 @@ hu_moments_matcher::hu_moments_matcher(ros::NodeHandle nh,ros::NodeHandle pnh)
 hu_moments_matcher::~hu_moments_matcher()
 {
 
+}
+
+void hu_moments_matcher::callback(const sensor_msgs::ImageConstPtr& image_msg,const robotx_msgs::ObjectRegionOfInterestArrayConstPtr& rois_msg)
+{
+    return;
 }
 
 boost::optional<std::pair<double,std::vector<cv::Point> > > hu_moments_matcher::match_(cv::Mat input, double hu_ref[7])
