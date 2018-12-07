@@ -169,6 +169,10 @@ set(pcl_plane_removal_src src/pcl_plane_removal.cpp)
 add_executable(pcl_plane_removal_node src/pcl_plane_removal_node.cpp ${pcl_plane_removal_src})
 target_link_libraries(pcl_plane_removal_node ${catkin_LIBRARIES})
 
+set(marker_detector_src src/hu_moments_matcher.cpp)
+add_executable(marker_detector_node src/marker_detector_node.cpp ${marker_detector_src})
+target_link_libraries(marker_detector_node ${catkin_LIBRARIES})
+
 option(USE_CNN "Use CNN" OFF)
 
 # cnn_prediction
