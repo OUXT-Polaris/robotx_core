@@ -48,6 +48,7 @@ class technical_network_bridge {
    * @param msg content for the message.
    */
   void heartbeat_callback(const robotx_msgs::Heartbeat::ConstPtr &msg);
+  void entrance_and_exit_gates_report_callback_(robotx_msgs::EntranceAndExitGatesReport::ConstPtr &msg);
   /**
    * @brief function for publishing ~/connection_status ROS topic.
    *

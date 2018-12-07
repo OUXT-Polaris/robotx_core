@@ -24,6 +24,11 @@ void technical_network_bridge::run(){
   tcp_thread = boost::thread(&technical_network_bridge::publish_heartbeat_message, this);
 }
 
+void technical_network_bridge::entrance_and_exit_gates_report_callback_(robotx_msgs::EntranceAndExitGatesReport::ConstPtr &msg)
+{
+  return;
+}
+
 void technical_network_bridge::publish_heartbeat_message() {
   ros::Rate loop_rate(heartbeat_publish_rate_);
   while (ros::ok()) {
