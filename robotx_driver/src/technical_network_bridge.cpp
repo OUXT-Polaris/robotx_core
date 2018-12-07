@@ -15,7 +15,10 @@ technical_network_bridge::technical_network_bridge() {
   connection_status_pub_ = nh_.advertise<robotx_msgs::TechnicalDirectorNetworkStatus>(
       ros::this_node::getName() + "/connection_status", 1);
   heartbeat_sub_ = nh_.subscribe("/heartbeat", 1, &technical_network_bridge::heartbeat_callback, this);
-  
+  entrance_and_exit_gates_report_sub_ = 
+    nh_.subscribe("/entrance_and_exit_gates_report",1,&technical_network_bridge::entrance_and_exit_gates_report_callback_,this);
+  identify_symbols_and_dock_report_sub_ = 
+    nh_.subscribe("/identify_symbols_and_dock_report",1,&technical_network_bridge::identify_symbols_and_dock_report_callback_,this);
 }
 
 technical_network_bridge::~technical_network_bridge() {}
@@ -24,7 +27,12 @@ void technical_network_bridge::run(){
   tcp_thread = boost::thread(&technical_network_bridge::publish_heartbeat_message, this);
 }
 
-void technical_network_bridge::entrance_and_exit_gates_report_callback_(robotx_msgs::EntranceAndExitGatesReport::ConstPtr &msg)
+void technical_network_bridge::entrance_and_exit_gates_report_callback_(const robotx_msgs::EntranceAndExitGatesReport::ConstPtr &msg)
+{
+  return;
+}
+
+void technical_network_bridge::identify_symbols_and_dock_report_callback_(const robotx_msgs::IdentifySymbolsAndDockReport::ConstPtr &msg)
 {
   return;
 }

@@ -48,7 +48,8 @@ class technical_network_bridge {
    * @param msg content for the message.
    */
   void heartbeat_callback(const robotx_msgs::Heartbeat::ConstPtr &msg);
-  void entrance_and_exit_gates_report_callback_(robotx_msgs::EntranceAndExitGatesReport::ConstPtr &msg);
+  void entrance_and_exit_gates_report_callback_(const robotx_msgs::EntranceAndExitGatesReport::ConstPtr &msg);
+  void identify_symbols_and_dock_report_callback_(const robotx_msgs::IdentifySymbolsAndDockReport::ConstPtr &msg);
   /**
    * @brief function for publishing ~/connection_status ROS topic.
    *
@@ -140,6 +141,8 @@ class technical_network_bridge {
 
   void get_local_time_(std::string& hst_hh, std::string& hst_mm, std::string& hst_ss);
   std::string team_id_;
+  ros::Subscriber entrance_and_exit_gates_report_sub_;
+  ros::Subscriber identify_symbols_and_dock_report_sub_;
 };
 
 #endif  // HEARTBEAT_PUBLISHER_H_INCLUDED
