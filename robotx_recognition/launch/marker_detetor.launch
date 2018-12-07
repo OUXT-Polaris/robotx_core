@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="robotx_recognition" type="marker_detector_node" name="marker_detector_node" output="screen">
+        <rosparam command="load" file="$(find robotx_recognition)/config/pcl_plane_removal.yaml"/>
+    </node>
+</launch>

@@ -1,2 +1,3 @@
 image_topic : "/wam_v/front_camera/image_rect"
 rect_topic : "/object_bbox_extractor_node/object_roi"
+y
