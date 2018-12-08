@@ -16,6 +16,7 @@
 #include <mutex>
 #include <fstream>
 #include <sstream>
+#include <map>
 
 //headers in boost
 #include <boost/thread.hpp>
@@ -31,11 +32,13 @@ private:
     ros::NodeHandle nh_;
     std::string waypoint_csv_file_path_,robot_frame_,map_frame_,robot_pose_topic_;
     std::vector<geometry_msgs::PoseStamped> waypoints_;
+    std::map<int,std::string> waypoint_event_;
     ros::Subscriber navigation_status_sub_;
     ros::Subscriber robot_pose_sub_;
     ros::Publisher marker_pub_;
     ros::Publisher waypoint_pub_;
     ros::Publisher trigger_event_pub_;
+    ros::Publisher mission_trigger_event_pub_;
     std::mutex mutex_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
