@@ -1,45 +1,30 @@
 FROM multiarch/ubuntu-core:arm64-xenial
 
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y curl build-essential
 
 RUN curl -o pylon_5.1.0.12682-deb0_arm64.deb https://www.baslerweb.com/fp-1535524598/media/downloads/software/pylon_software/pylon_5.1.0.12682-deb0_arm64.deb \
   && dpkg --force-all -i pylon_5.1.0.12682-deb0_arm64.deb\
   && rm pylon_5.1.0.12682-deb0_arm64.deb
 
-RUN curl https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.3/lw.xd42/JetPackL4T_33_b39/cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb -o cuda_arm64.deb \
+RUN curl https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.2.1/m8u2ki/JetPackL4T_321_b23/cuda-repo-l4t-9-0-local_9.0.252-1_arm64.deb -o cuda_arm64.deb \
    && dpkg -i cuda_arm64.deb \
    && rm cuda_arm64.deb \
    && cd /var/cuda-repo-9-0-local/ \
    && dpkg --force-all -i *.deb
 
-RUN curl -o cudnn.deb https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.3/lw.xd42/JetPackL4T_33_b39//libcudnn7_7.1.5.14-1+cuda9.0_arm64.deb \
+RUN curl -o cudnn.deb https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.2.1/m8u2ki/JetPackL4T_321_b23/libcudnn7_7.0.5.15-1+cuda9.0_arm64.deb \
   && dpkg -i cudnn.deb \
   && rm cudnn.deb
 
-RUN curl -o cudnn-dev.deb https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.3/lw.xd42/JetPackL4T_33_b39//libcudnn7-dev_7.1.5.14-1+cuda9.0_arm64.deb \
+RUN curl -o cudnn-dev.deb https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.2.1/m8u2ki/JetPackL4T_321_b23/libcudnn7-dev_7.0.5.15-1+cuda9.0_arm64.deb \
   && dpkg -i cudnn-dev.deb \
-  && rm cudnn-dev.deb 
+  && rm cudnn-dev.deb
 
-RUN curl -o libnvinfer4_4.1.3-1+cuda9.0_arm64.deb https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.3/lw.xd42/JetPackL4T_33_b39/libnvinfer4_4.1.3-1+cuda9.0_arm64.deb \
-  && dpkg -i libnvinfer4_4.1.3-1+cuda9.0_arm64.deb \
-  && rm libnvinfer4_4.1.3-1+cuda9.0_arm64.deb
-
-RUN curl -o libnvinfer-dev_4.1.3-1+cuda9.0_arm64.deb https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.3/lw.xd42/JetPackL4T_33_b39/libnvinfer-dev_4.1.3-1+cuda9.0_arm64.deb \
-  && dpkg -i libnvinfer-dev_4.1.3-1+cuda9.0_arm64.deb \
-  && rm libnvinfer-dev_4.1.3-1+cuda9.0_arm64.deb
-
-
-RUN curl -o libnvinfer-samples_4.1.3-1+cuda9.0_arm64.deb https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.3/lw.xd42/JetPackL4T_33_b39/libnvinfer-samples_4.1.3-1+cuda9.0_arm64.deb \
-  && dpkg -i libnvinfer-samples_4.1.3-1+cuda9.0_arm64.deb \
-  && rm libnvinfer-samples_4.1.3-1+cuda9.0_arm64.deb
-
-RUN curl -o tensorrt_4.0.2.0-1+cuda9.0_arm64.deb https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.3/lw.xd42/JetPackL4T_33_b39/tensorrt_4.0.2.0-1+cuda9.0_arm64.deb \
-  && dpkg -i tensorrt_4.0.2.0-1+cuda9.0_arm64.deb \
-  && rm tensorrt_4.0.2.0-1+cuda9.0_arm64.deb
-
-RUN curl -o libgie-dev_4.1.3-1+cuda9.0_arm64.deb https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.3/lw.xd42/JetPackL4T_33_b39/libgie-dev_4.1.3-1+cuda9.0_arm64.deb \
-  && dpkg -i libgie-dev_4.1.3-1+cuda9.0_arm64.deb \
-  && rm libgie-dev_4.1.3-1+cuda9.0_arm64.deb
+RUN curl -o nv-tensorrt-repo-ubuntu1604-ga-cuda9.0-trt3.0.4-20180208_1-1_arm64.deb https://developer.download.nvidia.com/devzone/devcenter/mobile/jetpack_l4t/3.2.1/m8u2ki/JetPackL4T_321_b23/nv-tensorrt-repo-ubuntu1604-ga-cuda9.0-trt3.0.4-20180208_1-1_arm64.deb \
+ && dpkg -i nv-tensorrt-repo-ubuntu1604-ga-cuda9.0-trt3.0.4-20180208_1-1_arm64.deb \
+ && rm nv-tensorrt-repo-ubuntu1604-ga-cuda9.0-trt3.0.4-20180208_1-1_arm64.deb \
+ && cd /var/nv-tensorrt-repo-ga-cuda9.0-trt3.0.4-20180208/ \
+ && dpkg --force-all -i *.deb
 
 RUN apt-get update && apt-get -f install -y
 RUN apt-get install -y lsb-release

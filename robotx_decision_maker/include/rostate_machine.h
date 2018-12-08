@@ -25,7 +25,7 @@ public:
     void run();
 private:
     void publish_current_state_();
-    void event_callback_(robotx_msgs::Event msg);
+    void event_callback_(const ros::MessageEvent<robotx_msgs::Event const>& event);//robotx_msgs::Event msg);
     std::shared_ptr<state_machine> state_machine_ptr_;
     ros::NodeHandle nh_;
     ros::Publisher current_state_pub_;
