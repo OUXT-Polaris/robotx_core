@@ -3,6 +3,9 @@
 
 // headers in this package
 #include <robotx_msgs/Heartbeat.h>
+#include <robotx_msgs/ScanTheCodeReport.h>
+#include <robotx_msgs/EntranceAndExitGatesReport.h>
+#include <robotx_msgs/IdentifySymbolsAndDockReport.h>
 #include <robotx_msgs/TechnicalDirectorNetworkStatus.h>
 #include <tcp_client.h>
 
@@ -18,22 +21,22 @@
 #include <mutex>
 
 /**
- * @brief heartbeat_publisher class
+ * @brief technical_network_bridge class
  *
  */
-class heartbeat_publisher {
+class technical_network_bridge {
  public:
   /**
    * @brief Construct a new heartbeat publisher object
    *
    */
-  heartbeat_publisher();
+  technical_network_bridge();
   /**
    * @brief Destroy the heartbeat publisher object
    *
    */
-  ~heartbeat_publisher();
-
+  ~technical_network_bridge();
+  void run();
  private:
   /**
    * @brief boost::thread object for TCP/IP thread.
@@ -46,6 +49,9 @@ class heartbeat_publisher {
    * @param msg content for the message.
    */
   void heartbeat_callback(const robotx_msgs::Heartbeat::ConstPtr &msg);
+  void entrance_and_exit_gates_report_callback_(const robotx_msgs::EntranceAndExitGatesReport::ConstPtr &msg);
+  void identify_symbols_and_dock_report_callback_(const robotx_msgs::IdentifySymbolsAndDockReport::ConstPtr &msg);
+  void scan_the_code_report_callback_(const robotx_msgs::ScanTheCodeReport::ConstPtr &msg);
   /**
    * @brief function for publishing ~/connection_status ROS topic.
    *
@@ -90,7 +96,7 @@ class heartbeat_publisher {
    * @brief parameter for message which send through TCP/IP transfer.
    *
    */
-  std::string tcp_send_msg_;
+  std::string heartbeat_tcp_send_msg_;
   /**
    * @brief mutex for exclusion control
    *
@@ -110,30 +116,37 @@ class heartbeat_publisher {
   tcp_client *client_;
   /**
    * @brief io_service for tcp_ip client
-   * @sa heartbeat_publisher::client_
+   * @sa technical_network_bridge::client_
    */
   boost::asio::io_service io_service_;
   /**
    * @brief target TCP/IP server IP address.
-   * @sa heartbeat_publisher::client_
+   * @sa technical_network_bridge::client_
    */
   std::string ip_address_;
   /**
    * @brief target TCP/IP server network port
-   * @sa heartbeat_publisher::client_
+   * @sa technical_network_bridge::client_
    */
   int port_;
   /**
    * @brief message publish rate of TCP/IP client.
    *
    */
-  double publish_rate_;
+  double heartbeat_publish_rate_;
   // flags
   /**
    * @brief parameter for checking message recieved.
    *
    */
   volatile bool message_recieved_;
+
+  void get_local_time_(std::string& hst_hh, std::string& hst_mm, std::string& hst_ss);
+  void get_local_date_(std::string& hst_dd, std::string& hst_mm, std::string& hst_yy);
+  std::string team_id_;
+  ros::Subscriber entrance_and_exit_gates_report_sub_;
+  ros::Subscriber identify_symbols_and_dock_report_sub_;
+  ros::Subscriber scan_the_code_report_sub_;
 };
 
 #endif  // HEARTBEAT_PUBLISHER_H_INCLUDED

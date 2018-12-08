@@ -44,10 +44,10 @@ else()
   )
 endif()
 
-set(heartbeat_publisher_node_src src/heartbeat_publisher_node.cpp src/heartbeat_publisher.cpp src/tcp_client.cpp)
-add_executable(heartbeat_publisher_node ${heartbeat_publisher_node_src})
-add_dependencies(heartbeat_publisher_node robotx_msgs_generate_messages_cpp)
-target_link_libraries(heartbeat_publisher_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+set(technical_network_bridge_node_src src/technical_network_bridge_node.cpp src/technical_network_bridge.cpp src/tcp_client.cpp)
+add_executable(technical_network_bridge_node ${technical_network_bridge_node_src})
+add_dependencies(technical_network_bridge_node robotx_msgs_generate_messages_cpp)
+target_link_libraries(technical_network_bridge_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 #add_document(heartbeat_publisher_node)
 #clang_format(heartbeat_publisher_node)
 
@@ -103,13 +103,11 @@ endif()
 ## Install ##
 #############
 if(CUDA_FOUND)
-  install(TARGETS robotx_hardware_interface_node heartbeat_publisher_node dynamixel_driver_node frame_publisher_node
-    sc30_driver_node signal_lamp_driver_node battery_monitor_driver_node #cuda_diagnostic_node
+  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node dynamixel_driver_node sc30_driver_node frame_publisher_node #cuda_diagnostic_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 else()
-  install(TARGETS robotx_hardware_interface_node heartbeat_publisher_node dynamixel_driver_node frame_publisher_node
-    sc30_driver_node signal_lamp_driver_node battery_monitor_driver_node
+  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node dynamixel_driver_node sc30_driver_node frame_publisher_node
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 endif()

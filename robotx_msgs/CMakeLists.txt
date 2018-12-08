@@ -43,6 +43,10 @@ add_message_files(
   CoastLineArray.msg
   ObstacleMap.msg
   FieldMap.msg
+  EntranceAndExitGatesReport.msg
+  IdentifySymbolsAndDockReport.msg
+  DetectAndDeliverReport.msg
+  ScanTheCodeReport.msg
   CarrotPlannerConfigure.msg
   ObstacleAvoidConfigure.msg
   SignalLamp.msg

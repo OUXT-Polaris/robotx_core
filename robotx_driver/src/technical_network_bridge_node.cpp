@@ -7,14 +7,15 @@
  */
 
 // headers in this package
-#include <heartbeat_publisher.h>
+#include <technical_network_bridge.h>
 
 // headers for ros
 #include <ros/ros.h>
 
 int main(int argc, char *argv[]) {
   ros::init(argc, argv, "heartbeat_publisher_node");
-  heartbeat_publisher publisher;
+  technical_network_bridge bridge;
+  bridge.run();
   ros::spin();
   return 0;
 }
