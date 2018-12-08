@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="robotx_navigation" type="imu_gravity_removal_node" name="imu_gravity_removal_node" output="screen">
+        <remap from="/imu_gravity_removal_node/input_imu" to="/imu/data"/>
+    </node>
+</launch>
