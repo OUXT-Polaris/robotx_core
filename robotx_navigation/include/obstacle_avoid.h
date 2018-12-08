@@ -66,6 +66,8 @@ private:
     boost::optional<robotx_msgs::State> current_state_;
     double search_angle_;
     double search_radius_;
+    double search_radius_side_;
+    double search_angle_behind_;
     double search_radius_behind_;
     state_lattice_planner planner_;
 };

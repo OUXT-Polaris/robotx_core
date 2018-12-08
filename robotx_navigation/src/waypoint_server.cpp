@@ -11,19 +11,21 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     waypoint_csv_file_path_ = ros::package::getPath("robotx_navigation") + "/data/" + waypoint_csv_filename;
     std::ifstream ifs(waypoint_csv_file_path_.c_str());
     std::string line;
+    int i = 0;
     while (getline(ifs, line))
     {
         std::vector<std::string> strvec = split_(line, ',');
         geometry_msgs::PoseStamped pose;
         try
         {
-            pose.header.frame_id = strvec[0];
-            pose.pose.position.x = std::stod(strvec[1].c_str());
-            pose.pose.position.y = std::stod(strvec[2].c_str());
+            pose.header.frame_id = strvec[1];
+            pose.pose.position.x = std::stod(strvec[2].c_str());
+            pose.pose.position.y = std::stod(strvec[3].c_str());
             pose.pose.position.z = 0;
-            double yaw = std::stod(strvec[3].c_str());
+            double yaw = std::stod(strvec[4].c_str());
             tf::Quaternion quat = tf::createQuaternionFromRPY(0,0,yaw);
             tf::quaternionTFToMsg(quat,pose.pose.orientation);
+            waypoint_event_[i] = strvec[5];
         }
         catch(...)
         {
@@ -31,8 +33,10 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
             std::exit(-1);
         }
         waypoints_.push_back(pose);
+        i++;
     }
     trigger_event_pub_ = nh_.advertise<robotx_msgs::Event>("/robotx_state_machine_node/navigation_state_machine/trigger_event",1);
+    mission_trigger_event_pub_ = nh_.advertise<robotx_msgs::Event>("/robotx_state_machine_node/mission_state_machine/trigger_event",1);
     marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker",1);
     waypoint_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(ros::this_node::getName()+"/next_waypoint",1,true);
     robot_pose_sub_ = nh_.subscribe(robot_pose_topic_, 1, &waypoint_server::robot_pose_callback_, this);
@@ -137,6 +141,12 @@ void waypoint_server::navigation_status_callback_(robotx_msgs::StateChanged msg)
             event_msg.trigger_event_name = "next_waypoint_found";
             trigger_event_pub_.publish(event_msg);
             waypoint_pub_.publish(waypoints_[target_waypoint_index_]);
+            if(waypoint_event_[target_waypoint_index_-1] != "None")
+            {
+                robotx_msgs::Event event;
+                event.trigger_event_name = waypoint_event_[target_waypoint_index_-1];
+                mission_trigger_event_pub_.publish(event);
+            }
         }
         else
         {
