@@ -31,11 +31,14 @@ void technical_network_bridge::run(){
 
 void technical_network_bridge::entrance_and_exit_gates_report_callback_(const robotx_msgs::EntranceAndExitGatesReport::ConstPtr &msg)
 {
-  std::string tcp_send_msg_;
-  tcp_send_msg_ = "$RXGAT";
+  std::string tcp_send_msg = "$RXGAT,";
+  std::string date_dd,data_mm,data_yy;
+  get_local_date_(date_dd,data_mm,data_yy);
+  tcp_send_msg = tcp_send_msg + date_dd + data_mm + data_yy + ",";
   std::string hh,mm,ss;
   get_local_time_(hh,mm,ss);
-  tcp_send_msg_ = tcp_send_msg_ + hh + mm + ss;
+  tcp_send_msg = tcp_send_msg + hh + mm + ss + ",";
+  tcp_send_msg = tcp_send_msg + team_id_ + ",";
   return;
 }
 
@@ -94,6 +97,31 @@ void technical_network_bridge::publish_heartbeat_message() {
 }
 
 void technical_network_bridge::scan_the_code_report_callback_(const robotx_msgs::ScanTheCodeReport::ConstPtr &msg){
+  std::string tcp_send_msg = "$RXCOD,";
+  std::string date_dd,data_mm,data_yy;
+  get_local_date_(date_dd,data_mm,data_yy);
+  tcp_send_msg = tcp_send_msg + date_dd + data_mm + data_yy + ",";
+  std::string hh,mm,ss;
+  get_local_time_(hh,mm,ss);
+  tcp_send_msg = tcp_send_msg + hh + mm + ss + ",";
+  tcp_send_msg = tcp_send_msg + team_id_ + ",";
+  std::string light_pattern_str;
+  for(int i=0; i<3; i++)
+  {
+    if(msg->light_pattern[i] == msg->RED)
+    {
+      light_pattern_str = light_pattern_str + "R,";
+    }
+    if(msg->light_pattern[i] == msg->BLUE)
+    {
+      light_pattern_str = light_pattern_str + "B,";
+    }
+    if(msg->light_pattern[i] == msg->GREEN)
+    {
+      light_pattern_str = light_pattern_str + "G,";
+    }
+  }
+  light_pattern_str = light_pattern_str + "*49";
   return;
 }
 
