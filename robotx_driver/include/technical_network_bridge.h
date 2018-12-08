@@ -3,6 +3,7 @@
 
 // headers in this package
 #include <robotx_msgs/Heartbeat.h>
+#include <robotx_msgs/ScanTheCodeReport.h>
 #include <robotx_msgs/EntranceAndExitGatesReport.h>
 #include <robotx_msgs/IdentifySymbolsAndDockReport.h>
 #include <robotx_msgs/TechnicalDirectorNetworkStatus.h>
@@ -50,6 +51,7 @@ class technical_network_bridge {
   void heartbeat_callback(const robotx_msgs::Heartbeat::ConstPtr &msg);
   void entrance_and_exit_gates_report_callback_(const robotx_msgs::EntranceAndExitGatesReport::ConstPtr &msg);
   void identify_symbols_and_dock_report_callback_(const robotx_msgs::IdentifySymbolsAndDockReport::ConstPtr &msg);
+  void scan_the_code_report_callback_(const robotx_msgs::ScanTheCodeReport::ConstPtr &msg);
   /**
    * @brief function for publishing ~/connection_status ROS topic.
    *
@@ -144,6 +146,7 @@ class technical_network_bridge {
   std::string team_id_;
   ros::Subscriber entrance_and_exit_gates_report_sub_;
   ros::Subscriber identify_symbols_and_dock_report_sub_;
+  ros::Subscriber scan_the_code_report_sub_;
 };
 
 #endif  // HEARTBEAT_PUBLISHER_H_INCLUDED

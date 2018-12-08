@@ -46,6 +46,7 @@ add_message_files(
   EntranceAndExitGatesReport.msg
   IdentifySymbolsAndDockReport.msg
   DetectAndDeliverReport.msg
+  ScanTheCodeReport.msg
 )
 ## Generate added messages and services with any dependencies listed here
 generate_messages(

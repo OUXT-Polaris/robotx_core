@@ -19,6 +19,8 @@ technical_network_bridge::technical_network_bridge() {
     nh_.subscribe("/entrance_and_exit_gates_report",1,&technical_network_bridge::entrance_and_exit_gates_report_callback_,this);
   identify_symbols_and_dock_report_sub_ = 
     nh_.subscribe("/identify_symbols_and_dock_report",1,&technical_network_bridge::identify_symbols_and_dock_report_callback_,this);
+  scan_the_code_report_sub_ = 
+    nh_.subscribe("/scan_the_code_report",1,&technical_network_bridge::scan_the_code_report_callback_,this);
 }
 
 technical_network_bridge::~technical_network_bridge() {}
@@ -39,6 +41,41 @@ void technical_network_bridge::entrance_and_exit_gates_report_callback_(const ro
 
 void technical_network_bridge::identify_symbols_and_dock_report_callback_(const robotx_msgs::IdentifySymbolsAndDockReport::ConstPtr &msg)
 {
+  std::string tcp_send_msg = "$RXDOK,";
+  std::string date_dd,data_mm,data_yy;
+  get_local_date_(date_dd,data_mm,data_yy);
+  tcp_send_msg = tcp_send_msg + date_dd + data_mm + data_yy + ",";
+  std::string hh,mm,ss;
+  get_local_time_(hh,mm,ss);
+  tcp_send_msg = tcp_send_msg + hh + mm + ss + ",";
+  tcp_send_msg = tcp_send_msg + team_id_ + ",";
+  if(msg->color == msg->RED)
+  {
+    tcp_send_msg = tcp_send_msg + "R,";
+  }
+  if(msg->color == msg->BLUE)
+  {
+    tcp_send_msg = tcp_send_msg + "B,";
+  }
+  if(msg->color == msg->GREEN)
+  {
+    tcp_send_msg = tcp_send_msg + "G,";
+  }
+  if(msg->shape == msg->CRUCIFORM)
+  {
+    tcp_send_msg = tcp_send_msg + "CRUCI";
+  }
+  if(msg->shape == msg->TRIANGLE)
+  {
+    tcp_send_msg = tcp_send_msg + "TRIAN";
+  }
+  if(msg->shape == msg->CIRCLE)
+  {
+    tcp_send_msg = tcp_send_msg + "CIRCL";
+  }
+  tcp_send_msg = tcp_send_msg + "*28";
+  client_->send(tcp_send_msg);
+  ROS_INFO_STREAM("publish Hearbeat message -> " << tcp_send_msg);
   return;
 }
 
@@ -49,11 +86,15 @@ void technical_network_bridge::publish_heartbeat_message() {
     mtx_.lock();
     if (message_recieved_ == true) {
       client_->send(heartbeat_tcp_send_msg_);
-      ROS_INFO_STREAM("publish heart beat message -> " << heartbeat_tcp_send_msg_);
+      ROS_INFO_STREAM("publish Identify Symbols and Dock Message message -> " << heartbeat_tcp_send_msg_);
     }
     mtx_.unlock();
     loop_rate.sleep();
   }
+}
+
+void technical_network_bridge::scan_the_code_report_callback_(const robotx_msgs::ScanTheCodeReport::ConstPtr &msg){
+  return;
 }
 
 void technical_network_bridge::heartbeat_callback(const robotx_msgs::Heartbeat::ConstPtr &msg) {
@@ -80,6 +121,9 @@ std::string technical_network_bridge::generate_checksum(const char *data) {
 
 void technical_network_bridge::update_heartbeat_message() {
   heartbeat_tcp_send_msg_ = "$RXHRT,";
+  std::string date_dd,data_mm,data_yy;
+  get_local_date_(date_dd,data_mm,data_yy);
+  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + date_dd + data_mm + data_yy + ",";
   std::string hh,mm,ss;
   get_local_time_(hh,mm,ss);
   heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + hh + mm + ss + ",";
@@ -116,17 +160,24 @@ void technical_network_bridge::publish_connection_status_message() {
 
 void technical_network_bridge::get_local_date_(std::string& hst_dd, std::string& hst_mm, std::string& hst_yy)
 {
-  time_t t;
-  struct tm *tm;
-  tm = localtime(&t);
-  hst_yy = std::to_string(tm->tm_year+1990).substr(2,3);
-  if(tm->tm_mday < 9)
+  std::time_t t = std::time(nullptr);
+  std::tm tm = *std::localtime(&t);
+  hst_yy = std::to_string(tm.tm_year+1990).substr(2,3);
+  if(tm.tm_mday < 9)
   {
-    hst_mm = "0" + std::to_string(tm->tm_mday);
+    hst_mm = "0" + std::to_string(tm.tm_mday);
   }
   else
   {
-    hst_mm = std::to_string(tm->tm_mday);
+    hst_mm = std::to_string(tm.tm_mday);
+  }
+  if(tm.tm_mon < 9)
+  {
+    hst_mm = "0" + std::to_string(tm.tm_mon);
+  }
+  else
+  {
+    hst_mm = std::to_string(tm.tm_mon);
   }
 }
 
@@ -134,10 +185,6 @@ void technical_network_bridge::get_local_time_(std::string& hst_hh, std::string&
 {
   std::time_t t = std::time(nullptr);
   std::tm tm = *std::localtime(&t);
-  //std::cout.imbue(std::locale("ja_JP.utf8"));
-  //std::cout << "ja_JP: " << std::put_time(&tm, "%c %Z") << '\n';
-  //ROS_ERROR_STREAM(std::put_time(tm,"%c %Z"));
-  //tm = localtime(&t);
   if (tm.tm_hour < 9)
     hst_hh = "0" + std::to_string(tm.tm_hour);
   else
