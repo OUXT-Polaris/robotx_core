@@ -140,6 +140,7 @@ class technical_network_bridge {
   volatile bool message_recieved_;
 
   void get_local_time_(std::string& hst_hh, std::string& hst_mm, std::string& hst_ss);
+  void get_local_date_(std::string& hst_dd, std::string& hst_mm, std::string& hst_yy);
   std::string team_id_;
   ros::Subscriber entrance_and_exit_gates_report_sub_;
   ros::Subscriber identify_symbols_and_dock_report_sub_;

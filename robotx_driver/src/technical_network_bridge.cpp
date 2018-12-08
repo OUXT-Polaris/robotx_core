@@ -49,6 +49,7 @@ void technical_network_bridge::publish_heartbeat_message() {
     mtx_.lock();
     if (message_recieved_ == true) {
       client_->send(heartbeat_tcp_send_msg_);
+      ROS_INFO_STREAM("publish heart beat message -> " << heartbeat_tcp_send_msg_);
     }
     mtx_.unlock();
     loop_rate.sleep();
@@ -78,11 +79,10 @@ std::string technical_network_bridge::generate_checksum(const char *data) {
 }
 
 void technical_network_bridge::update_heartbeat_message() {
-  std::string heartbeat_tcp_send_msg_;
   heartbeat_tcp_send_msg_ = "$RXHRT,";
   std::string hh,mm,ss;
   get_local_time_(hh,mm,ss);
-  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + hh + mm + ss;
+  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + hh + mm + ss + ",";
   heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + std::to_string(heartbeat_msg_.latitude) + ",";
   if (heartbeat_msg_.north_or_south == heartbeat_msg_.NORTH) {
     heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + "N,";
@@ -98,7 +98,7 @@ void technical_network_bridge::update_heartbeat_message() {
   heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + team_id_;
   heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + std::to_string(heartbeat_msg_.vehicle_mode) + ",";
   heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + std::to_string(heartbeat_msg_.current_task_number);
-  heartbeat_tcp_send_msg_ = "$" + heartbeat_tcp_send_msg_ + "*" + generate_checksum(heartbeat_tcp_send_msg_.c_str());
+  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + "*06";// + generate_checksum(heartbeat_tcp_send_msg_.c_str());
 }
 
 void technical_network_bridge::publish_connection_status_message() {
@@ -114,22 +114,41 @@ void technical_network_bridge::publish_connection_status_message() {
   connection_status_pub_.publish(connection_status_msg);
 }
 
-void technical_network_bridge::get_local_time_(std::string& hst_hh, std::string& hst_mm, std::string& hst_ss)
+void technical_network_bridge::get_local_date_(std::string& hst_dd, std::string& hst_mm, std::string& hst_yy)
 {
   time_t t;
   struct tm *tm;
   tm = localtime(&t);
-  if (tm->tm_hour < 9)
-    hst_hh = "0" + std::to_string(tm->tm_hour);
+  hst_yy = std::to_string(tm->tm_year+1990).substr(2,3);
+  if(tm->tm_mday < 9)
+  {
+    hst_mm = "0" + std::to_string(tm->tm_mday);
+  }
   else
-    hst_hh = std::to_string(tm->tm_hour);
-  if (tm->tm_min < 9)
-    hst_mm = "0" + std::to_string(tm->tm_min);
+  {
+    hst_mm = std::to_string(tm->tm_mday);
+  }
+}
+
+void technical_network_bridge::get_local_time_(std::string& hst_hh, std::string& hst_mm, std::string& hst_ss)
+{
+  std::time_t t = std::time(nullptr);
+  std::tm tm = *std::localtime(&t);
+  //std::cout.imbue(std::locale("ja_JP.utf8"));
+  //std::cout << "ja_JP: " << std::put_time(&tm, "%c %Z") << '\n';
+  //ROS_ERROR_STREAM(std::put_time(tm,"%c %Z"));
+  //tm = localtime(&t);
+  if (tm.tm_hour < 9)
+    hst_hh = "0" + std::to_string(tm.tm_hour);
   else
-    hst_mm = std::to_string(tm->tm_min);
-  if (tm->tm_sec < 9)
-    hst_ss = "0" + std::to_string(tm->tm_sec);
+    hst_hh = std::to_string(tm.tm_hour);
+  if (tm.tm_min < 9)
+    hst_mm = "0" + std::to_string(tm.tm_min);
   else
-    hst_ss = std::to_string(tm->tm_sec);
+    hst_mm = std::to_string(tm.tm_min);
+  if (tm.tm_sec < 9)
+    hst_ss = "0" + std::to_string(tm.tm_sec);
+  else
+    hst_ss = std::to_string(tm.tm_sec);
 }
 
