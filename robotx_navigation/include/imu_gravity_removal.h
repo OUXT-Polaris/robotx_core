@@ -3,7 +3,7 @@
 
 // headers in ROS
 #include <ros/ros.h>
-#include <geometry_msgs/TwistTim.h>
+#include <geometry_msgs/TwistStamped.h>
 #include <sensor_msgs/Imu.h>
 #include <string>
 #include <iostream>
@@ -14,9 +14,10 @@ class imu_gravity_removal {
  public:
   struct parameters {
     double LPF_const_value;
-    std::string input_imu_topic;
+    std::string frame_id,input_imu_topic;
     parameters() {
       ros::param::param<double>("/LPF_const_value", LPF_const_value, 0.8);
+      ros::param::param<std::string>(ros::this_node::getName() + "/frame_id", frame_id,"/imu");
       ros::param::param<std::string>(ros::this_node::getName() + "/input_imu_topic", input_imu_topic,
                                      ros::this_node::getName() + "/input_imu");
     }
