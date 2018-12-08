@@ -1,7 +1,7 @@
+// headers in this package
 #include <pointcloud_merger.h>
-#include <ros/ros.h>
 
-#include <string>
+// headers in STL
 #include <mutex>
 
 pointcloud_merger::pointcloud_merger() :
@@ -14,6 +14,7 @@ pointcloud_merger::pointcloud_merger() :
   // publisher
   _pc_pub = _nh.advertise<sensor_msgs::PointCloud2>(ros::this_node::getName() + "/merged_points", 1);
 
+  // message_filter
   _sync.registerCallback(boost::bind(&pointcloud_merger::callback, this, _1, _2));
 }
 
@@ -21,7 +22,6 @@ pointcloud_merger::pointcloud_merger() :
 pointcloud_merger::~pointcloud_merger() {
 }
 
-// callbacks
 void pointcloud_merger::callback(
     const sensor_msgs::PointCloud2ConstPtr& pc1_msg,
     const sensor_msgs::PointCloud2ConstPtr& pc2_msg) {
