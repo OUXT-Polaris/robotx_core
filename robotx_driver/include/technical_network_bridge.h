@@ -94,7 +94,7 @@ class technical_network_bridge {
    * @brief parameter for message which send through TCP/IP transfer.
    *
    */
-  std::string tcp_send_msg_;
+  std::string heartbeat_tcp_send_msg_;
   /**
    * @brief mutex for exclusion control
    *

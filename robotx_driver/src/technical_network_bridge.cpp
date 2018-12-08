@@ -29,6 +29,11 @@ void technical_network_bridge::run(){
 
 void technical_network_bridge::entrance_and_exit_gates_report_callback_(const robotx_msgs::EntranceAndExitGatesReport::ConstPtr &msg)
 {
+  std::string tcp_send_msg_;
+  tcp_send_msg_ = "$RXGAT";
+  std::string hh,mm,ss;
+  get_local_time_(hh,mm,ss);
+  tcp_send_msg_ = tcp_send_msg_ + hh + mm + ss;
   return;
 }
 
@@ -43,7 +48,7 @@ void technical_network_bridge::publish_heartbeat_message() {
     publish_connection_status_message();
     mtx_.lock();
     if (message_recieved_ == true) {
-      client_->send(tcp_send_msg_);
+      client_->send(heartbeat_tcp_send_msg_);
     }
     mtx_.unlock();
     loop_rate.sleep();
@@ -73,26 +78,27 @@ std::string technical_network_bridge::generate_checksum(const char *data) {
 }
 
 void technical_network_bridge::update_heartbeat_message() {
-  tcp_send_msg_ = "RXHRT,";
+  std::string heartbeat_tcp_send_msg_;
+  heartbeat_tcp_send_msg_ = "$RXHRT,";
   std::string hh,mm,ss;
   get_local_time_(hh,mm,ss);
-  tcp_send_msg_ = tcp_send_msg_ + hh + mm + ss;
-  tcp_send_msg_ = tcp_send_msg_ + std::to_string(heartbeat_msg_.latitude) + ",";
+  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + hh + mm + ss;
+  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + std::to_string(heartbeat_msg_.latitude) + ",";
   if (heartbeat_msg_.north_or_south == heartbeat_msg_.NORTH) {
-    tcp_send_msg_ = tcp_send_msg_ + "N,";
+    heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + "N,";
   } else {
-    tcp_send_msg_ = tcp_send_msg_ + "S,";
+    heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + "S,";
   }
-  tcp_send_msg_ = tcp_send_msg_ + std::to_string(heartbeat_msg_.longitude) + ",";
+  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + std::to_string(heartbeat_msg_.longitude) + ",";
   if (heartbeat_msg_.east_or_west == heartbeat_msg_.EAST) {
-    tcp_send_msg_ = tcp_send_msg_ + "E,";
+    heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + "E,";
   } else {
-    tcp_send_msg_ = tcp_send_msg_ + "W,";
+    heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + "W,";
   }
-  tcp_send_msg_ = tcp_send_msg_ + team_id_;
-  tcp_send_msg_ = tcp_send_msg_ + std::to_string(heartbeat_msg_.vehicle_mode) + ",";
-  tcp_send_msg_ = tcp_send_msg_ + std::to_string(heartbeat_msg_.current_task_number);
-  tcp_send_msg_ = "$" + tcp_send_msg_ + "*" + generate_checksum(tcp_send_msg_.c_str());
+  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + team_id_;
+  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + std::to_string(heartbeat_msg_.vehicle_mode) + ",";
+  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + std::to_string(heartbeat_msg_.current_task_number);
+  heartbeat_tcp_send_msg_ = "$" + heartbeat_tcp_send_msg_ + "*" + generate_checksum(heartbeat_tcp_send_msg_.c_str());
 }
 
 void technical_network_bridge::publish_connection_status_message() {
