@@ -3,24 +3,23 @@
 
 carrot_planner::carrot_planner() : _tf_listener(_tf_buffer)
 {
+    _enable_backword = false;
     _goal_recieved = false;
     _nh.param<std::string>(ros::this_node::getName()+"/goal_topic", _goal_topic, ros::this_node::getName()+"/goal_pose");
-    _nh.param<std::string>(ros::this_node::getName()+"/tolerance_topic", _tolerance_topic, ros::this_node::getName()+"/tolerance");
-    _nh.param<std::string>(ros::this_node::getName()+"/angular_tolerance_topic", _angular_tolerance_topic, ros::this_node::getName()+"/angular_tolerance");
     _nh.param<std::string>(ros::this_node::getName()+"/map_frame", _map_frame, "map");
-    _nh.param<std::string>(ros::this_node::getName()+"/linear_velocity_topic", _linear_velocity_topic, ros::this_node::getName()+"/linear_velocity");
     _nh.param<double>(ros::this_node::getName()+"/default_linear_velocity", _linear_velocity, 0.1);
+    _nh.param<double>(ros::this_node::getName()+"/default_angular_velocity", _angular_velocity, 0.1);
     _nh.param<double>(ros::this_node::getName()+"/default_torelance", _torelance, 1.0);
     _nh.param<double>(ros::this_node::getName()+"/default_angular_tolerance", _angular_tolerance, 1.57);
     _nh.param<double>(ros::this_node::getName()+"/publish_rate", _publish_rate, 10);
     _nh.param<std::string>(ros::this_node::getName()+"/robot_frame", _robot_frame,"base_link");
     _nh.param<std::string>(ros::this_node::getName()+"/twist_topic", _twist_topic, ros::this_node::getName()+"/twist_cmd");
     _twist_pub = _nh.advertise<geometry_msgs::Twist>(_twist_topic,1);
-    _status_text_pub = _nh.advertise<jsk_rviz_plugins::OverlayText>(ros::this_node::getName()+"/status/text",1);
-    _status_pub = _nh.advertise<robotx_msgs::NavigationStatus>(ros::this_node::getName()+"/status",1);
-    _tolerance_sub = _nh.subscribe(_tolerance_topic,1,&carrot_planner::_torelance_callback,this);
+    _trigger_event_pub = _nh.advertise<robotx_msgs::Event>("/robotx_state_machine_node/navigation_state_machine/trigger_event",1);
+    _current_stete_sub = _nh.subscribe("/robotx_state_machine_node/navigation_state_machine/current_state",1,&carrot_planner::_current_state_callback,this);
+    _configure_sub = _nh.subscribe(ros::this_node::getName()+"/configure",1,&carrot_planner::_configure_callback,this);
+    _robot_pose_sub = _nh.subscribe("/robot_pose",1,&carrot_planner::_robot_pose_callback,this);
     _goal_pose_sub = _nh.subscribe(_goal_topic,1,&carrot_planner::_goal_pose_callback,this);
-    _linear_velocity_sub = _nh.subscribe(_linear_velocity_topic,1,&carrot_planner::_linear_velocity_callback,this);
 }
 
 carrot_planner::~carrot_planner()
@@ -28,26 +27,48 @@ carrot_planner::~carrot_planner()
 
 }
 
-void carrot_planner::_linear_velocity_callback(const std_msgs::Float64::ConstPtr msg)
+void carrot_planner::_configure_callback(const robotx_msgs::CarrotPlannerConfigure::ConstPtr msg)
+{
+    _linear_velocity = msg->linear_velocity;
+    _angular_tolerance = msg->angular_torelance;
+    _torelance = msg->radius_torelance;
+    _enable_backword = msg->enable_backword;
+    return;
+}
+
+void carrot_planner::_robot_pose_callback(const geometry_msgs::PoseStamped::ConstPtr msg)
 {
     std::unique_lock<std::mutex> lock(_mtx);
-    _linear_velocity = msg->data;
+    geometry_msgs::PoseStamped robot_pose;
+    if(msg->header.frame_id != _map_frame)
+    {
+        geometry_msgs::TransformStamped transform_stamped;
+        try
+        {
+            transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg->header.frame_id, ros::Time(0));
+            tf2::doTransform(*msg, robot_pose, transform_stamped);
+        }
+        catch(tf2::TransformException &ex)
+        {
+            ROS_WARN("%s",ex.what());
+            lock.unlock();
+            return;
+        }
+    }
+    tf::Quaternion quat(robot_pose.pose.orientation.x,robot_pose.pose.orientation.y,robot_pose.pose.orientation.z,robot_pose.pose.orientation.w);
+    double r,p,y;
+    tf::Matrix3x3(quat).getRPY(r,p,y);
+    _robot_pose_2d.x = robot_pose.pose.position.x;
+    _robot_pose_2d.y = robot_pose.pose.position.y;
+    _robot_pose_2d.theta = y;
     lock.unlock();
     return;
 }
 
-void carrot_planner::_torelance_callback(const std_msgs::Float64::ConstPtr msg)
+void carrot_planner::_current_state_callback(const robotx_msgs::State::ConstPtr msg)
 {
     std::unique_lock<std::mutex> lock(_mtx);
-    _torelance = msg->data;
-    lock.unlock();
-    return;
-}
-
-void carrot_planner::_angular_torelance_callback(const std_msgs::Float64::ConstPtr msg)
-{
-    std::unique_lock<std::mutex> lock(_mtx);
-    _angular_tolerance = msg->data;
+    _current_state = *msg;
     lock.unlock();
     return;
 }
@@ -56,16 +77,16 @@ void carrot_planner::_goal_pose_callback(geometry_msgs::PoseStamped msg)
 {
     std::unique_lock<std::mutex> lock(_mtx);
     geometry_msgs::TransformStamped transform_stamped;
-    if(_goal_pose.header.frame_id != _robot_frame)
+    if(_goal_pose.header.frame_id != _map_frame)
     {
         try
         {
-            transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg.header.frame_id,ros::Time(0));
+            transform_stamped = _tf_buffer.lookupTransform(_map_frame, msg.header.frame_id,ros::Time(0),ros::Duration(1));
             tf2::doTransform(msg, _goal_pose, transform_stamped);
         }
         catch(tf2::TransformException &ex)
         {
-            ROS_ERROR("%s",ex.what());
+            ROS_WARN("%s",ex.what());
             lock.unlock();
             return;
         }
@@ -74,6 +95,12 @@ void carrot_planner::_goal_pose_callback(geometry_msgs::PoseStamped msg)
     {
         _goal_pose = msg;
     }
+    _goal_pose_2d.x = _goal_pose.pose.position.x;
+    _goal_pose_2d.y = _goal_pose.pose.position.y;
+    tf::Quaternion quat(_goal_pose.pose.orientation.x,_goal_pose.pose.orientation.y,_goal_pose.pose.orientation.z,_goal_pose.pose.orientation.w);
+    double r,p,y;
+    tf::Matrix3x3(quat).getRPY(r,p,y);
+    _goal_pose_2d.theta = y;
     _goal_recieved = true;
     lock.unlock();
     return;
@@ -88,148 +115,136 @@ void carrot_planner::run()
 void carrot_planner::_publish_twist_cmd()
 {
     ros::Rate rate(_publish_rate);
-    geometry_msgs::TransformStamped transform_stamped;
-    jsk_rviz_plugins::OverlayText text;
-    text.action = text.ADD;
-    text.width = 320;
-    text.height = 50;
-    text.left = 0;
-    text.top = 0;
-    text.bg_color.r = 0;
-    text.bg_color.g = 0;
-    text.bg_color.b = 0;
-    text.bg_color.a = 0.5;
-    text.line_width = 20;
-    text.text_size = 20;
-    text.fg_color.r = 0;
-    text.fg_color.g = 1.0;
-    text.fg_color.b = 1.0;
-    text.fg_color.a = 1.0;
     while(ros::ok())
     {
-        std::unique_lock<std::mutex> lock(_mtx);
-        geometry_msgs::Twist twist_cmd;
-        robotx_msgs::NavigationStatus status_msg;
-        if(_goal_recieved == false)
+        if(!_current_state || !_goal_recieved)
         {
-            status_msg.status = status_msg.NO_GOAL_POSE;
-            _status_pub.publish(status_msg);
-            text.text = "no goal pose";
-            _status_text_pub.publish(text);
-            lock.unlock();
             rate.sleep();
             continue;
         }
-        if(_map_frame != _robot_frame)
+        double diff_yaw_to_target = _get_diff_yaw_to_target();
+        if(_current_state->current_state == "heading_to_next_waypoint")
         {
-            try
+            if(std::fabs(diff_yaw_to_target) > 0.05)
             {
-                transform_stamped = _tf_buffer.lookupTransform(_robot_frame, _map_frame,ros::Time(0));
+                if(diff_yaw_to_target > 0)
+                {
+                    geometry_msgs::Twist twist_cmd;
+                    twist_cmd.angular.z = _angular_velocity;
+                    _twist_pub.publish(twist_cmd);
+                    rate.sleep();
+                    continue;
+                }
+                else
+                {
+                    geometry_msgs::Twist twist_cmd;
+                    twist_cmd.angular.z = -1 * _angular_velocity;
+                    _twist_pub.publish(twist_cmd);
+                    rate.sleep();
+                    continue;
+                }
             }
-            catch(tf2::TransformException &ex)
+            else
             {
-                ROS_ERROR("%s",ex.what());
-                text.text = "failed to transform goal pose";
-                _status_text_pub.publish(text);
-                lock.unlock();
+                geometry_msgs::Twist twist_cmd;
+                _twist_pub.publish(twist_cmd);
+                robotx_msgs::Event event_msg;
+                event_msg.trigger_event_name = "head_to_next_target";
+                _trigger_event_pub.publish(event_msg);
                 rate.sleep();
                 continue;
             }
         }
-        geometry_msgs::PoseStamped transformed_pose;
-        tf2::doTransform(_goal_pose, transformed_pose, transform_stamped);
-        double radius = std::sqrt(std::pow(transformed_pose.pose.position.x,2)+std::pow(transformed_pose.pose.position.y,2));
-        if(radius < _torelance)
+        if(_current_state->current_state == "moving_to_next_waypoint")
         {
-            tf::Quaternion q(transformed_pose.pose.orientation.x, transformed_pose.pose.orientation.y, transformed_pose.pose.orientation.z, transformed_pose.pose.orientation.w);
-            tf::Matrix3x3 m(q);
-            double roll, pitch, yaw;
-            m.getRPY(roll, pitch, yaw);
-            if(std::fabs(yaw) < _angular_tolerance)
+            if(std::sqrt(std::pow(_goal_pose_2d.x-_robot_pose_2d.x,2)+std::pow(_goal_pose_2d.y-_robot_pose_2d.y,2)) < _torelance)
             {
-                status_msg.status = status_msg.NAVIGATION_COMPLETE;
-                _status_pub.publish(status_msg);
-                text.text = "navigation complete";
-                _status_text_pub.publish(text);
-                twist_cmd.linear.x = 0;
-                twist_cmd.linear.y = 0;
-                twist_cmd.angular.z = 0;
+                geometry_msgs::Twist twist_cmd;
+                _twist_pub.publish(twist_cmd);
+                robotx_msgs::Event event_msg;
+                event_msg.trigger_event_name = "moved_to_next_target";
+                _trigger_event_pub.publish(event_msg);
+                rate.sleep();
+                continue;
+            }
+            else if(diff_yaw_to_target && std::fabs(diff_yaw_to_target > 0.1))
+            {
+                geometry_msgs::Twist twist_cmd;
+                _twist_pub.publish(twist_cmd);
+                robotx_msgs::Event event_msg;
+                event_msg.trigger_event_name = "heading_slipped";
+                _trigger_event_pub.publish(event_msg);
+                rate.sleep();
+                continue;
             }
             else
             {
-                if(yaw < 0)
-                {
-                    status_msg.status = status_msg.ALLIGN_TO_GOAL_POSE;
-                    _status_pub.publish(status_msg);
-                    text.text = "align to goal pose";
-                    _status_text_pub.publish(text);
-                    twist_cmd.linear.x = 0;
-                    twist_cmd.linear.y = 0;
-                    twist_cmd.angular.z = 0.1;
-                }
-                else
-                {
-                    status_msg.status = status_msg.ALLIGN_TO_GOAL_POSE;
-                    _status_pub.publish(status_msg);
-                    text.text = "align to goal pose";
-                    _status_text_pub.publish(text);
-                    twist_cmd.linear.x = 0;
-                    twist_cmd.linear.y = 0;
-                    twist_cmd.angular.z = -0.1;
-                }
+                geometry_msgs::Twist twist_cmd;
+                twist_cmd.linear.x = _linear_velocity;
+                _twist_pub.publish(twist_cmd);
+                rate.sleep();
+                continue;
             }
         }
-        else
+        if(_current_state->current_state == "align_to_next_waypoint")
         {
-            double phi = std::atan2(transformed_pose.pose.position.y,transformed_pose.pose.position.x);
-            if(-0.5*M_PI < phi && phi < 0.5*M_PI)
+            double diff_yaw = _get_diff_yaw();
+            if(diff_yaw > _angular_tolerance)
             {
-                double dt = std::fabs((radius*phi)/(_linear_velocity*std::sin(phi)));
-                if(radius<3.0)
-                {
-                    status_msg.status = status_msg.APPROACH_TO_GOAL_POSE;
-                    _status_pub.publish(status_msg);
-                    text.text = "approach to goal pose";
-                    _status_text_pub.publish(text);
-                    twist_cmd.linear.x = 0.5;
-                }
-                else
-                {
-                    status_msg.status = status_msg.MOVE_TO_GOAL_POSE;
-                    _status_pub.publish(status_msg);
-                    text.text = "move to goal pose";
-                    _status_text_pub.publish(text);
-                    twist_cmd.linear.x = _linear_velocity;
-                }
-                twist_cmd.linear.y = 0;
-                twist_cmd.angular.z = phi/dt;
+                geometry_msgs::Twist twist_cmd;
+                twist_cmd.angular.z = _angular_velocity;
+                _twist_pub.publish(twist_cmd);
+                rate.sleep();
+                continue;
+            }
+            else if(diff_yaw < -1*_angular_tolerance)
+            {
+                geometry_msgs::Twist twist_cmd;
+                twist_cmd.angular.z = -1 * _angular_velocity;
+                _twist_pub.publish(twist_cmd);
+                rate.sleep();
+                continue;
             }
             else
             {
-                double dt = std::fabs((radius*phi)/(_linear_velocity*std::sin(phi)));
-                if(radius<3.0)
-                {
-                    status_msg.status = status_msg.APPROACH_TO_GOAL_POSE;
-                    _status_pub.publish(status_msg);
-                    text.text = "approach to goal pose";
-                    _status_text_pub.publish(text);
-                    twist_cmd.linear.x = -0.5;
-                }
-                else
-                {
-                    status_msg.status = status_msg.MOVE_TO_GOAL_POSE;
-                    _status_pub.publish(status_msg);
-                    text.text = "move to goal pose";
-                    _status_text_pub.publish(text);
-                    twist_cmd.linear.x = -1*_linear_velocity;
-                }
-                twist_cmd.linear.y = 0;
-                twist_cmd.angular.z = -phi/dt;
+                geometry_msgs::Twist twist_cmd;
+                _twist_pub.publish(twist_cmd);
+                robotx_msgs::Event event_msg;
+                event_msg.trigger_event_name = "waypoint_reached";
+                _trigger_event_pub.publish(event_msg);
+                rate.sleep();
+                continue;
             }
         }
-        _twist_pub.publish(twist_cmd);
-        lock.unlock();
         rate.sleep();
     }
     return;
+}
+
+double carrot_planner::get_diff_angle_(double from,double to)
+{
+    double ans = 0;
+    double inner_prod = std::cos(from)*std::cos(to)+std::sin(from)*std::sin(to);
+    double theta = std::acos(inner_prod);
+    double outer_prod = std::cos(from)*std::sin(to)-std::sin(from)*std::cos(to);
+    if(outer_prod > 0)
+    {
+        ans = theta;
+    }
+    else
+    {
+        ans = -1 * theta;
+    }
+    return ans;
+}
+
+double carrot_planner::_get_diff_yaw()
+{
+    return get_diff_angle_(_robot_pose_2d.theta,_goal_pose_2d.theta);
+}
+
+double carrot_planner::_get_diff_yaw_to_target()
+{
+    double yaw_to_target = std::atan2(_goal_pose_2d.y-_robot_pose_2d.y, _goal_pose_2d.x-_robot_pose_2d.x);// - M_PI/2;
+    return get_diff_angle_(_robot_pose_2d.theta,yaw_to_target);
 }

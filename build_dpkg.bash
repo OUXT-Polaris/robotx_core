@@ -1,6 +1,6 @@
 export DEB_BUILD_OPTIONS='parallel=8'
 
-for package in robotx_driver robotx_msgs robotx_navigation robotx_recognition wamv_description
+for package in robotx_driver robotx_msgs robotx_navigation robotx_recognition robotx_pcl_tools wamv_description
 do
     roscd $package
     bloom-generate rosdebian --os-name ubuntu --os-version xenial --ros-distro kinetic --skip-package-names ignore.txt

@@ -1,1 +1,0 @@
-set(GLOG_LIBRARIES glog)

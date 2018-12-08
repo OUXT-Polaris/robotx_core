@@ -1,0 +1,5 @@
+cmd_topic : /signal_lamp_driver_node/cmd
+publish_rate : 10
+timeout : 10
+ip_address : 192.168.1.150
+port : 5000

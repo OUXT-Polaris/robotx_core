@@ -1,0 +1,4 @@
+ip_address : "127.0.0.1"
+port : 8080
+heartbeat_publish_rate : 1.0
+team_id : "OUXT Polaris"

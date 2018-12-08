@@ -6,7 +6,12 @@
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
 
-// headers in pcl
+// headers in gpu module pcl 
+#ifdef GPU_CLUSTERING
+  #include <pcl/gpu/segmentation/gpu_extract_clusters.h>
+#endif
+
+// headers in pcl 
 #include <pcl/features/moment_of_inertia_estimation.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/voxel_grid.h>

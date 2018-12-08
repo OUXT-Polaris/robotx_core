@@ -1,28 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-<!--
-  <include file="$(find robotx_navigation)/launch/move_base.launch">
-  </include>
--->
 
   <node name="obstacle_map_server_node" pkg="robotx_navigation" type="obstacle_map_server_node" args="" output="screen" respawn="true">
     <rosparam command="load" file="$(find robotx_navigation)/config/obstacle_map_server.yaml"/>
   </node>
 
+<!--
   <node name="robotx_localization_node" pkg="robotx_navigation" type="robotx_localization_node" args="" output="screen" respawn="true">
     <rosparam command="load" file="$(find robotx_navigation)/config/robotx_localization.yaml"/>
-  </node>
-  
-  <node name="geographic_map_server_node" pkg="robotx_navigation" type="geographic_map_server_node" args="" output="screen" respawn="true">
-    <rosparam command="load" file="$(find robotx_navigation)/config/geographic_map_server.yaml"/>
-  </node>
-
-  <node name="carrot_planner_node" pkg="robotx_navigation" type="carrot_planner_node" args="" output="screen" respawn="true">
-    <rosparam command="load" file="$(find robotx_navigation)/config/carrot_planner.yaml"/>
   </node>
 
   <node name="waypoint_logger_node" pkg="robotx_navigation" type="waypoint_logger_node" args="" output="screen" respawn="true">
     <rosparam command="load" file="$(find robotx_navigation)/config/waypoint_logger.yaml"/>
+  </node>
+-->
+
+  <node name="carrot_planner_node" pkg="robotx_navigation" type="carrot_planner_node" args="" output="screen" respawn="true">
+    <rosparam command="load" file="$(find robotx_navigation)/config/carrot_planner.yaml"/>
   </node>
 
   <node name="waypoint_server_node" pkg="robotx_navigation" type="waypoint_server_node" args="" output="screen" respawn="true">
@@ -32,7 +26,11 @@
   <node name="obstacle_avoid_node" pkg="robotx_navigation" type="obstacle_avoid_node" args="" output="screen" respawn="true">
     <rosparam command="load" file="$(find robotx_navigation)/config/obstacle_avoid.yaml"/>
   </node>
-  
+
+  <node name="world_pose_publisher_node" pkg="robotx_navigation" type="world_pose_publisher_node" args="" output="screen" respawn="true">
+    <rosparam command="load" file="$(find robotx_navigation)/config/world_pose_publisher.yaml"/>
+  </node>
+
 <!--
   <rosparam command="load" file="$(find robotx_navigation)/config/ndt_mapping.yaml" ns="ndt_mapping_node"/>
   <node name="ndt_mapping_node" pkg="robotx_navigation" type="ndt_mapping_node" args="" output="screen" respawn="true">

@@ -1,20 +1,30 @@
 <state_machine>
     <init_state name="navigation_start"/>
 
-    <transition from = "navigation_start" to="heading_to_next_waypoint" name="navigation_start"/>
+    <transition from = "navigation_start" to="load_next_waypoint" name="navigation_start"/>
+
+    <transition from = "load_next_waypoint" to="heading_to_next_waypoint" name="next_waypoint_found"/>
+    <transition from = "load_next_waypoint" to="navigation_finished" name="next_waypoint_not_found"/>
 
     <transition from = "heading_to_next_waypoint" to="moving_to_next_waypoint" name="head_to_next_target"/>
     <transition from = "heading_to_next_waypoint" to="obstacle_avoid" name="obstacle_found"/>
 
+    <transition from = "moving_to_next_waypoint" to="heading_to_next_waypoint" name="heading_slipped"/>
     <transition from = "moving_to_next_waypoint" to="align_to_next_waypoint" name="moved_to_next_target"/>
     <transition from = "moving_to_next_waypoint" to="obstacle_avoid" name="obstacle_found"/>
 
     <transition from = "obstacle_avoid" to="go_straight" name="obstacle_not_found"/>
+    <transition from = "obstacle_avoid" to="stacked" name="obstacle_avoid_failed"/>
+
+    <transition from = "stacked" to="turn_right" name="found_open_space_in_right"/>
+    <transition from = "stacked" to="turn_left" name="found_open_space_in_left"/>
+
+    <transition from = "turn_right" to="go_straight" name="obstacle_not_found"/>
+    <transition from = "turn_left" to="go_straight" name="obstacle_not_found"/>
 
     <transition from = "go_straight" to="heading_to_next_waypoint" name="go_straight_finished"/>
-    <transition from = "go_straight" to="obstacle_avoid" name="go_straight_finished"/>
+    <transition from = "go_straight" to="obstacle_avoid" name="obstacle_found"/>
 
     <transition from = "align_to_next_waypoint" to="obstacle_avoid" name="obstacle_found"/>
-    <transition from = "align_to_next_waypoint" to="heading_to_next_waypoint" name="next_waypoint_found"/>
-    <transition from = "align_to_next_waypoint" to="navigation_finished" name="reach_last_waypoint"/>
+    <transition from = "align_to_next_waypoint" to="load_next_waypoint" name="waypoint_reached"/>
 </state_machine>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+<!--
+    <node name="geographic_map_server_node" pkg="robotx_navigation" type="geographic_map_server_node" args="" output="screen" respawn="true">
+        <rosparam command="load" file="$(find robotx_navigation)/config/geographic_map_server.yaml"/>
+    </node>
+-->
+    <node name="coast_line_publisher_node" pkg="robotx_navigation" type="coast_line_publisher_node" args="" output="screen" respawn="true">
+        <rosparam command="load" file="$(find robotx_navigation)/config/coast_line_publisher.yaml"/>
+    </node>
+
+    <include file="$(find robotx_navigation)/launch/map_to_world.launch" />
+</launch>
