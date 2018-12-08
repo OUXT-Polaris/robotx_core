@@ -1,4 +1,6 @@
 download.sh
+
 arm.sh
+arm.pem
 
 *.tar.gz

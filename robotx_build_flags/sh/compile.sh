@@ -27,4 +27,4 @@ catkin_make -j16
 
 # package built files as tar
 cd $HOME
-tar zcvf catkin_ws.tar.gz catkin_ws
+tar zcf catkin_ws.tar.gz catkin_ws
