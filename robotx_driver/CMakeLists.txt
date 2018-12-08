@@ -69,7 +69,7 @@ add_dependencies(sc30_driver_node robotx_msgs_generate_messages_cpp)
 target_link_libraries(sc30_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 add_executable(frame_publisher_node src/frame_publisher_node.cpp src/frame_publisher.cpp)
-#add_dependencies(frame_publisher_node robotx_msgs_generate_messages_cpp)
+add_dependencies(frame_publisher_node robotx_msgs_generate_messages_cpp)
 target_link_libraries(frame_publisher_node ${catkin_LIBRARIES})
 
 add_executable(signal_lamp_driver_node src/signal_lamp_driver_node.cpp src/signal_lamp_driver.cpp src/tcp_client.cpp)
@@ -77,7 +77,7 @@ add_dependencies(signal_lamp_driver_node robotx_msgs_generate_messages_cpp)
 target_link_libraries(signal_lamp_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 add_executable(battery_monitor_driver_node src/battery_monitor_driver_node.cpp src/battery_monitor_driver.cpp src/tcp_server.cpp)
-add_dependencies(signal_lamp_driver_node robotx_msgs_generate_messages_cpp)
+add_dependencies(battery_monitor_driver_node robotx_msgs_generate_messages_cpp)
 target_link_libraries(battery_monitor_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 message(STATUS "")
