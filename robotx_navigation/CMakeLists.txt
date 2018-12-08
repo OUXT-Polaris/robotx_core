@@ -101,6 +101,9 @@ add_executable(field_map_server_node src/field_map_server.cpp src/field_map_serv
 target_link_libraries(field_map_server_node ${catkin_LIBRARIES})
 add_dependencies(field_map_server_node robotx_msgs_generate_messages_cpp)
 
+add_executable(imu_gravity_removal_node src/imu_gravity_removal.cpp src/imu_gravity_removal_node.cpp)
+target_link_libraries(imu_gravity_removal_node ${catkin_LIBRARIES})
+
 #############
 ## Install ##
 #############
