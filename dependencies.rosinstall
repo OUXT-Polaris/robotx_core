@@ -1,7 +1,7 @@
 - git:
     local-name: velodyne
     uri: https://github.com/OUXT-Polaris/velodyne.git
-    version:  feature/velodyne_raw_packets_filter
+    version:  robotx
 - git:
     local-name: nmea_navsat_driver
     uri: https://github.com/OUXT-Polaris/nmea_navsat_driver.git
