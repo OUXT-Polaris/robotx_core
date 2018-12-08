@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
     ros::NodeHandle nh;
     ros::NodeHandle pnh("~");
     world_pose_publisher publisher(nh,pnh);
+    publisher.run();
     ros::spin();
     return 0;
 }

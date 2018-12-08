@@ -14,11 +14,15 @@ find_package(catkin REQUIRED COMPONENTS
   diagnostic_updater
   nmea_msgs
   robotx_build_flags
+  dynamic_reconfigure
+  tf2_ros
 )
 
 find_package(Boost REQUIRED COMPONENTS thread system chrono)
 
 find_package(CUDA)
+
+generate_dynamic_reconfigure_options(cfg/frame_publisher.cfg)
 
 catkin_package(
 #  INCLUDE_DIRS include
@@ -64,6 +68,18 @@ add_executable(sc30_driver_node src/sc30_driver_node.cpp src/sc30_driver.cpp)
 add_dependencies(sc30_driver_node robotx_msgs_generate_messages_cpp)
 target_link_libraries(sc30_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
+add_executable(frame_publisher_node src/frame_publisher_node.cpp src/frame_publisher.cpp)
+#add_dependencies(frame_publisher_node robotx_msgs_generate_messages_cpp)
+target_link_libraries(frame_publisher_node ${catkin_LIBRARIES})
+
+add_executable(signal_lamp_driver_node src/signal_lamp_driver_node.cpp src/signal_lamp_driver.cpp src/tcp_client.cpp)
+add_dependencies(signal_lamp_driver_node robotx_msgs_generate_messages_cpp)
+target_link_libraries(signal_lamp_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
+add_executable(battery_monitor_driver_node src/battery_monitor_driver_node.cpp src/battery_monitor_driver.cpp src/tcp_server.cpp)
+#add_dependencies(signal_lamp_driver_node robotx_msgs_generate_messages_cpp)
+target_link_libraries(battery_monitor_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
 message(STATUS "")
 message(STATUS "FoundCUDA              : ${CUDA_FOUND}")
 
@@ -87,11 +103,11 @@ endif()
 ## Install ##
 #############
 if(CUDA_FOUND)
-  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node dynamixel_driver_node sc30_driver_node #cuda_diagnostic_node
+  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node dynamixel_driver_node sc30_driver_node frame_publisher_node #cuda_diagnostic_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 else()
-  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node dynamixel_driver_node sc30_driver_node
+  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node dynamixel_driver_node sc30_driver_node frame_publisher_node
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 endif()
