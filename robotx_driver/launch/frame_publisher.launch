@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+    
+    <param name="robot_description" textfile="$(find wamv_description)/urdf/wamv_simple.urdf" />
+
+    <node pkg="robotx_driver" type="frame_publisher_node" name="frame_publisher_node" output="log" respawn="false" respawn_delay="0">
+    </node>
+
+    <node pkg="dynamic_reconfigure" type="dynparam" name="dynamic_reconfigure_load" args="load /frame_publisher_node $(find robotx_driver)/config/frame_publisher.yaml" />
+</launch>

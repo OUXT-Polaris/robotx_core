@@ -9,33 +9,21 @@
 
 //headers in this message
 #include <robotx_msgs/ObstacleMap.h>
+#include <robotx_msgs/ObstacleAvoidConfigure.h>
 
 //headers in boost
 #include <boost/optional.hpp>
 
-struct state_lattice_parameters
-{
-    double max_angular_acceleration;
-    double min_angular_acceleration;
-    double max_linear_acceleration;
-    double min_linear_acceleration;
-    double max_linear_velocity;
-    double min_linear_velocity;
-    double max_angular_velocity;
-    double step_duration_;
-    int num_predictions;
-    int num_samples_angular;
-    int num_samples_linear;
-};
-
 class state_lattice_planner
 {
 public:
-    state_lattice_planner(state_lattice_parameters params);
+    state_lattice_planner();
+    state_lattice_planner(robotx_msgs::ObstacleAvoidConfigure params);
     ~state_lattice_planner();
     boost::optional<geometry_msgs::Twist> plan(robotx_msgs::ObstacleMap map, nav_msgs::Odometry odom, geometry_msgs::Pose2D target_pose);
+    void update_params(robotx_msgs::ObstacleAvoidConfigure params);
 private:
-    state_lattice_parameters params_;
+    robotx_msgs::ObstacleAvoidConfigure params_;
     std::vector<geometry_msgs::Pose2D> generate_path(nav_msgs::Odometry odom, double linear_acceleration, double angular_acceleration);
     double get_nearest_obstacle_distance_(robotx_msgs::ObstacleMap map, std::vector<geometry_msgs::Pose2D> path);
     double evaluate_function_(double nearest_obstacle_distance, geometry_msgs::Pose2D end_pose, geometry_msgs::Pose2D target_pose);

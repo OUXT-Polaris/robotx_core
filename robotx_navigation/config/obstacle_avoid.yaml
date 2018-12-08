@@ -1,9 +1,10 @@
-odom_topic : /odom
+odom_topic : /world_pose_publisher_node/odom
 raw_cmd_vel_topic : /carrot_planner_node/cmd_vel
 cmd_vel_topic : /obstacle_avoid_node/cmd_vel
 map_topic : /obstacle_map
 target_pose_topic : /waypoint_server_node/next_waypoint
 current_state_topic : /robotx_state_machine_node/navigation_state_machine/current_state
 trigger_event_topic : /robotx_state_machine_node/navigation_state_machine/trigger_event
-search_radius : 6.0
 search_angle : 0.5
+search_radius : 8.0
+search_radius_behind : 3.0
