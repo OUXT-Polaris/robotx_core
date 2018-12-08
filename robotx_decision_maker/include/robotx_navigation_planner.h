@@ -47,6 +47,7 @@ private:
     std::string waypoint_planner_cmd_topic_;
     std::string obstacle_avoid_cmd_topic_;
     double publish_rate_;
+    double go_straight_time_;
     boost::optional<geometry_msgs::Twist> waypoint_planner_cmd_;
     boost::optional<geometry_msgs::Twist> obstacle_avoid_cmd_;
     boost::optional<robotx_msgs::State> current_state_;

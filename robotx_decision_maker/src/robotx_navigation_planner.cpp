@@ -15,6 +15,7 @@ robotx_navigation_planner::robotx_navigation_planner()
     ros::param::param<std::string>(ros::this_node::getName() + "/obstacle_avoid_cmd_topic", 
         obstacle_avoid_cmd_topic_, "/obstacle_avoid_node/cmd_vel");
     ros::param::param<double>(ros::this_node::getName() + "/publish_rate", publish_rate_, 30.0);
+    ros::param::param<double>(ros::this_node::getName() + "/go_straight_time", go_straight_time_, 10.0);
     trigger_event_pub_ = nh_.advertise<robotx_msgs::Event>(trigger_event_topic_, 10);
     mission_trigger_event_pub_ = nh_.advertise<robotx_msgs::Event>("/robotx_state_machine_node/mission_state_machine/trigger_event", 10);
     cmd_vel_pub_ = nh_.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
@@ -145,7 +146,7 @@ void robotx_navigation_planner::state_changed_callback_(robotx_msgs::StateChange
 
 void robotx_navigation_planner::publish_timer_event_()
 {
-    ros::Duration sleep_time(10);
+    ros::Duration sleep_time(go_straight_time_);
     sleep_time.sleep();
     robotx_msgs::Event event;
     event.header.stamp = ros::Time::now();
