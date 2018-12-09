@@ -46,6 +46,10 @@ void pointcloud_merger::callback(
   pcl::fromROSMsg(*pc1_msg, *pcl_cloud1);
   pcl::fromROSMsg(*pc2_msg, *pcl_cloud2);
   *pcl_output_cloud = *pcl_cloud1 + *pcl_cloud2;
+  pcl::VoxelGrid<pcl::PointXYZI> sor;
+  sor.setInputCloud(pcl_output_cloud);
+  sor.setLeafSize(_params.voxelgrid_x,_params.voxelgrid_y,_params.voxelgrid_z);
+  sor.filter(*pcl_output_cloud);
   sensor_msgs::PointCloud2 output_msg;
   pcl::toROSMsg(*pcl_output_cloud, output_msg);
   _pc_pub.publish(output_msg);
