@@ -1,7 +1,4 @@
 <?xml version="1.0"?>
 <launch>
-    <!-- Load GPS, Speed sensor -->
     <include file="$(find robotx_driver)/launch/sc30_driver.launch"/>
-    <!-- Load hardware devices -->
-    <include file="$(find robotx_driver)/hardware.launch"/>
 </launch>
