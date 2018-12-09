@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <include file="$(find robotx_driver)/launch/bringup/aibox1/aibox1.launch" />
-    <include file="$(find robotx_driver)/launch/bringup/aibox2/aibox2.launch" />
-    <include file="$(find robotx_driver)/launch/bringup/aibox3/aibox3.launch" />
-</launch>
