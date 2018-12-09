@@ -1,2 +1,6 @@
 pointcloud1_topic: /ai_pilot_velodyne/velodyne_points
 pointcloud2_topic: /front_velodyne/velodyne_points
+voxelgrid :
+  x : 0.1
+  y : 0.1
+  z : 0.1
