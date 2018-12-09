@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="rosbag" value="true"/>
+    <arg name="rosbag" default="true"/>
 
     <machine name="aibox2" address="192.168.1.101" env-loader="/home/nvidia/catkin_ws/devel/env.sh" user="nvidia" password="nvidia"/>
 
