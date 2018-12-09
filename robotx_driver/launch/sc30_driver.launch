@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="nmea_navsat_driver" type="nmea_topic_serial_reader" name="nmea_topic_serial_reader" output="screen" respawn="true">
+        <rosparam file="$(find robotx_driver)/config/nmea_navsat_driver.yaml" command="load"/>
+    </node>
+    
+    <node pkg="robotx_driver" type="sc30_driver_node" name="sc30_driver_node" output="screen" respawn="true">
+        <rosparam file="$(find robotx_driver)/config/sc30_driver.yaml" command="load"/>
+    </node>
+</launch>

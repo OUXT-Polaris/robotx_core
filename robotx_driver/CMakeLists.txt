@@ -22,7 +22,9 @@ find_package(Boost REQUIRED COMPONENTS thread system chrono)
 
 find_package(CUDA)
 
-generate_dynamic_reconfigure_options(cfg/frame_publisher.cfg)
+generate_dynamic_reconfigure_options(
+  cfg/frame_publisher.cfg
+  cfg/sc30_driver.cfg)
 
 catkin_package(
 #  INCLUDE_DIRS include
