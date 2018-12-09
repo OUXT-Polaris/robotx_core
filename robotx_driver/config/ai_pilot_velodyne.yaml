@@ -1,2 +1,3 @@
-cut_start_angle : 3.141519
-cut_end_angle : -3.141519
+cut_start_angle : 1.0
+cut_end_angle : -0.1
+input_topic : /ai_pilot_velodyne/velodyne_packets
