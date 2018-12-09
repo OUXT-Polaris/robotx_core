@@ -42,20 +42,23 @@ void sc30_driver::nmea_cakkback_(const nmea_msgs::Sentence::ConstPtr msg)
     if(type == SENTENCE_GPRMC)
     {
         boost::optional<sensor_msgs::NavSatFix> fix = get_nav_sat_fix_(msg);
-        boost::optional<geometry_msgs::QuaternionStamped> quat = get_true_course_(msg);
         boost::optional<geometry_msgs::TwistStamped> twist = get_twist_(msg);
-        bool status = is_valid_status_(msg);
-        if(fix && status)
+        //bool status = is_valid_status_(msg);
+        if(fix)// && status)
         {
             navsat_fix_pub_.publish(*fix);
         }
-        if(quat && status)
-        {
-            true_course_pub_.publish(*quat);
-        }
-        if(twist && status)
+        if(twist)// && status)
         {
             twist_pub_.publish(*twist);
+        }
+    }
+    if(type == SENTENCE_GPHDT)
+    {
+        boost::optional<geometry_msgs::QuaternionStamped> quat = get_true_course_(msg);
+        if(quat)
+        {
+            true_course_pub_.publish(*quat);
         }
     }
     return;
@@ -75,8 +78,31 @@ bool sc30_driver::is_valid_status_(const nmea_msgs::Sentence::ConstPtr sentence)
 boost::optional<geometry_msgs::QuaternionStamped> sc30_driver::get_true_course_(const nmea_msgs::Sentence::ConstPtr sentence)
 {
     geometry_msgs::QuaternionStamped true_course;
+    // get true course from GPRMC
+    /*
     std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
     std::string true_course_str = splited_sentence[8];
+    try
+    {
+        double true_course_value = std::stod(true_course_str);
+        std::pair<ros::Time,double> data;
+        data.first = sentence->header.stamp;
+        data.second = true_course_value;
+        true_course_buf_.push_back(data);
+        true_course.header = sentence->header;
+        tf::Quaternion quat;
+        quat.setRPY(0,0,-1*true_course_value);
+        quaternionTFToMsg(quat, true_course.quaternion);
+    }
+    catch(...)
+    {
+        return boost::none;
+    }
+    */
+
+    // get true course from GPHDT
+    std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
+    std::string true_course_str = splited_sentence[1];
     try
     {
         double true_course_value = std::stod(true_course_str);
@@ -169,6 +195,10 @@ int sc30_driver::get_sentence_type_(std::string sentence)
     if(type_str == "$GPRMC")
     {
         return SENTENCE_GPRMC;
+    }
+    if(type_str == "$GPHDT")
+    {
+        return SENTENCE_GPHDT;
     }
     return SENTENCE_UNDEFINED;
 }

@@ -20,6 +20,7 @@
 
 #define SENTENCE_UNDEFINED 0
 #define SENTENCE_GPRMC 1
+#define SENTENCE_GPHDT 2
 
 class sc30_driver
 {
