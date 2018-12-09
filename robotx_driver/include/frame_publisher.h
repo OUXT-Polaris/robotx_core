@@ -27,7 +27,7 @@ private:
     void configure_callback_(robotx_driver::frame_publisherConfig &config, uint32_t level);
     dynamic_reconfigure::Server<robotx_driver::frame_publisherConfig> server_;
     dynamic_reconfigure::Server<robotx_driver::frame_publisherConfig>::CallbackType callback_func_type_;
-   tf2_ros::StaticTransformBroadcaster broadcaster_;
+    tf2_ros::StaticTransformBroadcaster broadcaster_;
     geometry_msgs::Quaternion convert(double r,double p, double y);
 };
 #endif  //FRAME_PUBLISHER_H_INCLUDED

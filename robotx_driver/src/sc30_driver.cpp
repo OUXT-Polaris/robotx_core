@@ -11,6 +11,8 @@ sc30_driver::sc30_driver(ros::NodeHandle nh, ros::NodeHandle pnh)
     navsat_fix_pub_ = nh_.advertise<sensor_msgs::NavSatFix>(fix_topic_,10);
     twist_pub_ = nh_.advertise<geometry_msgs::TwistStamped>(twist_topic_,10);
     true_course_pub_ = nh_.advertise<geometry_msgs::QuaternionStamped>(true_course_topic_,10);
+    callback_func_type_ = boost::bind(&sc30_driver::configure_callback_, this, _1, _2);
+    server_.setCallback(callback_func_type_);
     nmea_sub_ = nh_.subscribe("/nmea_sentence",10,&sc30_driver::nmea_cakkback_,this);
 }
 
@@ -64,6 +66,13 @@ void sc30_driver::nmea_cakkback_(const nmea_msgs::Sentence::ConstPtr msg)
     return;
 }
 
+void sc30_driver::configure_callback_(robotx_driver::sc30_driverConfig &config, uint32_t level)
+{
+    offset_angle_ = config.offset_angle;
+    true_course_buf_.clear();
+    return;
+}
+
 bool sc30_driver::is_valid_status_(const nmea_msgs::Sentence::ConstPtr sentence)
 {
     std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
@@ -108,7 +117,7 @@ boost::optional<geometry_msgs::QuaternionStamped> sc30_driver::get_true_course_(
         double true_course_value = std::stod(true_course_str);
         std::pair<ros::Time,double> data;
         data.first = sentence->header.stamp;
-        data.second = true_course_value/180*M_PI;
+        data.second = true_course_value/180*M_PI-offset_angle_*M_PI;
         true_course_buf_.push_back(data);
         true_course.header = sentence->header;
         tf::Quaternion quat;
