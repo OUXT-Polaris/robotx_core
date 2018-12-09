@@ -2,6 +2,8 @@
 <launch>
     <node pkg="robotx_navigation" type="imu_gravity_removal_node" name="imu_gravity_removal_node" output="screen">
         <remap from="/imu_gravity_removal_node/input_imu" to="/imu/data_raw"/>
+        <remap from="/imu_gravity_removal_node/imu_rm_gravity" to="/twist/vel_Stamped"/>
+        <remap from="/imu_gravity_removal_node/imu_rm_gravity_noStamped" to="/twist/vel"/>
         <param name="/acc_x_offset" value="0.0"/>
         <param name="/acc_y_offset" value="0.0"/>
         <param name="/acc_z_offset" value="0.0"/>
