@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <machine name="aibox1" address="192.168.1.101" env-loader="/home/nvidia/catkin_ws/devel/env.sh" user="nvidia" password="nvidia"/>
+    <include file="$(find robotx_driver)/launch/bringup/aibox1/sensors.launch" />
+</launch>
