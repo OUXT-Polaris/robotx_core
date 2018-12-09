@@ -56,7 +56,7 @@ robotx_hardware_interface::robotx_hardware_interface()
   thruster_diagnostic_updater_.add("right_connection_status", this,
                                    &robotx_hardware_interface::update_right_thruster_connection_status_);
   current_task_number_ = 0;
-  fix_sub_ = nh_.subscribe("/fix", 1, &robotx_hardware_interface::fix_callback_, this);
+  fix_sub_ = nh_.subscribe("/sc30_driver_node/fix", 1, &robotx_hardware_interface::fix_callback_, this);
   motor_command_sub_ =
       nh_.subscribe("/wam_v/motor_command", 1, &robotx_hardware_interface::motor_command_callback_, this);
   control_state_sub_ =

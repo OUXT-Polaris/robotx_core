@@ -43,6 +43,7 @@ class technical_network_bridge {
    *
    */
   boost::thread tcp_thread;
+  boost::thread io_service_thread;
   /**
    * @brief callback function for subscribing ~/heartbeat ROS topic.
    *
@@ -52,6 +53,7 @@ class technical_network_bridge {
   void entrance_and_exit_gates_report_callback_(const robotx_msgs::EntranceAndExitGatesReport::ConstPtr &msg);
   void identify_symbols_and_dock_report_callback_(const robotx_msgs::IdentifySymbolsAndDockReport::ConstPtr &msg);
   void scan_the_code_report_callback_(const robotx_msgs::ScanTheCodeReport::ConstPtr &msg);
+  void run_io_service_();
   /**
    * @brief function for publishing ~/connection_status ROS topic.
    *
