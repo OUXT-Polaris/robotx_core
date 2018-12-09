@@ -1,4 +1,4 @@
-input_cloud: /pointcloud_merger_node/merged_points
+input_cloud: /filtered_points
 # CONDITIONAL_EUCLIDIAN_CLUSTERING = 0
 # EUCLIDIAN_CLUSTER_EXTRACTION = 1
 clustering_method: 1

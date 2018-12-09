@@ -16,6 +16,7 @@
 // headers in PCL
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/filters/voxel_grid.h>
 #include <pcl_conversions/pcl_conversions.h>
 
 // messages
@@ -35,7 +36,11 @@ class pointcloud_merger {
     struct parameters {
       std::string pointcloud1_topic;
       std::string pointcloud2_topic;
+      double voxelgrid_x,voxelgrid_y,voxelgrid_z;
       parameters() {
+        ros::param::param<double>(ros::this_node::getName() + "/voxelgrid/x", voxelgrid_x, 0.1);
+        ros::param::param<double>(ros::this_node::getName() + "/voxelgrid/y", voxelgrid_y, 0.1);
+        ros::param::param<double>(ros::this_node::getName() + "/voxelgrid/z", voxelgrid_z, 0.1);
         ros::param::param<std::string>(ros::this_node::getName() + "/pointcloud1_topic", pointcloud1_topic, ros::this_node::getName() + "/pointcloud1");
         ros::param::param<std::string>(ros::this_node::getName() + "/pointcloud2_topic", pointcloud2_topic, ros::this_node::getName() + "/pointcloud2");
       }
