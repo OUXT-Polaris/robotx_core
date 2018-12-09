@@ -76,7 +76,7 @@ void imu_gravity_removal::imu_CB_(const sensor_msgs::Imu msg) {
     pub_geo.twist.angular.x = msg.angular_velocity.x;
     pub_geo.twist.angular.y = msg.angular_velocity.y;
     pub_geo.twist.angular.z = msg.angular_velocity.z;
-    rm_gravity_pub_.publish(pub_geo.twist);
+    rm_gravity_pub_.publish(pub_geo);
     start_time_ = std::chrono::system_clock::now();
 
 }
