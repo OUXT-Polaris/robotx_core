@@ -11,7 +11,6 @@ technical_network_bridge::technical_network_bridge() {
   nh_.param<int>(ros::this_node::getName() + "/port", port_, 31400);
   nh_.param<double>(ros::this_node::getName() + "/heartbeat_publish_rate", heartbeat_publish_rate_, 1);
   client_ = new tcp_client(io_service_, ip_address_, port_);
-  io_service_.run();
   connection_status_pub_ = nh_.advertise<robotx_msgs::TechnicalDirectorNetworkStatus>(
       ros::this_node::getName() + "/connection_status", 1);
   heartbeat_sub_ = nh_.subscribe("/heartbeat", 1, &technical_network_bridge::heartbeat_callback, this);
@@ -27,6 +26,12 @@ technical_network_bridge::~technical_network_bridge() {}
 
 void technical_network_bridge::run(){
   tcp_thread = boost::thread(&technical_network_bridge::publish_heartbeat_message, this);
+  io_service_thread = boost::thread(&technical_network_bridge::run_io_service_, this);
+}
+
+void technical_network_bridge::run_io_service_(){
+  io_service_.run();
+  return;
 }
 
 void technical_network_bridge::entrance_and_exit_gates_report_callback_(const robotx_msgs::EntranceAndExitGatesReport::ConstPtr &msg)
