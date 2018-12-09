@@ -1,5 +1,0 @@
-<launch>
-    <machine name="jetson_1" address="192.168.1.102" env-loader="/home/nvidia/catkin_ws/devel/env.sh" user="nvidia" password="nvidia"/>
-    <!-- Launch Velodynes -->
-    <include file="$(find robotx_driver)/launch/front_velodyne.launch"/>
-</launch>

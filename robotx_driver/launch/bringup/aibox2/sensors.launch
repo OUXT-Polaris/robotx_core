@@ -1,0 +1,4 @@
+<launch>
+    <!-- Launch Velodynes -->
+    <include file="$(find robotx_driver)/launch/front_velodyne.launch"/>
+</launch>

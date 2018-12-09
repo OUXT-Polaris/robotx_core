@@ -84,7 +84,7 @@ void technical_network_bridge::identify_symbols_and_dock_report_callback_(const 
   }
   tcp_send_msg = "$" + tcp_send_msg + "*" + generate_checksum(tcp_send_msg.c_str()) + "\r\n";
   client_->send(tcp_send_msg);
-  ROS_INFO_STREAM("publish Dock symbols message -> " << tcp_send_msg);
+  ROS_INFO_STREAM("publish Identify Sybmols and Dock message -> " << tcp_send_msg);
   return;
 }
 
