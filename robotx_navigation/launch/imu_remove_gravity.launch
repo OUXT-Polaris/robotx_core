@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <launch>
-    <node pkg="robotx_navigation" type="imu_gravity_removal_node" name="imu_gravity_removal_node" output="screen">
-        <remap from="/imu_gravity_removal_node/input_imu" to="/imu/data"/>
+    <node pkg="robotx_navigation" type="imu_gravity_removal_node" name="imu_gravity_removal_node">
+        <remap from="/imu_gravity_removal_node/input_imu" to="/imu/data_raw"/>
+        <param name="/acc_x_offset" value="0.0"/>
+        <param name="/acc_y_offset" value="0.0"/>
+        <param name="/acc_z_offset" value="0.0"/>
+        <param name="/gyro_x_offset" value="0.0"/>
+        <param name="/gyro_y_offset" value="0.0"/>
+        <param name="/gyro_z_offset" value="0.0"/>
     </node>
 </launch>

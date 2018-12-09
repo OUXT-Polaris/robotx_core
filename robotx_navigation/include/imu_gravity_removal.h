@@ -15,8 +15,20 @@ class imu_gravity_removal {
   struct parameters {
     double LPF_const_value;
     std::string frame_id,input_imu_topic;
+    double acc_x_offset;
+    double acc_y_offset;
+    double acc_z_offset;
+    double gyro_x_offset;
+    double gyro_y_offset;
+    double gyro_z_offset;
     parameters() {
       ros::param::param<double>("/LPF_const_value", LPF_const_value, 0.8);
+      ros::param::param<double>(ros::this_node::getName() + "/acc_x_offset", acc_x_offset,0.0);
+      ros::param::param<double>(ros::this_node::getName() + "/acc_y_offset", acc_y_offset,0.0);
+      ros::param::param<double>(ros::this_node::getName() + "/acc_z_offset", acc_z_offset,0.0);
+      ros::param::param<double>(ros::this_node::getName() + "/gyro_x_offset", gyro_x_offset,0.0);
+      ros::param::param<double>(ros::this_node::getName() + "/gyro_y_offset", gyro_y_offset,0.0);
+      ros::param::param<double>(ros::this_node::getName() + "/gyro_z_offset", gyro_z_offset,0.0);
       ros::param::param<std::string>(ros::this_node::getName() + "/frame_id", frame_id,"/imu");
       ros::param::param<std::string>(ros::this_node::getName() + "/input_imu_topic", input_imu_topic,
                                      ros::this_node::getName() + "/input_imu");
