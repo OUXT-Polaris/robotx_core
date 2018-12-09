@@ -1,0 +1,8 @@
+<launch>
+  <machine name="msi_gaming" address="192.168.1.2" env-loader="/home/masaya/robotx_ws/devel/env.sh" user="masaya" password="ouxthawaii2018">
+  </machine>
+
+  <!-- Launch Velodynes -->
+  <node pkg="robotx_driver" type="sc30_driver_node" name="sc30_driver_node" output="screen" respawn="true" machine="msi_gaming">
+  </node>
+</launch>

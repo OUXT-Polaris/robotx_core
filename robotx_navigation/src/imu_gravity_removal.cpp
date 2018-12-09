@@ -6,6 +6,8 @@ imu_gravity_removal::imu_gravity_removal()
     start_time_ = std::chrono::system_clock::now(); // 計測開始時間
     rm_gravity_pub_ = 
         nh_.advertise<geometry_msgs::TwistStamped>(ros::this_node::getName() + "/imu_rm_gravity", 1);
+    rm_gravity_pub_noStamped_ = 
+        nh_.advertise<geometry_msgs::Twist>(ros::this_node::getName() + "/imu_rm_gravity_noStamped", 1);
     raw_imu_sub_ =
       nh_.subscribe(params_.input_imu_topic, 1, &imu_gravity_removal::imu_CB_, this);
 
@@ -26,8 +28,11 @@ imu_gravity_removal::imu_gravity_removal()
 imu_gravity_removal::~imu_gravity_removal() {}
 
 void imu_gravity_removal::imu_CB_(const sensor_msgs::Imu msg) {
+
     geometry_msgs::TwistStamped pub_geo;
     sensor_msgs::Imu sensor_var = msg;
+
+    geometry_msgs::Twist rm_gravity_pub_noStamped;
     end_time_ = std::chrono::system_clock::now();
     sec_ = std::chrono::duration_cast<std::chrono::milliseconds>(end_time_-start_time_).count() / 1000.0;
     pub_geo.header.stamp = ros::Time::now();
@@ -57,8 +62,6 @@ void imu_gravity_removal::imu_CB_(const sensor_msgs::Imu msg) {
     pub_geo.twist.linear.y = sensor_var.linear_acceleration.y - grav_.y;
     pub_geo.twist.linear.z =  sensor_var.linear_acceleration.z - grav_.z;
 
-    ROS_INFO("correctioned vec length = %f",sqrt(pow(pub_geo.twist.linear.x,2)+pow(pub_geo.twist.linear.y,2)+pow(pub_geo.twist.linear.z,2)));
-
     //vel_.x += ((pub_geo.twist.linear.x + old_acc_.x) * sec_) / 2.0  ;
     //vel_.y += ((pub_geo.twist.linear.y + old_acc_.y) * sec_) / 2.0  ;
     //vel_.z -= ((pub_geo.twist.linear.z + old_acc_.z) * sec_) / 2.0  ;
@@ -70,12 +73,15 @@ void imu_gravity_removal::imu_CB_(const sensor_msgs::Imu msg) {
     // vel_.y += (sensor_var.linear_acceleration.y * sec_);
     // vel_.z += (pub_geo.twist.linear.z * sec_);
 
+
+    ROS_INFO("correctioned vec length = %f",sqrt(pow(pub_geo.twist.linear.x,2)+pow(pub_geo.twist.linear.y,2)+pow(pub_geo.twist.linear.z,2)));
+    
+
     old_acc_.x = pub_geo.twist.linear.x;
     old_acc_.y = pub_geo.twist.linear.y;
     old_acc_.z = pub_geo.twist.linear.z;
 
     ROS_INFO("sec_ = %f",sec_);
-
 
     pub_geo.twist.linear.x = vel_.x;
     pub_geo.twist.linear.y = vel_.y;
@@ -83,6 +89,15 @@ void imu_gravity_removal::imu_CB_(const sensor_msgs::Imu msg) {
     pub_geo.twist.angular.x = sensor_var.angular_velocity.x;
     pub_geo.twist.angular.y = sensor_var.angular_velocity.y;
     pub_geo.twist.angular.z = sensor_var.angular_velocity.z;
+
+    rm_gravity_pub_noStamped.linear.x = vel_.x;
+    rm_gravity_pub_noStamped.linear.y = vel_.y;
+    rm_gravity_pub_noStamped.linear.z = 0;
+    rm_gravity_pub_noStamped.angular.x = sensor_var.angular_velocity.x;
+    rm_gravity_pub_noStamped.angular.y = sensor_var.angular_velocity.y;
+    rm_gravity_pub_noStamped.angular.z = sensor_var.angular_velocity.z;
+    
+    rm_gravity_pub_noStamped_.publish(rm_gravity_pub_noStamped);
     rm_gravity_pub_.publish(pub_geo);
     start_time_ = std::chrono::system_clock::now();
 

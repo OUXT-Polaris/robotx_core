@@ -4,6 +4,8 @@
 // headers in ROS
 #include <ros/ros.h>
 #include <geometry_msgs/TwistStamped.h>
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Quaternion.h>
 #include <sensor_msgs/Imu.h>
 #include <string>
 #include <iostream>
@@ -47,6 +49,7 @@ class imu_gravity_removal {
     const parameters params_;
 
     ros::Publisher rm_gravity_pub_;
+    ros::Publisher rm_gravity_pub_noStamped_;
     ros::Subscriber raw_imu_sub_;
 
     std::chrono::system_clock::time_point  start_time_, end_time_; // 型は auto で可
