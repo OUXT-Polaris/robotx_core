@@ -6,9 +6,9 @@
 
 technical_network_bridge::technical_network_bridge() {
   message_recieved_ = false;
-  nh_.param<std::string>(ros::this_node::getName() + "/team_id", team_id_, "OUXT Polaris");
-  nh_.param<std::string>(ros::this_node::getName() + "/ip_address", ip_address_, "127.0.0.1");
-  nh_.param<int>(ros::this_node::getName() + "/port", port_, 31400);
+  nh_.param<std::string>(ros::this_node::getName() + "/team_id", team_id_, "OUXTP");
+  nh_.param<std::string>(ros::this_node::getName() + "/ip_address", ip_address_, "172.20.10.7");
+  nh_.param<int>(ros::this_node::getName() + "/port", port_, 12345);
   nh_.param<double>(ros::this_node::getName() + "/heartbeat_publish_rate", heartbeat_publish_rate_, 1);
   client_ = new tcp_client(io_service_, ip_address_, port_);
   connection_status_pub_ = nh_.advertise<robotx_msgs::TechnicalDirectorNetworkStatus>(
@@ -44,12 +44,13 @@ void technical_network_bridge::entrance_and_exit_gates_report_callback_(const ro
   get_local_time_(hh,mm,ss);
   tcp_send_msg = tcp_send_msg + hh + mm + ss + ",";
   tcp_send_msg = tcp_send_msg + team_id_ + ",";
+  // TODO
   return;
 }
 
 void technical_network_bridge::identify_symbols_and_dock_report_callback_(const robotx_msgs::IdentifySymbolsAndDockReport::ConstPtr &msg)
 {
-  std::string tcp_send_msg = "$RXDOK,";
+  std::string tcp_send_msg = "RXDOK,";
   std::string date_dd,data_mm,data_yy;
   get_local_date_(date_dd,data_mm,data_yy);
   tcp_send_msg = tcp_send_msg + date_dd + data_mm + data_yy + ",";
@@ -81,9 +82,9 @@ void technical_network_bridge::identify_symbols_and_dock_report_callback_(const 
   {
     tcp_send_msg = tcp_send_msg + "CIRCL";
   }
-  tcp_send_msg = tcp_send_msg + "*28";
+  tcp_send_msg = "$" + tcp_send_msg + "*" + generate_checksum(tcp_send_msg.c_str()) + "\r\n";
   client_->send(tcp_send_msg);
-  ROS_INFO_STREAM("publish Hearbeat message -> " << tcp_send_msg);
+  ROS_INFO_STREAM("publish Dock symbols message -> " << tcp_send_msg);
   return;
 }
 
@@ -94,7 +95,7 @@ void technical_network_bridge::publish_heartbeat_message() {
     mtx_.lock();
     if (message_recieved_ == true) {
       client_->send(heartbeat_tcp_send_msg_);
-      ROS_INFO_STREAM("publish Identify Symbols and Dock Message message -> " << heartbeat_tcp_send_msg_);
+      ROS_INFO_STREAM("publish Heartbeat Message message -> " << heartbeat_tcp_send_msg_);
     }
     mtx_.unlock();
     loop_rate.sleep();
@@ -102,7 +103,7 @@ void technical_network_bridge::publish_heartbeat_message() {
 }
 
 void technical_network_bridge::scan_the_code_report_callback_(const robotx_msgs::ScanTheCodeReport::ConstPtr &msg){
-  std::string tcp_send_msg = "$RXCOD,";
+  std::string tcp_send_msg = "RXCOD,";
   std::string date_dd,data_mm,data_yy;
   get_local_date_(date_dd,data_mm,data_yy);
   tcp_send_msg = tcp_send_msg + date_dd + data_mm + data_yy + ",";
@@ -115,18 +116,18 @@ void technical_network_bridge::scan_the_code_report_callback_(const robotx_msgs:
   {
     if(msg->light_pattern[i] == msg->RED)
     {
-      light_pattern_str = light_pattern_str + "R,";
+      light_pattern_str = light_pattern_str + "R";
     }
     if(msg->light_pattern[i] == msg->BLUE)
     {
-      light_pattern_str = light_pattern_str + "B,";
+      light_pattern_str = light_pattern_str + "B";
     }
     if(msg->light_pattern[i] == msg->GREEN)
     {
-      light_pattern_str = light_pattern_str + "G,";
+      light_pattern_str = light_pattern_str + "G";
     }
   }
-  light_pattern_str = light_pattern_str + "*49";
+  light_pattern_str = "$" + light_pattern_str + "*" + generate_checksum(light_pattern_str.c_str()) + "\r\n";
   return;
 }
 
@@ -140,20 +141,18 @@ void technical_network_bridge::heartbeat_callback(const robotx_msgs::Heartbeat::
 
 std::string technical_network_bridge::generate_checksum(const char *data) {
   int crc = 0;
-  int i;
   // the first $ sign and the last two bytes of original CRC + the * sign
-  for (i = 1; i < strlen(data) - 3; i++) {
+  for (int i = 0; i < strlen(data); i++) {
     crc ^= data[i];
   }
-  std::string checksum = "";
-  std::stringstream ss;
-  ss << std::hex << crc;
+  std::stringstream checksum;
+  checksum << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << std::right << crc;  // like "0A"
   std::dec;
-  return checksum;
+  return checksum.str();
 }
 
 void technical_network_bridge::update_heartbeat_message() {
-  heartbeat_tcp_send_msg_ = "$RXHRT,";
+  heartbeat_tcp_send_msg_ = "RXHRB,";
   std::string date_dd,data_mm,data_yy;
   get_local_date_(date_dd,data_mm,data_yy);
   heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + date_dd + data_mm + data_yy + ",";
@@ -172,10 +171,11 @@ void technical_network_bridge::update_heartbeat_message() {
   } else {
     heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + "W,";
   }
-  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + team_id_;
-  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + std::to_string(heartbeat_msg_.vehicle_mode) + ",";
-  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + std::to_string(heartbeat_msg_.current_task_number);
-  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + "*06";// + generate_checksum(heartbeat_tcp_send_msg_.c_str());
+  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + team_id_ + ",";
+  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + std::to_string(heartbeat_msg_.vehicle_mode + 1) + ",";
+  heartbeat_tcp_send_msg_ = heartbeat_tcp_send_msg_ + "1";
+  std::string checksum = generate_checksum(heartbeat_tcp_send_msg_.c_str());
+  heartbeat_tcp_send_msg_ = "$" + heartbeat_tcp_send_msg_ + "*" + checksum + "\r\n";
 }
 
 void technical_network_bridge::publish_connection_status_message() {
