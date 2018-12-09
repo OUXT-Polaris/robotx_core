@@ -67,11 +67,11 @@ add_dependencies(dynamixel_driver_node robotx_msgs_generate_messages_cpp)
 target_link_libraries(dynamixel_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 add_executable(sc30_driver_node src/sc30_driver_node.cpp src/sc30_driver.cpp)
-add_dependencies(sc30_driver_node robotx_msgs_generate_messages_cpp)
+add_dependencies(sc30_driver_node robotx_msgs_generate_messages_cpp robotx_driver_gencfg)
 target_link_libraries(sc30_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 add_executable(frame_publisher_node src/frame_publisher_node.cpp src/frame_publisher.cpp)
-add_dependencies(frame_publisher_node robotx_msgs_generate_messages_cpp)
+add_dependencies(frame_publisher_node robotx_msgs_generate_messages_cpp robotx_driver_gencfg)
 target_link_libraries(frame_publisher_node ${catkin_LIBRARIES})
 
 add_executable(signal_lamp_driver_node src/signal_lamp_driver_node.cpp src/signal_lamp_driver.cpp src/tcp_client.cpp)
