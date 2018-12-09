@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="world_pose_publisher_node" pkg="robotx_navigation" type="world_pose_publisher_node" args="" output="screen" respawn="true">
+    <rosparam command="load" file="$(find robotx_navigation)/config/world_pose_publisher.yaml"/>
+    </node>
+
+    <include file="$(find robotx_navigation)/launch/geographic_map.launch">
+    </include>
+</launch>
