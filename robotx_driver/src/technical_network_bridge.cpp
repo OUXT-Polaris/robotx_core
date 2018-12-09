@@ -78,7 +78,7 @@ void technical_network_bridge::identify_symbols_and_dock_report_callback_(const 
   }
   tcp_send_msg = tcp_send_msg + "*28";
   client_->send(tcp_send_msg);
-  ROS_INFO_STREAM("publish Hearbeat message -> " << tcp_send_msg);
+  ROS_INFO_STREAM("publish Identify Sybmols and Dock message -> " << tcp_send_msg);
   return;
 }
 
@@ -89,7 +89,7 @@ void technical_network_bridge::publish_heartbeat_message() {
     mtx_.lock();
     if (message_recieved_ == true) {
       client_->send(heartbeat_tcp_send_msg_);
-      ROS_INFO_STREAM("publish Identify Symbols and Dock Message message -> " << heartbeat_tcp_send_msg_);
+      ROS_INFO_STREAM("publish Heart Beat Message message -> " << heartbeat_tcp_send_msg_);
     }
     mtx_.unlock();
     loop_rate.sleep();
