@@ -7,10 +7,22 @@
 technical_network_bridge::technical_network_bridge() {
   message_recieved_ = false;
   nh_.param<std::string>(ros::this_node::getName() + "/team_id", team_id_, "OUXTP");
-  nh_.param<std::string>(ros::this_node::getName() + "/ip_address", ip_address_, "172.20.10.7");
+  nh_.param<std::string>(ros::this_node::getName() + "/ip_address", ip_address_, "127.0.0.1");
+  nh_.param<std::string>(ros::this_node::getName() + "/hostname", hostname_, "local");
+  nh_.param<bool>(ros::this_node::getName() + "/use_hostname", use_hostname_, false);
   nh_.param<int>(ros::this_node::getName() + "/port", port_, 12345);
   nh_.param<double>(ros::this_node::getName() + "/heartbeat_publish_rate", heartbeat_publish_rate_, 1);
+  if(use_hostname_)
+  {
+    boost::asio::ip::tcp::resolver resolver(io_service_);
+    boost::asio::ip::tcp::resolver::query query(hostname_, std::to_string(port_));
+    boost::asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
+    boost::asio::ip::tcp::endpoint endpoint = iter->endpoint();
+    boost::asio::ip::address address = endpoint.address();
+    ip_address_ = address.to_string();
+  }
   client_ = new tcp_client(io_service_, ip_address_, port_);
+
   connection_status_pub_ = nh_.advertise<robotx_msgs::TechnicalDirectorNetworkStatus>(
       ros::this_node::getName() + "/connection_status", 1);
   heartbeat_sub_ = nh_.subscribe("/heartbeat", 1, &technical_network_bridge::heartbeat_callback, this);
