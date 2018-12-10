@@ -8,4 +8,5 @@
     <include file="$(find robotx_driver)/launch/bringup/aibox1/sensors.launch" unless="$(arg rosbag)"/>
     <include file="$(find robotx_driver)/launch/bringup/aibox1/gateway.launch"/>
     <include file="$(find robotx_driver)/launch/bringup/aibox1/decision_maker.launch" unless="$(arg calibration)"/>
+    <include file="$(find robotx_driver)/launch/frame_publisher.launch" />
 </launch>
