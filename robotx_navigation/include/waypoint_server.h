@@ -5,7 +5,6 @@
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <robotx_msgs/StateChanged.h>
-#include <robotx_msgs/State.h>
 #include <robotx_msgs/Event.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -35,7 +34,6 @@ private:
     std::vector<geometry_msgs::PoseStamped> waypoints_;
     std::map<int,std::string> waypoint_event_;
     ros::Subscriber navigation_state_changed_sub_;
-    ros::Subscriber navigation_state_sub_;
     ros::Subscriber robot_pose_sub_;
     ros::Publisher marker_pub_;
     ros::Publisher waypoint_pub_;
@@ -48,7 +46,6 @@ private:
     void publish_marker_();
     void robot_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg);
     void navigation_state_changed_callback_(robotx_msgs::StateChanged msg);
-    void navigation_state_callback_(robotx_msgs::State msg);
     bool load_next_waypoint_();
     boost::optional<int> get_nearest_wayppoint_(const geometry_msgs::PoseStamped::ConstPtr msg);
     std::vector<std::string> split_(std::string& input, char delimiter);
