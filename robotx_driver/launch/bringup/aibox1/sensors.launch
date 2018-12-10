@@ -3,4 +3,5 @@
     <!-- Launch Velodynes -->
     <include file="$(find robotx_driver)/launch/ai_pilot_velodyne.launch"/>
     <include file="$(find robotx_driver)/launch/watec.launch"/>
+    <include file="$(find robotx_driver)/launch/imu.launch"/>
 </launch>
