@@ -40,14 +40,21 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(ros::this_node::getName()+"/marker",1);
     waypoint_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(ros::this_node::getName()+"/next_waypoint",1,true);
     robot_pose_sub_ = nh_.subscribe(robot_pose_topic_, 1, &waypoint_server::robot_pose_callback_, this);
-    navigation_status_sub_ = nh_.subscribe("/robotx_state_machine_node/navigation_state_machine/state_changed",
-        1, &waypoint_server::navigation_status_callback_, this);
+    navigation_state_changed_sub_ = nh_.subscribe("/robotx_state_machine_node/navigation_state_machine/state_changed",
+        1, &waypoint_server::navigation_state_changed_callback_, this);
+    navigation_state_sub_ = nh_.subscribe("/robotx_state_machine_node/navigation_state_machine/current_state",
+        1, &waypoint_server::navigation_state_callback_, this);
     boost::thread marker_thread(boost::bind(&waypoint_server::publish_marker_, this));
 }
 
 waypoint_server::~waypoint_server()
 {
 
+}
+
+void waypoint_server::navigation_state_callback_(robotx_msgs::State msg)
+{
+    return;
 }
 
 std::vector<std::string> waypoint_server::split_(std::string& input, char delimiter)
@@ -130,7 +137,7 @@ void waypoint_server::publish_marker_()
     return;
 }
 
-void waypoint_server::navigation_status_callback_(robotx_msgs::StateChanged msg)
+void waypoint_server::navigation_state_changed_callback_(robotx_msgs::StateChanged msg)
 {
     robotx_msgs::Event event_msg;
     event_msg.header.stamp = ros::Time::now();
