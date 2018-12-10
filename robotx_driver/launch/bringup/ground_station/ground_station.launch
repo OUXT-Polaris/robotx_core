@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="joy" type="joy_node" name="joy_node" output="log" respawn="true" respawn_delay="0">    
+    </node>
+
+    <node name="technical_network_bridge_node" pkg="robotx_driver" type="technical_network_bridge_node" args="" output="screen" respawn="true">
+    <rosparam file="$(find robotx_driver)/config/technical_network_bridge.yaml" command="load"/>
+    </node>
+</launch>
