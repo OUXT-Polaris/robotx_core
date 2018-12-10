@@ -179,8 +179,13 @@ void robotx_hardware_interface::send_command_() {
     }
     if (params_.target == params_.ALL || params_.target == params_.HARDWARE) {
       if (current_control_state_.current_state == "remote_operated") {
+        /*
+        left_motor_cmd_client_ptr_->send(1);
+        right_motor_cmd_client_ptr_->send(1);
+        */
         left_motor_cmd_client_ptr_->send(last_manual_motor_cmd_msg_.data[0]);
         right_motor_cmd_client_ptr_->send(last_manual_motor_cmd_msg_.data[2]);
+        ROS_ERROR_STREAM(last_manual_motor_cmd_msg_.data[0] << "," << last_manual_motor_cmd_msg_.data[2]);
         std_msgs::Float64 left_thrust_joint_cmd_;
         left_thrust_joint_cmd_.data = last_manual_motor_cmd_msg_.data[1]*M_PI_2;
         std_msgs::Float64 right_thrust_joint_cmd_;

@@ -38,7 +38,7 @@ void frame_publisher::configure_callback_(robotx_driver::frame_publisherConfig &
     geometry_msgs::TransformStamped transform_stamped_front_camera_;
     transform_stamped_front_camera_.header.frame_id = "base_link";
     transform_stamped_front_camera_.header.stamp = now;
-    transform_stamped_front_camera_.child_frame_id = "front_camera";
+    transform_stamped_front_camera_.child_frame_id = "front_camera_link";
     transform_stamped_front_camera_.transform.translation.x = config.front_camera_x;
     transform_stamped_front_camera_.transform.translation.y = config.front_camera_y;
     transform_stamped_front_camera_.transform.translation.z = config.front_camera_z;

@@ -1,11 +1,12 @@
 #ALL = 0, SIMULATION = 1, HARDWARE = 2
-target: 2
+target: 0
 timeout: 30
 frequency: 30
 # DUALSHOCK4_SIMPLE=0
 # DUALSHOCK4=1
 # LOGICOOL=2
-controller_type: 2
+controller_type: 0
+use_tcp : false
 left_motor_ip: 192.168.1.20
 right_motor_ip: 192.168.1.21
 left_motor_port: 50000
