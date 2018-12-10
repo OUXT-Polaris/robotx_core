@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <launch>
+<!--
     <include file="$(find robotx_driver)/launch/dynamixel.launch"/>
     <include file="$(find robotx_driver)/launch/dynamixel_drivers.launch"/>
+-->
+    <include file="$(find robotx_driver)/launch/serial_devices.launch" />
 </launch>
