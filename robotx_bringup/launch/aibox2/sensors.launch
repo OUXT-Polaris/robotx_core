@@ -1,4 +1,9 @@
 <launch>
     <!-- Launch Velodynes -->
     <include file="$(find robotx_driver)/launch/front_velodyne.launch"/>
+    <?xml version="1.0"?>
+
+    <node pkg="rosserial_python" type="serial_node.py" name="serial_light" output="screen" respawn="true">
+        <param name="port" value="/dev/serial/by-id/usb-mbed_Microcontroller_101000000000000000000002F7F1F5C4-if01"/>
+    </node>
 </launch>
