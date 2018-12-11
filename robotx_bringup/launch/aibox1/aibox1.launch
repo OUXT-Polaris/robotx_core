@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="rosbag" default="false" />
+    <arg name="calibration" default="false"/>
+
+    <machine name="aibox1" address="192.168.1.101" env-loader="/home/nvidia/catkin_ws/devel/env.sh" user="nvidia" password="nvidia"/>
+
+    <include file="$(find robotx_driver)/launch/bringup/aibox1/sensors.launch" unless="$(arg rosbag)"/>
+    <include file="$(find robotx_driver)/launch/bringup/aibox1/gateway.launch"/>
+    <include file="$(find robotx_driver)/launch/bringup/aibox1/decision_maker.launch" unless="$(arg calibration)"/>
+</launch>
