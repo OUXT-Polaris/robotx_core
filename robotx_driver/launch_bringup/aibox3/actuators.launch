@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-<!--
-    <include file="$(find robotx_driver)/launch/dynamixel.launch"/>
-    <include file="$(find robotx_driver)/launch/dynamixel_drivers.launch"/>
--->
-</launch>

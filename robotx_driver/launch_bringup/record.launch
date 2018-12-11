@@ -1,6 +1,0 @@
-<launch>
-    <node name="record" pkg="rosbag" type="record" args="/nmea_sentence /ai_pilot_velodyne/velodyne_packets /front_velodyne/velodyne_packets 
-    /wam_v/front_camera/fron_camera_info /wam_v/front_camera/image_rect/compressed /joint_states /diagnostics /left_engine_position_controller/command
-    /right_engine_position_controller/command /left_thrust_cmd /right_thrust_cmd
-    -O /media/$(env USER)/robotx_hdd/"/>
-</launch>

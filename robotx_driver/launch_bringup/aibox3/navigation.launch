@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <include file="$(find robotx_navigation)/launch/gps_pipeline.launch"/>
-    <include file="$(find robotx_navigation)/launch/navigation_planner.launch"/>
-    <include file="$(find robotx_twist_controller)/launch/twist_controller.launch" />
-</launch>
