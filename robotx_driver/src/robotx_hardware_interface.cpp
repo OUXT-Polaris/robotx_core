@@ -14,6 +14,7 @@ robotx_hardware_interface::robotx_hardware_interface()
   if (params_.target == params_.ALL || params_.target == params_.SIMULATION) {
     right_thrust_cmd_pub_ = nh_.advertise<std_msgs::Float32>("/right_thrust_cmd", 1);
     left_thrust_cmd_pub_ = nh_.advertise<std_msgs::Float32>("/left_thrust_cmd", 1);
+    light_cmd_pub_ = nh_.advertise<std_msgs::String>("/serial_sender_node/msg", 1);;
     left_thrust_joint_pub_ =
         nh_.advertise<std_msgs::Float64>("/left_engine_position_controller/command", 1);
     right_thrust_joint_pub_ =
@@ -162,6 +163,9 @@ void robotx_hardware_interface::send_command_() {
         right_thrust_cmd_pub_.publish(right_drive_cmd_);
         left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
         right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
+        std_msgs::String light_cmd;
+        light_cmd.data = "r";
+        light_cmd_pub_.publish(light_cmd);
       }
       if (current_control_state_.current_state == "autonomous") {
         std_msgs::Float32 left_drive_cmd_,right_drive_cmd_;
@@ -175,6 +179,9 @@ void robotx_hardware_interface::send_command_() {
         right_thrust_cmd_pub_.publish(right_drive_cmd_);
         left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
         right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
+        std_msgs::String light_cmd;
+        light_cmd.data = "a";
+        light_cmd_pub_.publish(light_cmd);
       }
     }
     if (params_.target == params_.ALL || params_.target == params_.HARDWARE) {
