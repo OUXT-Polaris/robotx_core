@@ -16,6 +16,7 @@
 #include <std_msgs/Float32.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/UInt8.h>
+#include <std_msgs/String.h>
 
 // headers in boost
 #include <boost/thread.hpp>
@@ -288,6 +289,7 @@ class robotx_hardware_interface {
    * @brief parameter for current control state
    */
   robotx_msgs::State current_control_state_;
+  ros::Publisher light_cmd_pub_;
 };
 
 #endif  // ROBOTX_HARDWARE_INTERFACE_H_INCLUDEDE
