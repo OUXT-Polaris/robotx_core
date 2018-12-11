@@ -3,10 +3,8 @@
     <arg name="rosbag" default="true"/>
 
     <machine name="aibox2" address="192.168.1.101" env-loader="/home/nvidia/catkin_ws/devel/env.sh" user="nvidia" password="nvidia"/>
-    <node pkg="rosserial_python" type="serial_node.py" name="serial_right_thruster_node" output="screen" respawn="true">
-            <param name="port" value="/dev/serial/by-id/usb-mbed_Microcontroller_101000000000000000000002F7F1F5C4-if01"/>
-    </node>
 
     <include file="$(find robotx_driver)/launch/bringup/aibox2/sensors.launch" unless="$(arg rosbag)"/>
+    <include file="$(find robotx_driver)/launch/bringup/aibox2/serial_devices.launch" unless="$(arg rosbag)"/>
     <include file="$(find robotx_driver)/launch/bringup/aibox2/perception.launch"/>
 </launch>

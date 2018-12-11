@@ -7,4 +7,5 @@
     <include file="$(find robotx_driver)/launch/bringup/aibox3/actuators.launch" unless="$(arg rosbag)"/>
     <include file="$(find robotx_driver)/launch/bringup/aibox3/sensors.launch" unless="$(arg rosbag)"/>
     <include file="$(find robotx_driver)/launch/bringup/aibox3/navigation.launch" unless="$(arg calibration)"/>
+    <include file="$(find robotx_driver)/launch/bringup/aibox3/serial_devices.launch" unless="$(arg calibration)"/>
 </launch>
