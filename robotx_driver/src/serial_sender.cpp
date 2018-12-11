@@ -36,10 +36,13 @@ void serial_sender::send_()
 	port.set_option(serial_port_base::flow_control(serial_port_base::flow_control::none));
 	port.set_option(serial_port_base::parity(serial_port_base::parity::none));
 	port.set_option(serial_port_base::stop_bits(serial_port_base::stop_bits::one));
+    char rbuf[32];
+	std::size_t length;
     while(ros::ok())
     {
         ROS_INFO_STREAM("send serial to " << port_ << ":" << write_buf_);
         port.write_some(buffer(write_buf_));
+        std::cout.write(rbuf, length);
         rate.sleep();
     }
     return;
