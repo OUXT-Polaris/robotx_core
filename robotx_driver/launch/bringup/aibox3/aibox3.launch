@@ -4,6 +4,7 @@
 
     <machine name="aibox3" address="192.168.1.103" env-loader="/home/nvidia/catkin_ws/devel/env.sh" user="nvidia" password="nvidia"/>
 
+    <include file="$(find robotx_driver)/launch/bringup/aibox3/gateway.launch" unless="$(arg rosbag)"/>
     <include file="$(find robotx_driver)/launch/bringup/aibox3/actuators.launch" unless="$(arg rosbag)"/>
     <include file="$(find robotx_driver)/launch/bringup/aibox3/sensors.launch" unless="$(arg rosbag)"/>
     <include file="$(find robotx_driver)/launch/bringup/aibox3/navigation.launch" unless="$(arg calibration)"/>
