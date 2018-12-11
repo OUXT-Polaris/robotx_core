@@ -38,6 +38,7 @@ void serial_sender::send_()
 	port.set_option(serial_port_base::stop_bits(serial_port_base::stop_bits::one));
     while(ros::ok())
     {
+        ROS_INFO_STREAM("send serial to " << port_ << ":" << write_buf_);
         port.write_some(buffer(write_buf_));
         rate.sleep();
     }
