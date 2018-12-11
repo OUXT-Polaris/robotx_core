@@ -2,9 +2,7 @@
 <launch>
     <node pkg="joy" type="joy_node" name="joy_node" output="log" respawn="true" respawn_delay="0">    
     </node>
-
-    <include file="$(find robotx_driver)/launch/mqtt_joy_ground_station.launch"/>
-
+    
     <rosparam command="load" file="$(find robotx_driver)/config/hardware.yaml" ns="robotx_hardware_interface_node"/>
     <node pkg="robotx_driver" type="robotx_hardware_interface_node" name="robotx_hardware_interface_node" args="" output="screen" respawn="true">
     </node>
