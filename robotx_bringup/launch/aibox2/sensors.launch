@@ -1,4 +1,5 @@
 <launch>
     <!-- Launch Velodynes -->
     <include file="$(find robotx_driver)/launch/front_velodyne.launch"/>
+    <include file="$(find rt_usb_9axisimu_driver)/launch/rt_usb_9axisimu_driver.launch"/>
 </launch>
