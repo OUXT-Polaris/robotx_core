@@ -4,7 +4,9 @@
     <node pkg="robotx_driver" type="robotx_hardware_interface_node" name="robotx_hardware_interface_node" args="" output="screen" respawn="true">
     </node>
 
+<!--
     <node name="technical_network_bridge_node" pkg="robotx_driver" type="technical_network_bridge_node" args="" output="screen" respawn="true">
     <rosparam file="$(find robotx_driver)/config/technical_network_bridge.yaml" command="load"/>
     </node>
+-->
 </launch>
