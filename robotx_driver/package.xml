@@ -67,6 +67,7 @@
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>rqt_reconfigure</exec_depend>
   <exec_depend>rosserial_python</exec_depend>
+  <exec_depend>rt_usb_9axisimu_driver</exec_depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
