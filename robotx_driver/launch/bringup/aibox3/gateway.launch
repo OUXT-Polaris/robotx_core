@@ -1,4 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <include file="$(find robotx_driver)/launch/mqtt_joy_wamv.launch"/>
-</launch>
