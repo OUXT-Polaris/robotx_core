@@ -20,9 +20,9 @@ dictitems:
   front_velodyne_z: -0.3
   gps_pitch: 0.0
   gps_roll: 0.0
-  gps_x: -1.6
+  gps_x: -0.1
   gps_y: 0.0
-  gps_yaw: 0.0
+  gps_yaw: 0.5
   gps_z: 0.1
   groups: !!python/object/new:dynamic_reconfigure.encoding.Config
     dictitems:
@@ -46,17 +46,17 @@ dictitems:
       front_velodyne_z: -0.3
       gps_pitch: 0.0
       gps_roll: 0.0
-      gps_x: -1.6
+      gps_x: -0.1
       gps_y: 0.0
-      gps_yaw: 0.0
+      gps_yaw: 0.5
       gps_z: 0.1
       groups: !!python/object/new:dynamic_reconfigure.encoding.Config
         state: []
       id: 0
       imu_pitch: 0.0
       imu_roll: 0.0
-      imu_x: -0.1
-      imu_y: 0.0
+      imu_x: -0.7
+      imu_y: 0.3
       imu_yaw: 0.0
       imu_z: 0.03
       name: Default
@@ -68,8 +68,8 @@ dictitems:
     state: []
   imu_pitch: 0.0
   imu_roll: 0.0
-  imu_x: -0.1
-  imu_y: 0.0
+  imu_x: -0.7
+  imu_y: 0.3
   imu_yaw: 0.0
   imu_z: 0.03
 state: []

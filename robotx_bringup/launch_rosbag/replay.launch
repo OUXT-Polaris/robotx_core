@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="file" default=""/>
+
+    <!--<node pkg="rosbag" type="play" name="rosbag" args="$(arg file)"/>-->
+    <include file="$(find robotx_recognition)/launch/recognition.launch" />
+    <include file="$(find robotx_driver)/launch/bringup/aibox2/perception.launch"/>
+    <include file="$(find robotx_decision_maker)/launch/decision_maker.launch"/>
+    <include file="$(find robotx_navigation)/launch/gps_pipeline.launch"/>
+    <include file="$(find robotx_navigation)/launch/navigation_planner.launch"/>
+    <include file="$(find robotx_twist_controller)/launch/twist_controller.launch" />
+</launch>
