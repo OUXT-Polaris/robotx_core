@@ -82,6 +82,10 @@ add_executable(battery_monitor_driver_node src/battery_monitor_driver_node.cpp s
 add_dependencies(battery_monitor_driver_node robotx_msgs_generate_messages_cpp)
 target_link_libraries(battery_monitor_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
+add_executable(serial_sender_node src/serial_sender_node.cpp src/serial_sender.cpp)
+add_dependencies(serial_sender_node robotx_msgs_generate_messages_cpp)
+target_link_libraries(serial_sender_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
 message(STATUS "")
 message(STATUS "FoundCUDA              : ${CUDA_FOUND}")
 
@@ -105,11 +109,13 @@ endif()
 ## Install ##
 #############
 if(CUDA_FOUND)
-  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node dynamixel_driver_node sc30_driver_node frame_publisher_node #cuda_diagnostic_node
+  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node serial_sender_node
+  dynamixel_driver_node sc30_driver_node frame_publisher_node #cuda_diagnostic_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 else()
-  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node dynamixel_driver_node sc30_driver_node frame_publisher_node
+  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node serial_sender_node
+  dynamixel_driver_node sc30_driver_node frame_publisher_node
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 endif()
