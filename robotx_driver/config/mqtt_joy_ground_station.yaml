@@ -1,0 +1,15 @@
+mqtt:
+  client:
+    protocol: 4      # MQTTv311
+  connection:
+    host: mosquitto.org # set MQTT Server IP or URL
+    port: 1883
+    keepalive: 60
+  private_path: device/001
+bridge:
+  ## Topics to MQTT ##
+  # joy
+  - factory: mqtt_bridge.bridge:RosToMqttBridge
+    msg_type: sensor_msgs.msg:Joy
+    topic_from: /joy
+    topic_to: joy
