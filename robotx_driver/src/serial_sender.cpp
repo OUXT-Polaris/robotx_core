@@ -42,6 +42,7 @@ void serial_sender::send_()
     {
         ROS_INFO_STREAM("send serial to " << port_ << ":" << write_buf_);
         port.write_some(buffer(write_buf_));
+        length = port.read_some(buffer(rbuf));
         std::cout.write(rbuf, length);
         rate.sleep();
     }
