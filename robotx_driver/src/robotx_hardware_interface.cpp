@@ -158,11 +158,13 @@ void robotx_hardware_interface::send_command_() {
   while (ros::ok()) {
     thruster_diagnostic_updater_.update();
     mtx_.lock();
+    /*
     if(kill_cmd_flag_)
     {
       rate.sleep();
       continue;
     }
+    */
     if (params_.target == params_.ALL || params_.target == params_.SIMULATION) {
       if (current_control_state_.current_state == "remote_operated") {
         //robotx_msgs::UsvDrive usv_drive_msg;
