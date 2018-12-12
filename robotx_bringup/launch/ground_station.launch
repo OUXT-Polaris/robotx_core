@@ -2,4 +2,6 @@
 <launch>
     <node pkg="joy" type="joy_node" name="joy_node">
     </node>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robotx_driver)/config/ground_station.rviz"/>
 </launch>
