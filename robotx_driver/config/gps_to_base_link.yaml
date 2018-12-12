@@ -1,0 +1,27 @@
+!!python/object/new:dynamic_reconfigure.encoding.Config
+dictitems:
+  gps_pitch: 0.0
+  gps_roll: 0.0
+  gps_x: 0.0
+  gps_y: 0.15
+  gps_yaw: 0.5
+  gps_z: -0.1
+  groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+    dictitems:
+      gps_pitch: 0.0
+      gps_roll: 0.0
+      gps_x: 0.0
+      gps_y: 0.15
+      gps_yaw: 0.5
+      gps_z: -0.1
+      groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      id: 0
+      name: Default
+      parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      parent: 0
+      state: true
+      type: ''
+    state: []
+state: []

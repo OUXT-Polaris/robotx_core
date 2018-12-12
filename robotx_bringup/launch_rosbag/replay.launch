@@ -1,11 +1,13 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="file" default=""/>
-
-    <!--<node pkg="rosbag" type="play" name="rosbag" args="$(arg file)"/>-->
-    <include file="$(find robotx_recognition)/launch/recognition.launch" />
-    <include file="$(find robotx_decision_maker)/launch/decision_maker.launch"/>
+    <node pkg="rosbag" type="play" name="rosbag" args="$(find robotx_bringup)/launch_rosbag/2018-12-12-10-52-18.bag"/>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robotx_driver)/config/replay.rviz"/>
+    <include file="$(find robotx_driver)/launch/frame_publisher.launch" />
     <include file="$(find robotx_navigation)/launch/gps_pipeline.launch"/>
     <include file="$(find robotx_navigation)/launch/navigation_planner.launch"/>
     <include file="$(find robotx_twist_controller)/launch/twist_controller.launch" />
+    <node pkg="robotx_driver" type="sc30_driver_node" name="sc30_driver_node" output="screen" respawn="true">
+        <rosparam file="$(find robotx_driver)/config/sc30_driver.yaml" command="load"/>
+    </node>
+    <include file="$(find robotx_decision_maker)/launch/decision_maker.launch"/>
 </launch>
