@@ -45,10 +45,12 @@ private:
     std::string true_course_topic_;
     tf2_ros::TransformBroadcaster broadcaster_;
     std::string world_frame_;
+    std::string robot_frame_;
     std::string world_pose_topic_;
     ros::Publisher world_pose_pub_;
     std::string world_odom_topic_;
     ros::Publisher world_odom_pub_;
+    double gps_yaw_offset_;
     double publish_rate_;
     bool data_recieved_;
     sensor_msgs::NavSatFix fix_;

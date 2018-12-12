@@ -9,9 +9,11 @@ world_pose_publisher::world_pose_publisher(ros::NodeHandle nh,ros::NodeHandle pn
     pnh_.param<std::string>("twist_topic", twist_topic_, ros::this_node::getName()+"/twist");
     pnh_.param<std::string>("true_course_topic", true_course_topic_, ros::this_node::getName()+"/true_course");
     pnh_.param<std::string>("world_frame", world_frame_, "world");
+    pnh_.param<std::string>("robot_frame", robot_frame_, "base_link");
     pnh_.param<std::string>("world_pose_topic", world_pose_topic_, ros::this_node::getName()+"/world_pose");
     pnh_.param<std::string>("world_odom_topic", world_odom_topic_, ros::this_node::getName()+"/odom");
     pnh_.param<double>("publish_rate", publish_rate_, 10);
+    pnh_.param<double>("gps_yaw_offset", gps_yaw_offset_, 0);
     world_odom_pub_ = nh_.advertise<nav_msgs::Odometry>(world_odom_topic_,10);
     world_pose_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(world_pose_topic_,10);
     fix_sub_ptr_ = boost::make_shared<message_filters::Subscriber<sensor_msgs::NavSatFix> >(nh_,fix_topic_,1);
