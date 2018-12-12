@@ -9,4 +9,5 @@
     <node pkg="robotx_driver" type="sc30_driver_node" name="sc30_driver_node" output="screen" respawn="true">
         <rosparam file="$(find robotx_driver)/config/sc30_driver.yaml" command="load"/>
     </node>
+    <include file="$(find robotx_decision_maker)/launch/decision_maker.launch"/>
 </launch>
