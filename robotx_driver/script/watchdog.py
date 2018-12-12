@@ -5,7 +5,7 @@ import datetime
 import rospy
 from std_msgs.msg import Empty
 
-def ping(address, timeout=5, attempts=4):
+def ping(address, timeout=5, attempts=2):
     failed_attempts = 0
     for i in range(0, attempts):
         result = os.system('/bin/ping -c 1 -w %i %s > /dev/null 2>&1' % (timeout, address))
@@ -26,7 +26,7 @@ def watchdog():
     rate = rospy.Rate(10)
     pub = rospy.Publisher('/kill', Empty, queue_size=10)
     while not rospy.is_shutdown():
-        if not ping("192.168.1.16"):
+        if not ping("192.168.1.13"):
             pub.publish()
         rate.sleep()
 
