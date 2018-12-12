@@ -2,5 +2,6 @@ download.sh
 
 arm.sh
 arm.pem
+wamv.pem
 
 *.tar.gz
