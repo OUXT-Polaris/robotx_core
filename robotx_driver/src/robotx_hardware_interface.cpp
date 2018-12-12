@@ -10,6 +10,7 @@ robotx_hardware_interface::robotx_hardware_interface()
     : params_(robotx_hardware_interface::parameters()),
       remote_operated_if(
           boost::bind(&robotx_hardware_interface::recieve_remote_oprated_motor_command, this, _1)) {
+  kill_cmd_flag_ = true;
   right_thrust_cmd_str_pub_ = nh_.advertise<std_msgs::String>("/left_thrust_driver_node/msg", 1);
   left_thrust_cmd_str_pub_ = nh_.advertise<std_msgs::String>("/right_thrust_driver_node/msg", 1);
   heartbeat_pub_ = nh_.advertise<robotx_msgs::Heartbeat>("/heartbeat", 1);
@@ -146,11 +147,22 @@ void robotx_hardware_interface::update_right_thruster_connection_status_(
   stat.add("connection_status", "");
 }
 
+void robotx_hardware_interface::kill_cmd_callback_(const std_msgs::Empty::ConstPtr msg)
+{
+  kill_cmd_flag_ = true;
+  return;
+}
+
 void robotx_hardware_interface::send_command_() {
   ros::Rate rate(params_.frequency);
   while (ros::ok()) {
     thruster_diagnostic_updater_.update();
     mtx_.lock();
+    if(kill_cmd_flag_)
+    {
+      rate.sleep();
+      continue;
+    }
     if (params_.target == params_.ALL || params_.target == params_.SIMULATION) {
       if (current_control_state_.current_state == "remote_operated") {
         //robotx_msgs::UsvDrive usv_drive_msg;

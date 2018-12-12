@@ -5,6 +5,7 @@ serial_sender::serial_sender()
     pnh_ = ros::NodeHandle("~");
     pnh_.param<std::string>("port", port_, "");
     pnh_.param<int>("baud_rate", baud_rate_, 9600);
+    pnh_.param<int>("baud_rate", baud_rate_, 9600);
     pnh_.param<double>("send_rate", send_rate_, 10.0);
     message_sub_ = pnh_.subscribe("msg",1,&serial_sender::message_callback_,this);
 }

@@ -17,6 +17,7 @@
 #include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/UInt8.h>
 #include <std_msgs/String.h>
+#include <std_msgs/Empty.h>
 
 // headers in boost
 #include <boost/thread.hpp>
@@ -292,6 +293,9 @@ class robotx_hardware_interface {
   ros::Publisher light_cmd_pub_;
   ros::Publisher left_thrust_cmd_str_pub_;
   ros::Publisher right_thrust_cmd_str_pub_;
+  ros::Subscriber kill_cmd_sub_;
+  void kill_cmd_callback_(const std_msgs::Empty::ConstPtr msg);
+  bool kill_cmd_flag_;
 };
 
 #endif  // ROBOTX_HARDWARE_INTERFACE_H_INCLUDEDE
