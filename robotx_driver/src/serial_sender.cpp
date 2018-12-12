@@ -5,6 +5,7 @@ serial_sender::serial_sender()
     pnh_ = ros::NodeHandle("~");
     pnh_.param<std::string>("port", port_, "");
     pnh_.param<int>("baud_rate", baud_rate_, 9600);
+    pnh_.param<int>("baud_rate", baud_rate_, 9600);
     pnh_.param<double>("send_rate", send_rate_, 10.0);
     message_sub_ = pnh_.subscribe("msg",1,&serial_sender::message_callback_,this);
 }
@@ -31,7 +32,7 @@ void serial_sender::send_()
     ros::Rate rate = ros::Rate(send_rate_);
     io_service io;
 	serial_port port(io, port_.c_str());
-	port.set_option(serial_port_base::baud_rate(19200));
+	port.set_option(serial_port_base::baud_rate(baud_rate_));
 	port.set_option(serial_port_base::character_size(8));
 	port.set_option(serial_port_base::flow_control(serial_port_base::flow_control::none));
 	port.set_option(serial_port_base::parity(serial_port_base::parity::none));

@@ -10,10 +10,14 @@ robotx_hardware_interface::robotx_hardware_interface()
     : params_(robotx_hardware_interface::parameters()),
       remote_operated_if(
           boost::bind(&robotx_hardware_interface::recieve_remote_oprated_motor_command, this, _1)) {
+  kill_cmd_flag_ = true;
+  right_thrust_cmd_str_pub_ = nh_.advertise<std_msgs::String>("/left_thrust_driver_node/msg", 1);
+  left_thrust_cmd_str_pub_ = nh_.advertise<std_msgs::String>("/right_thrust_driver_node/msg", 1);
   heartbeat_pub_ = nh_.advertise<robotx_msgs::Heartbeat>("/heartbeat", 1);
   if (params_.target == params_.ALL || params_.target == params_.SIMULATION) {
     right_thrust_cmd_pub_ = nh_.advertise<std_msgs::Float32>("/right_thrust_cmd", 1);
     left_thrust_cmd_pub_ = nh_.advertise<std_msgs::Float32>("/left_thrust_cmd", 1);
+    light_cmd_pub_ = nh_.advertise<std_msgs::String>("/serial_sender_node/msg", 1);;
     left_thrust_joint_pub_ =
         nh_.advertise<std_msgs::Float64>("/left_engine_position_controller/command", 1);
     right_thrust_joint_pub_ =
@@ -143,11 +147,22 @@ void robotx_hardware_interface::update_right_thruster_connection_status_(
   stat.add("connection_status", "");
 }
 
+void robotx_hardware_interface::kill_cmd_callback_(const std_msgs::Empty::ConstPtr msg)
+{
+  kill_cmd_flag_ = true;
+  return;
+}
+
 void robotx_hardware_interface::send_command_() {
   ros::Rate rate(params_.frequency);
   while (ros::ok()) {
     thruster_diagnostic_updater_.update();
     mtx_.lock();
+    if(kill_cmd_flag_)
+    {
+      rate.sleep();
+      continue;
+    }
     if (params_.target == params_.ALL || params_.target == params_.SIMULATION) {
       if (current_control_state_.current_state == "remote_operated") {
         //robotx_msgs::UsvDrive usv_drive_msg;
@@ -162,6 +177,14 @@ void robotx_hardware_interface::send_command_() {
         right_thrust_cmd_pub_.publish(right_drive_cmd_);
         left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
         right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
+        std_msgs::String light_cmd;
+        light_cmd.data = "r";
+        light_cmd_pub_.publish(light_cmd);
+        left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
+        right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
+        std_msgs::String left_thrust_cmd_str_,right_thrust_cmd_str_;
+        left_thrust_cmd_str_.data = std::to_string(left_thrust_joint_cmd_.data)+"\n";
+        right_thrust_cmd_str_.data = std::to_string(right_thrust_joint_cmd_.data)+"\n";
       }
       if (current_control_state_.current_state == "autonomous") {
         std_msgs::Float32 left_drive_cmd_,right_drive_cmd_;
@@ -175,6 +198,14 @@ void robotx_hardware_interface::send_command_() {
         right_thrust_cmd_pub_.publish(right_drive_cmd_);
         left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
         right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
+        std_msgs::String light_cmd;
+        light_cmd.data = "a";
+        light_cmd_pub_.publish(light_cmd);
+        left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
+        right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
+        std_msgs::String left_thrust_cmd_str_,right_thrust_cmd_str_;
+        left_thrust_cmd_str_.data = std::to_string(left_thrust_joint_cmd_.data)+"\n";
+        right_thrust_cmd_str_.data = std::to_string(right_thrust_joint_cmd_.data)+"\n";
       }
     }
     if (params_.target == params_.ALL || params_.target == params_.HARDWARE) {
@@ -192,6 +223,9 @@ void robotx_hardware_interface::send_command_() {
         right_thrust_joint_cmd_.data = last_manual_motor_cmd_msg_.data[3]*M_PI_2;
         left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
         right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
+        std_msgs::String left_thrust_cmd_str_,right_thrust_cmd_str_;
+        left_thrust_cmd_str_.data = std::to_string(left_thrust_joint_cmd_.data)+"\n";
+        right_thrust_cmd_str_.data = std::to_string(right_thrust_joint_cmd_.data)+"\n";
       }
       if (current_control_state_.current_state == "autonomous") {
         left_motor_cmd_client_ptr_->send(last_motor_cmd_msg_.data[0]);
@@ -202,6 +236,11 @@ void robotx_hardware_interface::send_command_() {
         right_thrust_joint_cmd_.data = last_motor_cmd_msg_.data[3]*M_PI_2;
         left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
         right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
+        left_thrust_joint_pub_.publish(left_thrust_joint_cmd_);
+        right_thrust_joint_pub_.publish(right_thrust_joint_cmd_);
+        std_msgs::String left_thrust_cmd_str_,right_thrust_cmd_str_;
+        left_thrust_cmd_str_.data = std::to_string(left_thrust_joint_cmd_.data)+"\n";
+        right_thrust_cmd_str_.data = std::to_string(right_thrust_joint_cmd_.data)+"\n";
       }
     }
     mtx_.unlock();
