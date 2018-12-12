@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
     <node pkg="robotx_driver" type="serial_sender_node" name="serial_sender_node" args="" output="screen" respawn="true">
-        <rosparam file="$(find robotx_driver)/config/serial_sender.yaml" command="load"/>
+        <rosparam file="$(find robotx_driver)/config/signal_light_driver.yaml" command="load"/>
     </node>
 </launch>

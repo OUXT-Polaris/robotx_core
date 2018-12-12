@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="robotx_driver" type="serial_sender_node" name="left_thrust_driver_node" args="" output="screen" respawn="true">
+        <rosparam file="$(find robotx_driver)/config/left_thrust_driver.yaml" command="load"/>
+    </node>
+</launch>
