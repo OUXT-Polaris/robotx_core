@@ -149,7 +149,7 @@ void robotx_hardware_interface::update_right_thruster_connection_status_(
 
 void robotx_hardware_interface::kill_cmd_callback_(const std_msgs::Empty::ConstPtr msg)
 {
-  kill_cmd_flag_ = true;
+  //kill_cmd_flag_ = true;
   return;
 }
 
