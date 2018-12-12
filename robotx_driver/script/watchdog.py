@@ -26,7 +26,7 @@ def watchdog():
     rate = rospy.Rate(10)
     pub = rospy.Publisher('/kill', Empty, queue_size=10)
     while not rospy.is_shutdown():
-        if not ping("192.168.1.13"):
+        if not ping("192.168.1.16"):
             pub.publish()
         rate.sleep()
 
