@@ -290,6 +290,8 @@ class robotx_hardware_interface {
    */
   robotx_msgs::State current_control_state_;
   ros::Publisher light_cmd_pub_;
+  ros::Publisher left_thrust_cmd_str_pub_;
+  ros::Publisher right_thrust_cmd_str_pub_;
 };
 
 #endif  // ROBOTX_HARDWARE_INTERFACE_H_INCLUDEDE
