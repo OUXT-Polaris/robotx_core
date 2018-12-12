@@ -45,6 +45,7 @@ void frame_publisher::configure_callback_(robotx_driver::frame_publisherConfig &
     transform_stamped_front_camera_.transform.rotation = convert(config.front_camera_roll*M_PI,config.front_camera_pitch*M_PI,config.front_camera_yaw*M_PI);
     broadcaster_.sendTransform(transform_stamped_front_camera_);
     
+    /*
     geometry_msgs::TransformStamped transform_stamped_gps_;
     transform_stamped_gps_.header.frame_id = "base_link";
     transform_stamped_gps_.header.stamp = now;
@@ -54,7 +55,8 @@ void frame_publisher::configure_callback_(robotx_driver::frame_publisherConfig &
     transform_stamped_gps_.transform.translation.z = config.gps_z;
     transform_stamped_gps_.transform.rotation = convert(config.gps_roll*M_PI,config.gps_pitch*M_PI,config.gps_yaw*M_PI);
     broadcaster_.sendTransform(transform_stamped_gps_);
-
+    */
+    
     geometry_msgs::TransformStamped transform_stamped_imu_;
     transform_stamped_imu_.header.frame_id = "base_link";
     transform_stamped_imu_.header.stamp = now;

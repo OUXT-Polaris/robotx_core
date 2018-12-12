@@ -24,6 +24,7 @@ find_package(CUDA)
 
 generate_dynamic_reconfigure_options(
   cfg/frame_publisher.cfg
+  cfg/gps_to_base_link.cfg
   cfg/sc30_driver.cfg)
 
 catkin_package(
@@ -86,6 +87,10 @@ add_executable(serial_sender_node src/serial_sender_node.cpp src/serial_sender.c
 add_dependencies(serial_sender_node robotx_msgs_generate_messages_cpp)
 target_link_libraries(serial_sender_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
+add_executable(gps_to_base_link_node src/gps_to_base_link_node.cpp src/gps_to_base_link.cpp)
+add_dependencies(gps_to_base_link_node robotx_msgs_generate_messages_cpp robotx_driver_gencfg)
+target_link_libraries(gps_to_base_link_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
 message(STATUS "")
 message(STATUS "FoundCUDA              : ${CUDA_FOUND}")
 
@@ -109,12 +114,12 @@ endif()
 ## Install ##
 #############
 if(CUDA_FOUND)
-  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node serial_sender_node
+  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node serial_sender_node gps_to_base_link_node
   dynamixel_driver_node sc30_driver_node frame_publisher_node #cuda_diagnostic_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 else()
-  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node serial_sender_node
+  install(TARGETS robotx_hardware_interface_node technical_network_bridge_node serial_sender_node gps_to_base_link_node
   dynamixel_driver_node sc30_driver_node frame_publisher_node
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
