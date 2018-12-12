@@ -65,6 +65,8 @@ robotx_hardware_interface::robotx_hardware_interface()
       nh_.subscribe("/wam_v/motor_command", 1, &robotx_hardware_interface::motor_command_callback_, this);
   control_state_sub_ =
       nh_.subscribe("/robotx_state_machine_node/control_state_machine/current_state", 1, &robotx_hardware_interface::control_state_callback_, this);
+  kill_cmd_sub_ = 
+      nh_.subscribe("/kill", 1, &robotx_hardware_interface::kill_cmd_callback_, this);
 }
 
 void robotx_hardware_interface::run(){
