@@ -2,7 +2,7 @@
 #include <tf/transform_datatypes.h>
 
 obstacle_map_server::obstacle_map_server() : params_(), tf_listener_(tf_buffer_) {
-  obstacle_bbox_pub_ = nh_.advertise<jsk_recognition_msgs::BoundingBoxArray>("/obstacle_map/bbox", 1);
+  marker_pub_ = nh_.advertise<visualization_msgs::MarkerArray>("/obstacle_map/marker", 1);
   obstacle_map_pub_ = nh_.advertise<robotx_msgs::ObstacleMap>("/obstacle_map", 1);
   measurements_ = boost::circular_buffer<jsk_recognition_msgs::BoundingBoxArray>(params_.buffer_length);
   objects_bbox_sub_ =
@@ -50,6 +50,7 @@ void obstacle_map_server::objects_bbox_callback_(jsk_recognition_msgs::BoundingB
 void obstacle_map_server::generate_obstacle_map_()
 {
   robotx_msgs::ObstacleMap map;
+  visualization_msgs::MarkerArray marker_array_;
   geometry_msgs::TransformStamped transform_stamped;
   try
   {
@@ -61,32 +62,49 @@ void obstacle_map_server::generate_obstacle_map_()
     return;
   }
   map.header.frame_id = params_.robot_frame;
-  map.header.stamp = ros::Time::now();
-  jsk_recognition_msgs::BoundingBoxArray bbox_msg;
-  bbox_msg.header.frame_id = params_.map_frame;
-  bbox_msg.header.stamp = ros::Time::now();
+  ros::Time now = ros::Time::now();
+  map.header.stamp = now;
+  int id = 0;
   for(auto measurements_itr = measurements_.begin(); measurements_itr != measurements_.end(); measurements_itr++)
   {
     for(auto bbox_itr = measurements_itr->boxes.begin(); bbox_itr != measurements_itr->boxes.end(); bbox_itr++)
     {
-      bbox_msg.boxes.push_back(*bbox_itr);
       geometry_msgs::PoseStamped transformed_pose;
       geometry_msgs::PoseStamped obstacle_pose;
       obstacle_pose.header = measurements_itr->header;
       obstacle_pose.pose = bbox_itr->pose;
       tf2::doTransform(obstacle_pose, transformed_pose, transform_stamped);
+      map.points.push_back(transformed_pose.pose.position);
+      visualization_msgs::Marker marker;
+      marker.header.stamp = now;
+      marker.header.frame_id = params_.robot_frame;
+      marker.type = marker.CYLINDER;
+      marker.action = marker.ADD;
+      marker.id = id;
+      marker.pose.position.x = bbox_itr->pose.position.x;
+      marker.pose.position.y = bbox_itr->pose.position.y;
+      marker.pose.orientation.w = 1;
       if(bbox_itr->dimensions.x > bbox_itr->dimensions.y)
       {
         map.radius.push_back(bbox_itr->dimensions.x);
+        marker.scale.x = bbox_itr->dimensions.x;
+        marker.scale.y = bbox_itr->dimensions.x;
       }
       else
       {
         map.radius.push_back(bbox_itr->dimensions.y);
+        marker.scale.x = bbox_itr->dimensions.y;
+        marker.scale.x = bbox_itr->dimensions.y;
       }
-      map.points.push_back(transformed_pose.pose.position);
+      marker.color.r = 1;
+      marker.color.g = 1;
+      marker.color.b = 0;
+      marker.color.a = 1;
+      marker_array_.markers.push_back(marker);
+      id++;
     }
   }
-  obstacle_bbox_pub_.publish(bbox_msg);
   obstacle_map_pub_.publish(map);
+  marker_pub_.publish(marker_array_);
   return;
 }

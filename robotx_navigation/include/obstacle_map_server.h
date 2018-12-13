@@ -10,6 +10,7 @@
 #include <ros/ros.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
+#include <visualization_msgs/MarkerArray.h>
 
 // headers in Boost
 #include <boost/circular_buffer.hpp>
@@ -116,13 +117,13 @@ class obstacle_map_server {
    *
    */
   ros::Subscriber objects_bbox_sub_;
-  ros::Publisher obstacle_bbox_pub_;
   /**
    * @brief ROS publisher for /obstacle_map topic (message type :
    * robotx_msgs/ObstacleMap)
    *
    */
   ros::Publisher obstacle_map_pub_;
+  ros::Publisher marker_pub_;
   /**
    * @brief ROS callback function for (object_bbox_topic) topic (message type :
    * jsk_recognition_msgs/BoundingBoxArray)
