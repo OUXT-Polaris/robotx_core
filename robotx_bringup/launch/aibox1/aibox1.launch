@@ -5,5 +5,5 @@
     <include file="$(find robotx_bringup)/launch/aibox1/sensors.launch"/>
     <include file="$(find robotx_bringup)/launch/aibox1/gateway.launch"/>
     <include file="$(find robotx_bringup)/launch/aibox1/decision_maker.launch"/>
-    <include file="$(find robotx_bringup)/launch/aibox1/tims_sync.launch" />
+    <include file="$(find robotx_bringup)/launch/aibox1/time_sync.launch" />
 </launch>
