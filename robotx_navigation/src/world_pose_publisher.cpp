@@ -126,8 +126,8 @@ void world_pose_publisher::imu_callback_(const sensor_msgs::Imu::ConstPtr msg)
     yawrate_ = msg->angular_velocity.z;
     theta_trans_imu_ = theta_trans_imu_ + msg->angular_velocity.z * dt;
     dv_ = dv_ + msg->linear_acceleration.x * dt;
-    x_trans_imu_ = x_trans_imu_ - msg->linear_acceleration.x * std::cos(theta_trans_imu_) * dt * 0.25 + twist_.twist.linear.x * std::cos(theta_trans_imu_) * dt * 0.5;
-    y_trans_imu_ = y_trans_imu_ - msg->linear_acceleration.y * std::sin(theta_trans_imu_) * dt * 0.25 + twist_.twist.linear.x * std::sin(theta_trans_imu_) * dt * 0.5;
+    x_trans_imu_ = x_trans_imu_ - msg->linear_acceleration.x * std::cos(theta_trans_imu_) * dt * 0.1 + twist_.twist.linear.x * std::cos(theta_trans_imu_) * dt * 0.5;
+    y_trans_imu_ = y_trans_imu_ - msg->linear_acceleration.y * std::sin(theta_trans_imu_) * dt * 0.1 + twist_.twist.linear.x * std::sin(theta_trans_imu_) * dt * 0.5;
     last_imu_timestamp_ = msg->header.stamp;
     mtx_.unlock();
     return;

@@ -74,12 +74,12 @@ bool obstacle_avoid::obstacle_found_()
     {
         double yaw = std::atan2(map_.points[i].y,map_.points[i].x);
         double dist = std::sqrt(map_.points[i].x*map_.points[i].x + map_.points[i].y*map_.points[i].y);
-        ROS_WARN_STREAM("yaw : " << yaw << ",dist" << dist);
+        //ROS_WARN_STREAM("yaw : " << yaw << ",dist" << dist);
         if(std::fabs(search_angle_) > std::fabs(yaw))
         {
             if(search_radius_ > dist)
             {
-                ROS_ERROR_STREAM("obstacle found");
+                ROS_WARN_STREAM("obstacle found in front");
                 return true;
             }
         }
@@ -87,7 +87,7 @@ bool obstacle_avoid::obstacle_found_()
         {
             if(search_radius_behind_ > dist)
             {
-                ROS_ERROR_STREAM("obstacle found");
+                ROS_WARN_STREAM("obstacle found in behind");
                 return true;
             }
         }
@@ -95,7 +95,7 @@ bool obstacle_avoid::obstacle_found_()
         {
             if(search_radius_side_ > dist)
             {
-                ROS_ERROR_STREAM("obstacle found");
+                ROS_WARN_STREAM("obstacle found in side");
                 return true;
             }
         }
@@ -188,6 +188,10 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
         geometry_msgs::Pose2D target_pose_2d;
         geometry_msgs::PoseStamped target_pose;
         geometry_msgs::TransformStamped transform_stamped;
+        if(!target_pose_)
+        {
+            return;
+        }
         try
         {
             transform_stamped = tf_buffer_.lookupTransform(target_pose_->header.frame_id, robot_frame_, ros::Time(0), ros::Duration(1));
@@ -204,7 +208,7 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
         double r,p,y;
         tf2::Matrix3x3(quat).getRPY(r, p, y);
         target_pose_2d.theta = y;
-        boost::optional<geometry_msgs::Twist> planner_cmd;// = planner_.plan(map_,odom_,target_pose_2d);
+        boost::optional<geometry_msgs::Twist> planner_cmd = planner_.plan(map_,odom_,target_pose_2d);
         if(!planner_cmd)
         {
             ROS_ERROR_STREAM("All planed path was failed.");
@@ -218,7 +222,7 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
         else
         {
             ROS_INFO_STREAM("Local path planning succeed.");
-            //twist_cmd_pub_.publish(*planner_cmd);
+            twist_cmd_pub_.publish(*planner_cmd);
         }
     }
     return;
