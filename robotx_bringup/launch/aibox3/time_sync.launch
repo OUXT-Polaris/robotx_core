@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-    <node pkg="ntpd_driver" type="shm_driver" name="ntpd_driver_aibox3" output="log" respawn="false" respawn_delay="0">
-    </node>
+    <node name="ntp_driver_aibox3" pkg="ntpd_driver" type="shm_driver" args="_shm_unit:=2 _time_ref_topic:=/time_reference" output="screen"/>
 
     <node pkg="nmea_navsat_driver" type="nmea_topic_driver" name="gps_clock_publisher" output="log" respawn="false" respawn_delay="0">
     </node>
