@@ -1,6 +1,7 @@
 fix_topic : /sc30_driver_node/fix
 true_course_topic : /sc30_driver_node/true_course
-twist_topic : /sc30_driver_node/twist
+gps_twist_topic : /sc30_driver_node/twist
+imu_topic : /imu/data_raw
 world_frame : world
 robot_frame : base_link
 gps_yaw_offset : 0.0

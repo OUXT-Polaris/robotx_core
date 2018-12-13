@@ -6,21 +6,23 @@ world_pose_publisher::world_pose_publisher(ros::NodeHandle nh,ros::NodeHandle pn
     pnh_ = pnh;
     data_recieved_ = false;
     pnh_.param<std::string>("fix_topic", fix_topic_, ros::this_node::getName()+"/fix");
-    pnh_.param<std::string>("twist_topic", twist_topic_, ros::this_node::getName()+"/twist");
+    pnh_.param<std::string>("gps_twist_topic", gps_twist_topic_, ros::this_node::getName()+"/twist");
     pnh_.param<std::string>("true_course_topic", true_course_topic_, ros::this_node::getName()+"/true_course");
     pnh_.param<std::string>("world_frame", world_frame_, "world");
     pnh_.param<std::string>("robot_frame", robot_frame_, "base_link");
     pnh_.param<std::string>("world_pose_topic", world_pose_topic_, ros::this_node::getName()+"/world_pose");
     pnh_.param<std::string>("world_odom_topic", world_odom_topic_, ros::this_node::getName()+"/odom");
+    pnh_.param<std::string>("imu_topic", imu_topic_, ros::this_node::getName()+"/imu");
     pnh_.param<double>("publish_rate", publish_rate_, 10);
     pnh_.param<double>("gps_yaw_offset", gps_yaw_offset_, 0);
     world_odom_pub_ = nh_.advertise<nav_msgs::Odometry>(world_odom_topic_,10);
     world_pose_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(world_pose_topic_,10);
     fix_sub_ptr_ = boost::make_shared<message_filters::Subscriber<sensor_msgs::NavSatFix> >(nh_,fix_topic_,1);
-    twist_sub_ptr_ = boost::make_shared<message_filters::Subscriber<geometry_msgs::TwistStamped> >(nh_,twist_topic_,1);
+    twist_sub_ptr_ = boost::make_shared<message_filters::Subscriber<geometry_msgs::TwistStamped> >(nh_,gps_twist_topic_,1);
     true_course_sub_ptr_ = boost::make_shared<message_filters::Subscriber<geometry_msgs::QuaternionStamped> >(nh_,true_course_topic_,1);
     sync_ptr_ = boost::make_shared<message_filters::Synchronizer<sync_policy> >(sync_policy(10),*fix_sub_ptr_,*twist_sub_ptr_,*true_course_sub_ptr_);
     sync_ptr_->registerCallback(boost::bind(&world_pose_publisher::gnss_callback_,this,_1,_2,_3));
+    imu_sub_ = nh_.subscribe(imu_topic_,10,&world_pose_publisher::imu_callback_,this);
 }
 
 world_pose_publisher::~world_pose_publisher()
@@ -89,5 +91,34 @@ void world_pose_publisher::gnss_callback_(const sensor_msgs::NavSatFixConstPtr& 
     twist_ = *twist;
     twist_header_ = twist->header;
     true_course_ = *true_course;
+    imu_reset_flag_ = true;
+    x_trans_imu_ = 0;
+    y_trans_imu_ = 0;
+    theta_trans_imu_ = 0;
     mtx_.unlock();
+}
+
+void world_pose_publisher::imu_callback_(const sensor_msgs::Imu::ConstPtr msg)
+{
+    mtx_.lock();
+    if(!last_imu_timestamp_)
+    {
+        last_imu_timestamp_ = msg->header.stamp;
+        mtx_.unlock();
+        return;
+    }
+    double dt = (msg->header.stamp - *last_imu_timestamp_).toSec();
+    theta_trans_imu_ = theta_trans_imu_ + msg->angular_velocity.z * dt;
+    x_trans_imu_ = x_trans_imu_ + msg->linear_acceleration.x * std::sin(theta_trans_imu_) * dt;
+    y_trans_imu_ = y_trans_imu_ + msg->linear_acceleration.y * std::sin(theta_trans_imu_) * dt;
+    last_imu_timestamp_ = msg->header.stamp;
+    mtx_.unlock();
+    return;
+}
+
+void world_pose_publisher::get_rpy_(const geometry_msgs::Quaternion &q, double &roll,double &pitch,double &yaw)
+{
+    tf::Quaternion quat(q.x,q.y,q.z,q.w);
+    tf::Matrix3x3(quat).getRPY(roll, pitch, yaw);
+    return;
 }
