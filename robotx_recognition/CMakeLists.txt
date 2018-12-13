@@ -165,7 +165,7 @@ set(pcl_plane_removal_src src/pcl_plane_removal.cpp)
 add_executable(pcl_plane_removal_node src/pcl_plane_removal_node.cpp ${pcl_plane_removal_src})
 target_link_libraries(pcl_plane_removal_node ${catkin_LIBRARIES})
 
-option(USE_CNN "Use CNN" OFF)
+option(USE_CNN "Use CNN" ON)
 
 # cnn_prediction
 # If found cuda, build infer.cu. If not found cuda , build infer.cpp
