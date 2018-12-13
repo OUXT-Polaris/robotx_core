@@ -5,10 +5,10 @@ clean:
 	rm -rf catkin_ws.tar.gz
 
 build-aws:
-	. arm.sh && bash allatonce.sh
+	sh arm.sh && bash allatonce.sh
 
 update-aws:
-	. arm.sh && bash allatonce-update.sh
+	sh arm.sh && bash allatonce-update.sh
 
 transfer:
 	scp catkin_ws.tar.gz aibox1:/home/nvidia/

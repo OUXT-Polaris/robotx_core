@@ -23,7 +23,7 @@ rc::Twist::Twist()
   nh_.param<double>(ros::this_node::getName() + "/publish_rate", pub_rate_);
   motor_command_pub_ = nh_.advertise<std_msgs::Float64MultiArray>("/wam_v/motor_command", 1);
 
-  cmd_vel_sub_ = nh_.subscribe("/twist_vel", 1, &rc::Twist::CmdVelCallback, this);
+  cmd_vel_sub_ = nh_.subscribe("/cmd_vel", 1, &rc::Twist::CmdVelCallback, this);
   current_state_sub_ = nh_.subscribe("/vel", 1,
                                      &rc::Twist::CurStateCallback, this);
 

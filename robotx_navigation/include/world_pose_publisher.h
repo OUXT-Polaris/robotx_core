@@ -15,10 +15,12 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <geodesy/wgs84.h>
 #include <geodesy/utm.h>
+#include <sensor_msgs/Imu.h>
 
 //headers in Boost
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
+#include <boost/optional.hpp>
 
 //headers in STL
 #include <mutex>
@@ -41,7 +43,7 @@ private:
     boost::shared_ptr<message_filters::Subscriber<geometry_msgs::TwistStamped> > twist_sub_ptr_;
     boost::shared_ptr<message_filters::Subscriber<geometry_msgs::QuaternionStamped> > true_course_sub_ptr_;
     std::string fix_topic_;
-    std::string twist_topic_;
+    std::string gps_twist_topic_;
     std::string true_course_topic_;
     tf2_ros::TransformBroadcaster broadcaster_;
     std::string world_frame_;
@@ -50,7 +52,9 @@ private:
     ros::Publisher world_pose_pub_;
     std::string world_odom_topic_;
     ros::Publisher world_odom_pub_;
-    double gps_yaw_offset_;
+    std::string imu_topic_;
+    ros::Subscriber imu_sub_;
+    ros::Publisher twist_pub_;
     double publish_rate_;
     bool data_recieved_;
     sensor_msgs::NavSatFix fix_;
@@ -61,5 +65,16 @@ private:
     void gnss_callback_(const sensor_msgs::NavSatFixConstPtr& fix,
         const geometry_msgs::TwistStampedConstPtr& twist,
         const geometry_msgs::QuaternionStampedConstPtr true_course);
+    void imu_callback_(const sensor_msgs::Imu::ConstPtr msg);
+    volatile bool imu_reset_flag_;
+    double x_trans_imu_;
+    double y_trans_imu_;
+    double theta_trans_imu_;
+    boost::optional<ros::Time> last_imu_timestamp_;
+    void get_rpy_(const geometry_msgs::Quaternion &q, double &roll,double &pitch,double &yaw);
+    void get_quat_(double roll,double pitch,double yaw,geometry_msgs::Quaternion &q);
+    double yawrate_;
+    double dv_;
+    double v_;
 };
 #endif  //WORLD_POSE_PUBLISHER_H_INCLUDED
