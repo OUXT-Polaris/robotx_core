@@ -1,6 +1,6 @@
 roi_topic: object_bbox_extractor_node/object_roi
 image_topic: wam_v/front_camera/image_rect_color
-model_filename: robotx_hawaii.plan
+model_filename: /home/nvidia/resnet_v1_50_ft_hawaii_longer.plan
 model_inputName: images
 model_outputName: resnet_v1_50/SpatialSqueeze
 model_outputNum: 8

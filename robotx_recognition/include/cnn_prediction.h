@@ -41,7 +41,6 @@ class cnn_predictor {
         ros::param::param<std::string>(ros::this_node::getName() + "/roi_topic", roi_topic, "publisher/hogehoge");
         ros::param::param<std::string>(ros::this_node::getName() + "/image_topic", image_topic, "publisher/image");
         ros::param::param<std::string>(ros::this_node::getName() + "/model_filename", model_filename, "robotx.plan");
-        model_filename = ros::package::getPath("robotx_recognition")+"/data/"+model_filename;
         ros::param::param<std::string>(ros::this_node::getName() + "/model_inputName", model_inputName, "images");
         ros::param::param<std::string>(ros::this_node::getName() + "/model_outputName", model_outputName, "resnet_v1_50/SpatialSqueeze");
         ros::param::param<int>(ros::this_node::getName() + "/model_outputNum", model_outputNum, 4);
