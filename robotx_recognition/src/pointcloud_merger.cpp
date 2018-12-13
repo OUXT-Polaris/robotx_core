@@ -25,8 +25,7 @@ pointcloud_merger::~pointcloud_merger() {
 void pointcloud_merger::callback(
     const sensor_msgs::PointCloud2ConstPtr& pc1_msg,
     const sensor_msgs::PointCloud2ConstPtr& pc2_msg) {
-  std::mutex mutex;
-  mutex.lock();
+  ROS_ERROR_STREAM("test");
   sensor_msgs::PointCloud2 pc1 = *pc1_msg;
   sensor_msgs::PointCloud2 pc2 = *pc2_msg;
   if (pc1_msg->header.frame_id == "" || pc2_msg->header.frame_id == "") {
@@ -53,7 +52,6 @@ void pointcloud_merger::callback(
   sensor_msgs::PointCloud2 output_msg;
   pcl::toROSMsg(*pcl_output_cloud, output_msg);
   _pc_pub.publish(output_msg);
-  mutex.unlock();
   return;
 }
 
