@@ -94,28 +94,16 @@ robotx_msgs::ObjectRegionOfInterestArray cnn_predictor::_image_recognition(const
       // 切り出したところについてtensorrtで確率を計算
       float result[_params.model_outputNum];
       infer(subimage, result);
-      float max_prob = -1000;
-      int index = -1;
-      for (int i = 0; i < _params.model_outputNum; i++) {
+      // find max
+      float max_prob = result[0];
+      int index = 0;
+      for (int i = 1; i < _params.model_outputNum; i++) {
         if (max_prob < result[i]) {
           max_prob = result[i];
           index = i;
         }
       }
-      switch(index) {
-        case 0:
-          roi.object_type.ID = roi.object_type.OTHER;
-          break;
-        case 1:
-          roi.object_type.ID = roi.object_type.GREEN_BUOY;
-          break;
-        case 2:
-          roi.object_type.ID = roi.object_type.RED_BUOY;
-          break;
-        case 3:
-          roi.object_type.ID = roi.object_type.WHITE_BUOY;
-          break;
-      }
+      roi.object_type.ID = index;
       roi.objectness = result[index];
     } else {
       // invalid ROI
