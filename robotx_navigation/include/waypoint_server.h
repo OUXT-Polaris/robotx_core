@@ -34,6 +34,7 @@ private:
     std::vector<geometry_msgs::PoseStamped> waypoints_;
     std::map<int,std::string> waypoint_event_;
     ros::Subscriber navigation_status_sub_;
+    ros::Subscriber mission_state_changed_sub_;
     ros::Subscriber robot_pose_sub_;
     ros::Publisher marker_pub_;
     ros::Publisher waypoint_pub_;
@@ -45,6 +46,7 @@ private:
     int target_waypoint_index_;
     void publish_marker_();
     void robot_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr msg);
+    void mission_state_changed_callback_(robotx_msgs::StateChanged msg);
     void navigation_status_callback_(robotx_msgs::StateChanged msg);
     bool load_next_waypoint_();
     boost::optional<int> get_nearest_wayppoint_(const geometry_msgs::PoseStamped::ConstPtr msg);

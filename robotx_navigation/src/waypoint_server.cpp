@@ -42,12 +42,25 @@ waypoint_server::waypoint_server() : tf_listener_(tf_buffer_)
     robot_pose_sub_ = nh_.subscribe(robot_pose_topic_, 1, &waypoint_server::robot_pose_callback_, this);
     navigation_status_sub_ = nh_.subscribe("/robotx_state_machine_node/navigation_state_machine/state_changed",
         1, &waypoint_server::navigation_status_callback_, this);
+    mission_state_changed_sub_ = nh_.subscribe("/robotx_state_machine_node/mission_state_machine/state_changed",
+        1, &waypoint_server::mission_state_changed_callback_, this);
     boost::thread marker_thread(boost::bind(&waypoint_server::publish_marker_, this));
 }
 
 waypoint_server::~waypoint_server()
 {
 
+}
+
+void waypoint_server::mission_state_changed_callback_(robotx_msgs::StateChanged msg)
+{
+    robotx_msgs::Event event_msg;
+    if(msg.old_state == "go_to_start_position")
+    {
+        event_msg.trigger_event_name = "navigation_start";
+        trigger_event_pub_.publish(event_msg);
+    }
+    return;
 }
 
 std::vector<std::string> waypoint_server::split_(std::string& input, char delimiter)
@@ -134,11 +147,6 @@ void waypoint_server::navigation_status_callback_(robotx_msgs::StateChanged msg)
 {
     robotx_msgs::Event event_msg;
     event_msg.header.stamp = ros::Time::now();
-    if(msg.old_state == "go_to_start_position")
-    {
-        event_msg.trigger_event_name = "navigation_start";
-        trigger_event_pub_.publish(event_msg);
-    }
     if(msg.current_state == "load_next_waypoint")
     {
         if(load_next_waypoint_())
