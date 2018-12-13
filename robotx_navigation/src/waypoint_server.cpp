@@ -55,7 +55,7 @@ waypoint_server::~waypoint_server()
 void waypoint_server::mission_state_changed_callback_(robotx_msgs::StateChanged msg)
 {
     robotx_msgs::Event event_msg;
-    if(msg.old_state == "go_to_start_position")
+    if(msg.old_state == "mission_start")
     {
         event_msg.trigger_event_name = "navigation_start";
         trigger_event_pub_.publish(event_msg);
