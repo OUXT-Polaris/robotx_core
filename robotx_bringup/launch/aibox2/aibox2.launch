@@ -5,4 +5,5 @@
     <include file="$(find robotx_bringup)/launch/aibox2/sensors.launch"/>
     <include file="$(find robotx_bringup)/launch/aibox2/serial_devices.launch"/>
     <include file="$(find robotx_bringup)/launch/aibox2/perception.launch"/>
+    <include file="$(find robotx_bringup)/launch/aibox2/tims_sync.launch" />
 </launch>
