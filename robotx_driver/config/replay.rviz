@@ -192,7 +192,7 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 195
+      Max Intensity: 189
       Min Color: 0; 0; 0
       Min Intensity: 0
       Name: PointCloud2
@@ -257,7 +257,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Scale: 11.3847618
+      Scale: 15.8275537
       Target Frame: map
       Value: TopDownOrtho (rviz)
       X: 126.83535

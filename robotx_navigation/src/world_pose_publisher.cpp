@@ -70,13 +70,13 @@ void world_pose_publisher::publish_world_frame_()
         yaw = yaw + theta_trans_imu_;
         get_quat_(roll,pitch,yaw,pose.orientation);
 
-        transform_stamped.transform.translation.x = pose.position.x + std::cos(yaw + theta_trans_imu_/2)*x_trans_imu_;
-        transform_stamped.transform.translation.y = pose.position.y + std::sin(yaw + theta_trans_imu_/2)*y_trans_imu_;
+        transform_stamped.transform.translation.x = pose.position.x - std::sin(yaw + theta_trans_imu_/2)*x_trans_imu_ - std::cos(yaw + theta_trans_imu_/2)*y_trans_imu_;
+        transform_stamped.transform.translation.y = pose.position.y + std::cos(yaw + theta_trans_imu_/2)*x_trans_imu_ - std::sin(yaw + theta_trans_imu_/2)*y_trans_imu_;
         transform_stamped.transform.translation.z = 0;
         transform_stamped.transform.rotation = pose.orientation;
         broadcaster_.sendTransform(transform_stamped);
-        world_pose.pose.position.x = pose.position.x + std::cos(yaw + theta_trans_imu_/2)*x_trans_imu_;
-        world_pose.pose.position.y = pose.position.y + std::sin(yaw + theta_trans_imu_/2)*y_trans_imu_;
+        world_pose.pose.position.x = pose.position.x - std::sin(yaw + theta_trans_imu_/2)*x_trans_imu_ - std::cos(yaw + theta_trans_imu_/2)*y_trans_imu_;
+        world_pose.pose.position.y = pose.position.y + std::cos(yaw + theta_trans_imu_/2)*x_trans_imu_ - std::sin(yaw + theta_trans_imu_/2)*y_trans_imu_;
         world_pose.pose.position.z = 0;
         world_pose.pose.orientation = pose.orientation;
         world_odom.pose.pose = world_pose.pose;
@@ -122,8 +122,8 @@ void world_pose_publisher::imu_callback_(const sensor_msgs::Imu::ConstPtr msg)
     double dt = (msg->header.stamp - *last_imu_timestamp_).toSec();
     yawrate_ = msg->angular_velocity.z;
     theta_trans_imu_ = theta_trans_imu_ + msg->angular_velocity.z * dt;
-    x_trans_imu_ = x_trans_imu_ + twist_.twist.linear.x * std::cos(theta_trans_imu_) * dt + msg->linear_acceleration.x * std::cos(theta_trans_imu_) * dt * 0.5;
-    y_trans_imu_ = y_trans_imu_ - msg->linear_acceleration.y * std::sin(theta_trans_imu_) * dt * 0.5;
+    x_trans_imu_ = x_trans_imu_ - msg->linear_acceleration.x * std::cos(theta_trans_imu_) * dt * 0.25 + twist_.twist.linear.x * std::cos(theta_trans_imu_) * dt * 0.5;
+    y_trans_imu_ = y_trans_imu_ - msg->linear_acceleration.y * std::sin(theta_trans_imu_) * dt * 0.25 + twist_.twist.linear.x * std::sin(theta_trans_imu_) * dt * 0.5;
     last_imu_timestamp_ = msg->header.stamp;
     mtx_.unlock();
     return;
