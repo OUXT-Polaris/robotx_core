@@ -78,6 +78,7 @@ void obstacle_map_server::generate_obstacle_map_()
       visualization_msgs::Marker marker;
       marker.header.stamp = now;
       marker.header.frame_id = params_.robot_frame;
+      
       marker.type = marker.CYLINDER;
       marker.action = marker.ADD;
       marker.id = id;
