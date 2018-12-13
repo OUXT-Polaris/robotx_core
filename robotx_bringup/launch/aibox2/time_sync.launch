@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-    <node pkg="ntpd_driver" type="ntpd_driver" name="ntpd_driver_aibox2" output="log" respawn="false" respawn_delay="0">
+    <node pkg="ntpd_driver" type="shm_driver" name="ntpd_driver_aibox2" output="log" respawn="false" respawn_delay="0">
     </node>
 </launch>
