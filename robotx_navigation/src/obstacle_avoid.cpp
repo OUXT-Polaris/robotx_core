@@ -74,6 +74,7 @@ bool obstacle_avoid::obstacle_found_()
     {
         double yaw = std::atan2(map_.points[i].y,map_.points[i].x);
         double dist = std::sqrt(map_.points[i].x*map_.points[i].x + map_.points[i].y*map_.points[i].y);
+        ROS_ERROR_STREAM("yaw : " << yaw << ",dist" << dist);
         if(std::fabs(search_angle_) > std::fabs(yaw))
         {
             if(search_radius_ > dist)
