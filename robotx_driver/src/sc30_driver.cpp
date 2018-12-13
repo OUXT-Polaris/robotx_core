@@ -87,28 +87,6 @@ bool sc30_driver::is_valid_status_(const nmea_msgs::Sentence::ConstPtr sentence)
 boost::optional<geometry_msgs::QuaternionStamped> sc30_driver::get_true_course_(const nmea_msgs::Sentence::ConstPtr sentence)
 {
     geometry_msgs::QuaternionStamped true_course;
-    // get true course from GPRMC
-    /*
-    std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
-    std::string true_course_str = splited_sentence[8];
-    try
-    {
-        double true_course_value = std::stod(true_course_str);
-        std::pair<ros::Time,double> data;
-        data.first = sentence->header.stamp;
-        data.second = true_course_value;
-        true_course_buf_.push_back(data);
-        true_course.header = sentence->header;
-        tf::Quaternion quat;
-        quat.setRPY(0,0,-1*true_course_value);
-        quaternionTFToMsg(quat, true_course.quaternion);
-    }
-    catch(...)
-    {
-        return boost::none;
-    }
-    */
-
     // get true course from GPHDT
     std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
     std::string true_course_str = splited_sentence[1];
@@ -117,11 +95,11 @@ boost::optional<geometry_msgs::QuaternionStamped> sc30_driver::get_true_course_(
         double true_course_value = std::stod(true_course_str);
         std::pair<ros::Time,double> data;
         data.first = sentence->header.stamp;
-        data.second = true_course_value/180*M_PI-offset_angle_*M_PI;
+        data.second = true_course_value/180*M_PI;
         true_course_buf_.push_back(data);
         true_course.header = sentence->header;
         tf::Quaternion quat;
-        quat.setRPY(0,0,-1*true_course_value);
+        quat.setRPY(0,0,-1*data.second);
         quaternionTFToMsg(quat, true_course.quaternion);
     }
     catch(...)
