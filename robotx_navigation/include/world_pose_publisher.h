@@ -55,7 +55,6 @@ private:
     std::string imu_topic_;
     ros::Subscriber imu_sub_;
     ros::Publisher twist_pub_;
-    double gps_yaw_offset_;
     double publish_rate_;
     bool data_recieved_;
     sensor_msgs::NavSatFix fix_;
@@ -73,5 +72,7 @@ private:
     double theta_trans_imu_;
     boost::optional<ros::Time> last_imu_timestamp_;
     void get_rpy_(const geometry_msgs::Quaternion &q, double &roll,double &pitch,double &yaw);
+    void get_quat_(double roll,double pitch,double yaw,geometry_msgs::Quaternion &q);
+    double yawrate_;
 };
 #endif  //WORLD_POSE_PUBLISHER_H_INCLUDED
