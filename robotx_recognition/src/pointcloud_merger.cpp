@@ -8,7 +8,7 @@ pointcloud_merger::pointcloud_merger() :
   _params(),
   _pc1_sub(_nh, _params.pointcloud1_topic, 1),
   _pc2_sub(_nh, _params.pointcloud2_topic, 1),
-  _sync(SyncPolicy(1), _pc1_sub, _pc2_sub),
+  _sync(SyncPolicy(10), _pc1_sub, _pc2_sub),
   tf_listener_(tf_buffer_)
 {
   // publisher
