@@ -9,7 +9,9 @@ imu_gravity_removal::imu_gravity_removal()
     rm_gravity_pub_noStamped_ = 
         nh_.advertise<geometry_msgs::Twist>(ros::this_node::getName() + "/imu_rm_gravity_noStamped", 1);
     raw_imu_sub_ =
-      nh_.subscribe(params_.input_imu_topic, 1, &imu_gravity_removal::imu_CB_, this);
+        nh_.subscribe(params_.input_imu_topic, 1, &imu_gravity_removal::imu_CB_, this);
+    pose_sub_ = 
+        nh_.subscribe(params_.nmea_true_cource_topic, 1, &imu_gravity_removal::pose_CB_, this);
 
     vel_.x = 0.0;
     vel_.y = 0.0;
@@ -27,10 +29,18 @@ imu_gravity_removal::imu_gravity_removal()
 
 imu_gravity_removal::~imu_gravity_removal() {}
 
+void imu_gravity_removal::pose_CB_(const geometry_msgs::QuaternionStamped msg) {
+    pose_ = msg.quaternion;
+}
+
 void imu_gravity_removal::imu_CB_(const sensor_msgs::Imu msg) {
 
     geometry_msgs::TwistStamped pub_geo;
     sensor_msgs::Imu sensor_var = msg;
+    double r,p,y;
+
+    tf::Quaternion quat(pose_.x,pose_.y,pose_.z,pose_.w);
+    tf::Matrix3x3(quat).getRPY(r, p, y);
 
     geometry_msgs::Twist rm_gravity_pub_noStamped;
     end_time_ = std::chrono::system_clock::now();
@@ -58,9 +68,9 @@ void imu_gravity_removal::imu_CB_(const sensor_msgs::Imu msg) {
     ROS_INFO("grav_.y = %f",grav_.y);
     ROS_INFO("grav_.z = %f",grav_.z);
 
-    pub_geo.twist.linear.x = sensor_var.linear_acceleration.x - grav_.x;
-    pub_geo.twist.linear.y = sensor_var.linear_acceleration.y - grav_.y;
-    pub_geo.twist.linear.z =  sensor_var.linear_acceleration.z - grav_.z;
+    pub_geo.twist.linear.x = (sensor_var.linear_acceleration.x - grav_.x) * cos(y);
+    pub_geo.twist.linear.y = (sensor_var.linear_acceleration.y - grav_.y) * sin(y);
+   // pub_geo.twist.linear.z =  sensor_var.linear_acceleration.z - grav_.z;
 
     //vel_.x += ((pub_geo.twist.linear.x + old_acc_.x) * sec_) / 2.0  ;
     //vel_.y += ((pub_geo.twist.linear.y + old_acc_.y) * sec_) / 2.0  ;
@@ -81,7 +91,7 @@ void imu_gravity_removal::imu_CB_(const sensor_msgs::Imu msg) {
     old_acc_.y = pub_geo.twist.linear.y;
     old_acc_.z = pub_geo.twist.linear.z;
 
-    ROS_INFO("sec_ = %f",sec_);
+    ROS_INFO("yaw = %f",y);
 
     pub_geo.twist.linear.x = vel_.x;
     pub_geo.twist.linear.y = vel_.y;
