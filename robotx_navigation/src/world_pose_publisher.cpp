@@ -56,6 +56,7 @@ void world_pose_publisher::publish_world_frame_()
         world_odom.header.frame_id = world_frame_;
         world_odom.child_frame_id = twist_header_.frame_id;
         twist_.twist.angular.z = yawrate_;
+        twist_.twist.linear.x = v_ + dv_;
         world_odom.twist.twist = twist_.twist;
         geometry_msgs::TransformStamped transform_stamped;
         transform_stamped.header.stamp = fix_.header.stamp;
@@ -102,6 +103,8 @@ void world_pose_publisher::gnss_callback_(const sensor_msgs::NavSatFixConstPtr& 
     x_trans_imu_ = 0;
     y_trans_imu_ = 0;
     theta_trans_imu_ = 0;
+    dv_ = 0;
+    v_ = twist->twist.linear.x;
     mtx_.unlock();
 }
 
@@ -122,6 +125,7 @@ void world_pose_publisher::imu_callback_(const sensor_msgs::Imu::ConstPtr msg)
     double dt = (msg->header.stamp - *last_imu_timestamp_).toSec();
     yawrate_ = msg->angular_velocity.z;
     theta_trans_imu_ = theta_trans_imu_ + msg->angular_velocity.z * dt;
+    dv_ = dv_ + msg->linear_acceleration.x * dt;
     x_trans_imu_ = x_trans_imu_ - msg->linear_acceleration.x * std::cos(theta_trans_imu_) * dt * 0.25 + twist_.twist.linear.x * std::cos(theta_trans_imu_) * dt * 0.5;
     y_trans_imu_ = y_trans_imu_ - msg->linear_acceleration.y * std::sin(theta_trans_imu_) * dt * 0.25 + twist_.twist.linear.x * std::sin(theta_trans_imu_) * dt * 0.5;
     last_imu_timestamp_ = msg->header.stamp;

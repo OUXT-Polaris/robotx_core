@@ -74,5 +74,7 @@ private:
     void get_rpy_(const geometry_msgs::Quaternion &q, double &roll,double &pitch,double &yaw);
     void get_quat_(double roll,double pitch,double yaw,geometry_msgs::Quaternion &q);
     double yawrate_;
+    double dv_;
+    double v_;
 };
 #endif  //WORLD_POSE_PUBLISHER_H_INCLUDED
