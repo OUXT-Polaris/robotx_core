@@ -5,6 +5,6 @@
     <include file="$(find robotx_bringup)/launch/aibox3/sensors.launch"/>
     <!--<include file="$(find robotx_bringup)/launch/aibox3/serial_devices.launch"/>-->
     <include file="$(find robotx_bringup)/launch/aibox3/navigation.launch"/>
-
+    <include file="$(find robotx_driver)/launch/tims_sync.launch" />
     <include file="$(find robotx_driver)/launch/frame_publisher.launch" />
 </launch>

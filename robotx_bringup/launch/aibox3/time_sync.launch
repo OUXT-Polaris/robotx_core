@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="ntpd_driver" type="ntpd_driver" name="ntpd_driver_aibox3" output="log" respawn="false" respawn_delay="0">
+    </node>
+
+    <node pkg="nmea_navsat_driver" type="nmea_topic_driver" name="gps_clock_publisher" output="log" respawn="false" respawn_delay="0">
+    </node>
+</launch>
