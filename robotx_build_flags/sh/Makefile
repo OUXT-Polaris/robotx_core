@@ -1,30 +1,40 @@
+SHELL := /bin/bash
+SCP   := scp -i wamv.pem
+SSH   := ssh -i wamv.pem
+aibox1 := nvidia@192.168.1.101
+aibox2 := nvidia@192.168.1.102
+aibox3 := nvidia@192.168.1.103
+
 update: clean update-aws transfer extract
+	echo 'updating'
+
 build: clean build-aws transfer extract
+	echo 'building'
 
 clean:
 	rm -rf catkin_ws.tar.gz
 
 build-aws:
-	sh arm.sh && bash allatonce.sh
+	source arm.sh && bash allatonce.sh
 
 update-aws:
-	sh arm.sh && bash allatonce-update.sh
+	source arm.sh && bash allatonce-update.sh
 
 transfer:
-	scp catkin_ws.tar.gz aibox1:/home/nvidia/
-	scp catkin_ws.tar.gz aibox2:/home/nvidia/
-	scp catkin_ws.tar.gz aibox3:/home/nvidia/
+	$(SCP) catkin_ws.tar.gz $(aibox1):~
+	$(SCP) catkin_ws.tar.gz $(aibox2):~
+	$(SCP) catkin_ws.tar.gz $(aibox3):~
 
 transfer-aibox1:
-	scp catkin_ws.tar.gz aibox1:/home/nvidia/
+	$(SCP) catkin_ws.tar.gz $(aibox1):~
 
 transfer-aibox2:
-	scp catkin_ws.tar.gz aibox2:/home/nvidia/
+	$(SCP) catkin_ws.tar.gz $(aibox2):~
 
 transfer-aibox3:
-	scp catkin_ws.tar.gz aibox3:/home/nvidia/
+	$(SCP) catkin_ws.tar.gz $(aibox3):~
 
 extract: transfer
-	ssh aibox1 'cd /home/nvidia/ && tar xf catkin_ws.tar.gz'
-	ssh aibox2 'cd /home/nvidia/ && tar xf catkin_ws.tar.gz'
-	ssh aibox3 'cd /home/nvidia/ && tar xf catkin_ws.tar.gz'
+	$(SSH) $(aibox1) 'cd && tar xf catkin_ws.tar.gz'
+	$(SSH) $(aibox2) 'cd && tar xf catkin_ws.tar.gz'
+	$(SSH) $(aibox3) 'cd && tar xf catkin_ws.tar.gz'
