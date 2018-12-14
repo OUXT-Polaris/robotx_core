@@ -98,6 +98,7 @@ void world_pose_publisher::publish_world_frame_()
 
 void world_pose_publisher::fix_callback_(sensor_msgs::NavSatFix msg) {
   mtx_.lock();
+  dv_ = 0;
   fix_ = msg;
   mtx_.unlock();
 }
