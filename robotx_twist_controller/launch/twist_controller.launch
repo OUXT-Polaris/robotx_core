@@ -1,6 +1,6 @@
 <launch>
   <node name="robotx_twist_controller_node" pkg="robotx_twist_controller" type="robotx_twist_controller" output="screen">
-    <param name="tread" value="2.7" type="double"/>
+    <param name="tread" value="2.07" type="double"/>
     <param name="max_left_vel" value="10.0" type="double"/>
     <param name="max_right_vel" value="10.0" type="double"/>
     <param name="kp_vel" value="2.0" type="double"/>
