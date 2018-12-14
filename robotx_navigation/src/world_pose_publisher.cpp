@@ -17,11 +17,23 @@ world_pose_publisher::world_pose_publisher(ros::NodeHandle nh,ros::NodeHandle pn
     world_odom_pub_ = nh_.advertise<nav_msgs::Odometry>(world_odom_topic_,10);
     world_pose_pub_ = nh_.advertise<geometry_msgs::PoseStamped>(world_pose_topic_,10);
     twist_pub_ = nh_.advertise<geometry_msgs::Twist>("/vel",10);
+    /*
     fix_sub_ptr_ = boost::make_shared<message_filters::Subscriber<sensor_msgs::NavSatFix> >(nh_,fix_topic_,1);
     twist_sub_ptr_ = boost::make_shared<message_filters::Subscriber<geometry_msgs::TwistStamped> >(nh_,gps_twist_topic_,1);
     true_course_sub_ptr_ = boost::make_shared<message_filters::Subscriber<geometry_msgs::QuaternionStamped> >(nh_,true_course_topic_,1);
     sync_ptr_ = boost::make_shared<message_filters::Synchronizer<sync_policy> >(sync_policy(10),*fix_sub_ptr_,*twist_sub_ptr_,*true_course_sub_ptr_);
     sync_ptr_->registerCallback(boost::bind(&world_pose_publisher::gnss_callback_,this,_1,_2,_3));
+    */
+    fix_sub = nh_.subscribe(fix_topic_, 1, fix_callback_);
+    twist_sub = nh_.subscribe(gps_twist_topic_, 1, twist_callback_);
+    true_course_sub = nh_.subscribe(true_course_topic_, 1, true_course_callback_);
+    void fix_callback_(sensor_msgs::NavSatFix msg);
+    void twist_callback_(geometry_msgs::TwistStamped msg);
+    void true_course_callback_(geometry_msgs::QuaternionStamped msg);
+    sensor_msgs::NavSatFix fix_msg;
+    geometry_msgs::TwistStamped twist_msg;
+    geometry_msgs::QuaternionStamped true_msg;
+
     imu_sub_ = nh_.subscribe(imu_topic_,10,&world_pose_publisher::imu_callback_,this);
 }
 
@@ -90,15 +102,32 @@ void world_pose_publisher::publish_world_frame_()
     return;
 }
 
-void world_pose_publisher::gnss_callback_(const sensor_msgs::NavSatFixConstPtr& fix, 
-    const geometry_msgs::TwistStampedConstPtr& twist,const geometry_msgs::QuaternionStampedConstPtr true_course)
+void world_pose_publisher::fix_callback_(sensor_msgs::NavSatFix msg) {
+  mtx_.lock();
+  fix_ = msg;
+  mtx_.unlock();
+}
+void world_pose_publisher::twist_callback_(geometry_msgs::TwistStamped msg) {
+  mtx_.lock();
+  twist_ = msg;
+  mtx_.unlock();
+}
+void world_pose_publisher::true_course_callback_(geometry_msgs::QuaternionStamped msg) {
+  mtx_.lock();
+  true_course_ = msg;
+  if (fix_msg_ && twist_msg_ && true_msg_) {  // TODO
+    mtx_.unlock();
+    gnss_callback()
+  } else {
+    mtx_.unlock();
+  }
+}
+
+void world_pose_publisher::gnss_callback_()
 {
     mtx_.lock();
     data_recieved_ = true;
-    fix_ = *fix;
-    twist_ = *twist;
-    twist_header_ = twist->header;
-    true_course_ = *true_course;
+    twist_header_ = twist_->header;
     imu_reset_flag_ = true;
     x_trans_imu_ = 0;
     y_trans_imu_ = 0;
