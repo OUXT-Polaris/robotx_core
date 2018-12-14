@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   robotx_build_flags
   dynamic_reconfigure
   tf2_ros
+  geodesy
 )
 
 find_package(Boost REQUIRED COMPONENTS thread system chrono)

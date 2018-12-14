@@ -5,6 +5,7 @@ sc30_driver::sc30_driver(ros::NodeHandle nh, ros::NodeHandle pnh)
     nh_ = nh;
     pnh_ = pnh;
     true_course_buf_ = boost::circular_buffer<std::pair<ros::Time,double> >(2);
+    utm_point_buf_ = boost::circular_buffer<geodesy::UTMPoint>(2);
     pnh_.param<std::string>("twist_topic", twist_topic_, ros::this_node::getName()+"/twist");
     pnh_.param<std::string>("fix_topic", fix_topic_, ros::this_node::getName()+"/fix");
     pnh_.param<std::string>("true_course_topic", true_course_topic_, ros::this_node::getName()+"/true_course");
@@ -95,7 +96,7 @@ boost::optional<geometry_msgs::QuaternionStamped> sc30_driver::get_true_course_(
         double true_course_value = std::stod(true_course_str);
         std::pair<ros::Time,double> data;
         data.first = sentence->header.stamp;
-        data.second = true_course_value/180*M_PI+0.5*M_PI;
+        data.second = -1*(true_course_value/180*M_PI);
         true_course_buf_.push_back(data);
         true_course.header = sentence->header;
         tf::Quaternion quat;
@@ -113,12 +114,34 @@ boost::optional<geometry_msgs::TwistStamped> sc30_driver::get_twist_(const nmea_
 {
     geometry_msgs::TwistStamped twist;
     std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
+    if(true_course_buf_.size() == 0 && utm_point_buf_.size() != 2)
+    {
+        return boost::none;
+    }
     std::string speed_str = splited_sentence[7];
+    std::string twist_dir_str = splited_sentence[8];
     try
     {
-        double speed = std::stod(speed_str);
+        double twist_dir = std::stod(twist_dir_str)/180*M_PI;
+        double true_course = true_course_buf_[true_course_buf_.size()-1].second;
+        double diff_angle_ = get_diff_angle_(true_course,twist_dir);
+        double trans = std::sqrt(std::pow(utm_point_buf_[1].easting-utm_point_buf_[0].easting,2) + std::pow(utm_point_buf_[1].northing-utm_point_buf_[0].northing,2));
+        double speed_val = std::stod(speed_str);
+        if(speed_val > trans)
+        {
+            speed_val = trans;
+        }
+        double speed = 0;
+        if(std::fabs(diff_angle_) > (M_PI*0.5))
+        {
+            speed = -1 * speed_val;
+        }
+        else
+        {
+            speed = speed_val;
+        }
         twist.header = sentence->header;
-        twist.twist.linear.x = speed;
+        twist.twist.linear.x = speed; 
         twist.twist.linear.y = 0;
         twist.twist.linear.z = 0;
         twist.twist.angular.x = 0;
@@ -167,6 +190,11 @@ boost::optional<sensor_msgs::NavSatFix> sc30_driver::get_nav_sat_fix_(const nmea
         {
             fix.longitude = fix.longitude * -1;
         }
+        geographic_msgs::GeoPoint geo_poinst;
+        geo_poinst.latitude = fix.latitude;
+        geo_poinst.longitude = fix.longitude;
+        geodesy::UTMPoint utm_point(geo_poinst);
+        utm_point_buf_.push_back(utm_point);
         fix.header = sentence->header;
     }
     catch(...)
