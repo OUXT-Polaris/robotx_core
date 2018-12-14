@@ -60,7 +60,7 @@ void carrot_planner::_robot_pose_callback(const geometry_msgs::PoseStamped::Cons
     tf::Matrix3x3(quat).getRPY(r,p,y);
     _robot_pose_2d.x = robot_pose.pose.position.x;
     _robot_pose_2d.y = robot_pose.pose.position.y;
-    _robot_pose_2d.theta = y;
+    _robot_pose_2d.theta = -y;
     lock.unlock();
     return;
 }
@@ -255,6 +255,6 @@ double carrot_planner::_get_diff_yaw()
 
 double carrot_planner::_get_diff_yaw_to_target()
 {
-    double yaw_to_target = std::atan2(_goal_pose_2d.y-_robot_pose_2d.y, _goal_pose_2d.x-_robot_pose_2d.x);// - M_PI/2;
+    double yaw_to_target = std::atan2(_goal_pose_2d.y-_robot_pose_2d.y, _goal_pose_2d.x-_robot_pose_2d.x);
     return get_diff_angle_(_robot_pose_2d.theta,yaw_to_target);
 }
