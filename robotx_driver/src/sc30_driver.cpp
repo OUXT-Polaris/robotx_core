@@ -113,13 +113,21 @@ boost::optional<geometry_msgs::TwistStamped> sc30_driver::get_twist_(const nmea_
 {
     geometry_msgs::TwistStamped twist;
     std::vector<std::string> splited_sentence = split_(sentence->sentence,',');
+    if(true_course_buf_.size() == 0)
+    {
+        return boost::none;
+    }
     std::string speed_str = splited_sentence[7];
+    std::string twist_dir_str = splited_sentence[8];
     try
     {
+        double twist_dir = std::stod(twist_dir_str)/180*M_PI;
+        double true_course = true_course_buf_[true_course_buf_.size()-1].second;
+        double diff_angle_ = get_diff_angle_(true_course,twist_dir);
         double speed = std::stod(speed_str);
         twist.header = sentence->header;
-        twist.twist.linear.x = speed;
-        twist.twist.linear.y = 0;
+        twist.twist.linear.x =  speed*cos(diff_angle_)+speed*sin(diff_angle_); 
+        twist.twist.linear.y = -speed*sin(diff_angle_)+speed*cos(diff_angle_);
         twist.twist.linear.z = 0;
         twist.twist.angular.x = 0;
         twist.twist.angular.y = 0;
