@@ -125,6 +125,16 @@ void carrot_planner::_publish_twist_cmd()
         double diff_yaw_to_target = _get_diff_yaw_to_target();
         if(_current_state->current_state == "heading_to_next_waypoint")
         {
+            if(std::sqrt(std::pow(_goal_pose_2d.x-_robot_pose_2d.x,2)+std::pow(_goal_pose_2d.y-_robot_pose_2d.y,2)) < _torelance)
+            {
+                geometry_msgs::Twist twist_cmd;
+                _twist_pub.publish(twist_cmd);
+                robotx_msgs::Event event_msg;
+                event_msg.trigger_event_name = "moved_to_next_target";
+                _trigger_event_pub.publish(event_msg);
+                rate.sleep();
+                continue;
+            }
             if(std::fabs(diff_yaw_to_target) > 0.05)
             {
                 if(diff_yaw_to_target > 0)

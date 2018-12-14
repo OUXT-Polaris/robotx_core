@@ -12,4 +12,7 @@
     </node>
     <include file="$(find robotx_decision_maker)/launch/decision_maker.launch"/>
     <include file="$(find robotx_recognition)/launch/recognition.launch" />
+    
+    <node name="state_visualizer_node" pkg="robotx_tools" type="state_visualizer_node" args="" output="screen" respawn="false">
+    </node>
 </launch>
