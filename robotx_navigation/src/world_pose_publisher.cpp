@@ -24,15 +24,9 @@ world_pose_publisher::world_pose_publisher(ros::NodeHandle nh,ros::NodeHandle pn
     sync_ptr_ = boost::make_shared<message_filters::Synchronizer<sync_policy> >(sync_policy(10),*fix_sub_ptr_,*twist_sub_ptr_,*true_course_sub_ptr_);
     sync_ptr_->registerCallback(boost::bind(&world_pose_publisher::gnss_callback_,this,_1,_2,_3));
     */
-    fix_sub = nh_.subscribe(fix_topic_, 1, fix_callback_);
-    twist_sub = nh_.subscribe(gps_twist_topic_, 1, twist_callback_);
-    true_course_sub = nh_.subscribe(true_course_topic_, 1, true_course_callback_);
-    void fix_callback_(sensor_msgs::NavSatFix msg);
-    void twist_callback_(geometry_msgs::TwistStamped msg);
-    void true_course_callback_(geometry_msgs::QuaternionStamped msg);
-    sensor_msgs::NavSatFix fix_msg;
-    geometry_msgs::TwistStamped twist_msg;
-    geometry_msgs::QuaternionStamped true_msg;
+    fix_sub = nh_.subscribe(fix_topic_, 1, &world_pose_publisher::fix_callback_, this);
+    twist_sub = nh_.subscribe(gps_twist_topic_, 1, &world_pose_publisher::twist_callback_, this);
+    true_course_sub = nh_.subscribe(true_course_topic_, 1, &world_pose_publisher::true_course_callback_, this);
 
     imu_sub_ = nh_.subscribe(imu_topic_,10,&world_pose_publisher::imu_callback_,this);
 }
@@ -115,7 +109,7 @@ void world_pose_publisher::twist_callback_(geometry_msgs::TwistStamped msg) {
 void world_pose_publisher::true_course_callback_(geometry_msgs::QuaternionStamped msg) {
   mtx_.lock();
   true_course_ = msg;
-  if (fix_msg_ && twist_msg_ && true_msg_) {  // TODO
+  if (fix_ && twist_ && true_course_) {  // TODO
     mtx_.unlock();
     gnss_callback()
   } else {

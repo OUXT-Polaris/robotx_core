@@ -45,7 +45,10 @@ private:
     */
     ros::Subscriber fix_sub;
     ros::Subscriber twist_sub;
-    ros::Subscriber fix_sub;
+    ros::Subscriber true_course_sub;
+    void fix_callback_(sensor_msgs::NavSatFix msg);
+    void twist_callback_(geometry_msgs::TwistStamped msg);
+    void true_course_callback_(geometry_msgs::QuaternionStamped msg);
 
     std::string fix_topic_;
     std::string gps_twist_topic_;
