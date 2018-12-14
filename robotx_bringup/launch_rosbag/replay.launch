@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
     <!--<node pkg="rosbag" type="play" name="rosbag" args="/home/$(env USER)/Desktop/robotx/rosbag/2018-12-12/2018-12-12-16-59-35.bag"/>-->
-    <!--<param name="use_sim_time" value="true"/>-->
+    <param name="use_sim_time" value="true"/>
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robotx_driver)/config/replay.rviz"/>
     <include file="$(find robotx_driver)/launch/frame_publisher.launch" />
     <include file="$(find robotx_navigation)/launch/gps_pipeline.launch"/>
