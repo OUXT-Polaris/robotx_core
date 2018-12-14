@@ -125,6 +125,7 @@ void carrot_planner::_publish_twist_cmd()
         double diff_yaw_to_target = _get_diff_yaw_to_target();
         if(_current_state->current_state == "heading_to_next_waypoint")
         {
+            ROS_ERROR_STREAM(diff_yaw_to_target);
             if(std::sqrt(std::pow(_goal_pose_2d.x-_robot_pose_2d.x,2)+std::pow(_goal_pose_2d.y-_robot_pose_2d.y,2)) < _torelance)
             {
                 geometry_msgs::Twist twist_cmd;
