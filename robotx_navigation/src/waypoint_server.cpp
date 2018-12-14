@@ -105,9 +105,9 @@ void waypoint_server::publish_marker_()
                 marker.color.b = 0;
             }
             marker.color.a = 1;
-            marker.scale.x = 1;
-            marker.scale.y = 0.3;
-            marker.scale.z = 0.3;
+            marker.scale.x = 10;
+            marker.scale.y = 10;
+            marker.scale.z = 1;
             marker.frame_locked = true;
             //marker.lifetime = ros::Duration(0.3);
             marker_msg.markers.push_back(marker);
