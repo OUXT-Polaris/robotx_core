@@ -2,25 +2,8 @@
 #define POINTCLOUD_MERGER_H_INCLUDED
 
 #include <ros/ros.h>
-#include <ros/package.h>
-#include <vector>
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/sync_policies/approximate_time.h>
-
-// tf
-#include <tf2_ros/transform_listener.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <tf2_sensor_msgs/tf2_sensor_msgs.h>
-
-// headers in PCL
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl_conversions/pcl_conversions.h>
-
-// messages
 #include <sensor_msgs/PointCloud2.h>
+#include <tf2_ros/transform_listener.h>
 
 /**
  * @brief pointcloud_merger class
@@ -29,71 +12,87 @@
  *
  */
 class pointcloud_merger {
-  public:
-    /**
-     * @brief parameters for pointcloud_merger class
-     */
-    struct parameters {
-      std::string pointcloud1_topic;
-      std::string pointcloud2_topic;
-      double voxelgrid_x,voxelgrid_y,voxelgrid_z;
-      parameters() {
-        ros::param::param<double>(ros::this_node::getName() + "/voxelgrid/x", voxelgrid_x, 0.1);
-        ros::param::param<double>(ros::this_node::getName() + "/voxelgrid/y", voxelgrid_y, 0.1);
-        ros::param::param<double>(ros::this_node::getName() + "/voxelgrid/z", voxelgrid_z, 0.1);
-        ros::param::param<std::string>(ros::this_node::getName() + "/pointcloud1_topic", pointcloud1_topic, ros::this_node::getName() + "/pointcloud1");
-        ros::param::param<std::string>(ros::this_node::getName() + "/pointcloud2_topic", pointcloud2_topic, ros::this_node::getName() + "/pointcloud2");
-      }
-    };
-    const struct parameters _params;
+ public:
+  /**
+   * @brief parameters for pointcloud_merger class
+   *
+   */
+  struct parameters {
+    std::string pointcloud1_topic;
+    std::string pointcloud2_topic;
+    parameters() {
+      ros::param::param<std::string>(ros::this_node::getName() + "/pointcloud1_topic", pointcloud1_topic,
+                                     ros::this_node::getName() + "/pointcloud1");
+      ros::param::param<std::string>(ros::this_node::getName() + "/pointcloud2_topic", pointcloud2_topic,
+                                     ros::this_node::getName() + "/pointcloud2");
+    }
+  };
+  pointcloud_merger();
+  ~pointcloud_merger();
 
-    /**
-     * @brief constructor
-     */
-    pointcloud_merger();
-    ~pointcloud_merger();
-
-    /**
-     * @brief callback function for message_filter
-     */
-    void callback(
-        const sensor_msgs::PointCloud2ConstPtr& pc1_msg,
-        const sensor_msgs::PointCloud2ConstPtr& pc2_msg);
-
-  private:
-    /**
-     * @brief tf buffer fir tf_listener_
-     * @sa pointcloud_merger::tf_listener_
-     */
-    tf2_ros::Buffer tf_buffer_;
-      /**
-       * @brief tf listener for
-       * output_frame -> pointcloud1_topic frame
-       * and
-       * output_frame -> pointcloud2_topic frame
-       */
-    tf2_ros::TransformListener tf_listener_;
-
-    /**
-     * @brief ROS Nodehandle
-     */
-    ros::NodeHandle _nh;
-
-    /**
-     * @brief ROS publisher for ~/merged_points (message type : sensor_msgs/PointCloud2)
-     */
-    ros::Publisher  _pc_pub;
-
-    /**
-     * @brief message_filter subscriber and sync
-     */
-    message_filters::Subscriber<sensor_msgs::PointCloud2> _pc1_sub;
-    message_filters::Subscriber<sensor_msgs::PointCloud2> _pc2_sub;
-
-    typedef message_filters::sync_policies::ApproximateTime<
-      sensor_msgs::PointCloud2,
-      sensor_msgs::PointCloud2> SyncPolicy;
-    message_filters::Synchronizer<SyncPolicy> _sync;
+ private:
+  const parameters params_;
+  /**
+   * @brief tf buffer fir tf_listener_
+   * @sa pointcloud_merger::tf_listener_
+   */
+  tf2_ros::Buffer tf_buffer_;
+  /**
+   * @brief tf listener for
+   * output_frame -> pointcloud1_topic frame
+   * and
+   * output_frame -> pointcloud2_topic frame
+   */
+  tf2_ros::TransformListener tf_listener_;
+  /**
+   * @brief ROS publisher for ~/merged_points (message type : sensor_msgs/PointCloud2)
+   *
+   */
+  ros::Publisher output_pointcloud_pub_;
+  /**
+   * @brief ROS subscriber for (pointcloud1_topic) topic
+   * @sa pointcloud_merger::params_
+   */
+  ros::Subscriber pointcloud1_sub_;
+  /**
+   * @brief parameter for pointcloud1
+   *
+   */
+  sensor_msgs::PointCloud2 pointcloud1_msg_;
+  /**
+   * @brief ROS subscriber for (pointcloud2_topic) topic
+   * @sa pointcloud_merger::params_
+   */
+  ros::Subscriber pointcloud2_sub_;
+  /**
+   * @brief parameter for pointcloud2
+   *
+   */
+  sensor_msgs::PointCloud2 pointcloud2_msg_;
+  /**
+   * @brief ROS Nodehandle
+   *
+   */
+  ros::NodeHandle nh_;
+  /**
+   * @brief ROS callback function for pointcloud1_topic (message type : sensor_msgs/PointCloud2)
+   *
+   * @param msg ROS message
+   * @sa pointcloud_merger::pointcloud1_sub_
+   */
+  void pointcloud1_callback_(sensor_msgs::PointCloud2 msg);
+  /**
+   * @brief ROS callback function for pointcloud2_topic (message type : sensor_msgs/PointCloud2)
+   *
+   * @param msg ROS message
+   * @sa pointcloud_merger::pointcloud2_sub_
+   */
+  void pointcloud2_callback_(sensor_msgs::PointCloud2 msg);
+  /**
+   * @brief function for publishing pointcloud
+   *
+   */
+  void publish_pointcloud_();
 };
 
 #endif  // POINTCLOUD_MERGER_H_INCLUDED
