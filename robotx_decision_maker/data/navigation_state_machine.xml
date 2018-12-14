@@ -8,6 +8,7 @@
 
     <transition from = "heading_to_next_waypoint" to="moving_to_next_waypoint" name="head_to_next_target"/>
     <transition from = "heading_to_next_waypoint" to="obstacle_avoid" name="obstacle_found"/>
+    <transition from = "heading_to_next_waypoint" to="align_to_next_waypoint" name="moved_to_next_target"/>
 
     <transition from = "moving_to_next_waypoint" to="heading_to_next_waypoint" name="heading_slipped"/>
     <transition from = "moving_to_next_waypoint" to="align_to_next_waypoint" name="moved_to_next_target"/>
@@ -16,13 +17,11 @@
     <transition from = "obstacle_avoid" to="go_straight" name="obstacle_not_found"/>
     <transition from = "obstacle_avoid" to="stacked" name="obstacle_avoid_failed"/>
 
-    <transition from = "stacked" to="go_back" name="found_open_space_in_back"/>
     <transition from = "stacked" to="turn_right" name="found_open_space_in_right"/>
     <transition from = "stacked" to="turn_left" name="found_open_space_in_left"/>
 
-    <transition from = "go_back" to="obstacle_avoid" name="retry_obstacle_avoid"/>
-    <transition from = "turn_right" to="obstacle_avoid" name="found_open_space_in_right"/>
-    <transition from = "turn_left" to="obstacle_avoid" name="found_open_space_in_left"/>
+    <transition from = "turn_right" to="go_straight" name="obstacle_not_found"/>
+    <transition from = "turn_left" to="go_straight" name="obstacle_not_found"/>
 
     <transition from = "go_straight" to="heading_to_next_waypoint" name="go_straight_finished"/>
     <transition from = "go_straight" to="obstacle_avoid" name="obstacle_found"/>

@@ -1,5 +1,5 @@
-input_cloud: /velodyne2_points
-output_cloud: /velodyne2_points/filterd
+input_cloud: /pointcloud_merger_node/merged_points
+output_cloud: /filtered_points
 #if you want to remove pointcloud you should set mode 1
 mode: 1
 min_x: -5

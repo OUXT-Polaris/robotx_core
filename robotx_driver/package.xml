@@ -22,6 +22,9 @@
   <build_depend>robotx_decision_maker</build_depend>
   <build_depend>nmea_msgs</build_depend>
   <build_depend>robotx_build_flags</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>tf2_ros</build_depend>
+  <build_depend>geodesy</build_depend>
   
   <build_export_depend>joy</build_export_depend>
   <build_export_depend>robotx_msgs</build_export_depend>
@@ -32,13 +35,15 @@
   <build_export_depend>diagnostic_msgs</build_export_depend>
   <build_export_depend>diagnostic_updater</build_export_depend>
   <build_export_depend>nmea_msgs</build_export_depend>
+  <build_export_depend>dynamic_reconfigure</build_export_depend>
+  <build_export_depend>tf2_ros</build_export_depend>
+  <build_export_depend>geodesy</build_export_depend>
   
   <exec_depend>joy</exec_depend>
   <exec_depend>robotx_msgs</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>diagnostic_msgs</exec_depend>
   <exec_depend>diagnostic_updater</exec_depend>
@@ -55,7 +60,17 @@
   <exec_depend>mqtt_bridge</exec_depend>
   <exec_depend>robotx_decision_maker</exec_depend>
   <exec_depend>nmea_msgs</exec_depend>
-  
+  <exec_depend>dynamic_reconfigure</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>image_proc</exec_depend>
+  <exec_depend>camera_calibration</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>rqt_reconfigure</exec_depend>
+  <exec_depend>rosserial_python</exec_depend>
+  <exec_depend>rt_usb_9axisimu_driver</exec_depend>
+  <exec_depend>geodesy</exec_depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->

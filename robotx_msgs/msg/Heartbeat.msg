@@ -1,7 +1,3 @@
-#int32 utc_time #hhmmss
-string utc_time_hh
-string utc_time_mm
-string utc_time_ss
 float32 latitude
 
 bool north_or_south
@@ -13,8 +9,6 @@ float32 longitude
 bool east_or_west
 bool EAST = 0
 bool WEST = 1
-
-string team_id
 
 uint8 vehicle_mode
 uint8 REMOTE_OPERATED = 0

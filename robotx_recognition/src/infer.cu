@@ -161,7 +161,7 @@ void infer(cv::Mat image, float* out) {
 
   // output
   /* ROS_INFO("%f %f %f %f", outputDataHost[0], outputDataHost[1], outputDataHost[2], outputDataHost[3]); */
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < (int)numOutput; i++) {
     out[i] = outputDataHost[i];
   }
 }

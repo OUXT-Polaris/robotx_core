@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="ntp_driver_aibox1" pkg="ntpd_driver" type="shm_driver" args="_shm_unit:=2 _time_ref_topic:=/time_reference" output="screen"/>
+</launch>

@@ -15,14 +15,16 @@ rostate_machine::~rostate_machine()
 
 }
 
-void rostate_machine::event_callback_(robotx_msgs::Event msg)
+void rostate_machine::event_callback_(const ros::MessageEvent<robotx_msgs::Event const>& event)
 {
+    robotx_msgs::Event msg = *event.getMessage();
     state_info_t old_info = state_machine_ptr_->get_state_info();
     bool result = state_machine_ptr_->try_transition(msg.trigger_event_name);
     state_info_t info = state_machine_ptr_->get_state_info();
     if(!result)
     {
-        ROS_INFO_STREAM("failed to transition, current state : "<< info.current_state << ",event_name : " << msg.trigger_event_name);
+        std::string publisher_name = event.getPublisherName();
+        ROS_INFO_STREAM( "from : " << publisher_name << ", failed to transition, current state : "<< info.current_state << ", event_name : " << msg.trigger_event_name);
     }
     else
     {
@@ -38,7 +40,7 @@ void rostate_machine::event_callback_(robotx_msgs::Event msg)
 void rostate_machine::run()
 {
     boost::thread publish_thread(boost::bind(&rostate_machine::publish_current_state_, this));
-    trigger_event_sub_ = nh_.subscribe<robotx_msgs::Event>(ros::this_node::getName()+"/"+state_machine_name_+"/trigger_event", 10, &rostate_machine::event_callback_,this);
+    trigger_event_sub_ = nh_.subscribe(ros::this_node::getName()+"/"+state_machine_name_+"/trigger_event", 10, &rostate_machine::event_callback_,this);
     return;
 }
 

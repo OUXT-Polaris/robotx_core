@@ -1,0 +1,4 @@
+port : /dev/serial/by-id/usb-mbed_Microcontroller_101000000000000000000002F7F2A529-if01
+baud_rate : 9600
+send_rate : 10
+count : 8

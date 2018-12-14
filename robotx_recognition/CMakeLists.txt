@@ -7,12 +7,40 @@ project(robotx_recognition)
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
+option(GPU_PCL "Use Compiled PCL with GPU module" OFF)
+
 ## for tensor rt compile flag with cuda
 set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 set(CUDA_NVCC_FLAGS -std c++11)
 set(CMAKE_CXX_STANDARD 11)
 
-find_package(catkin REQUIRED COMPONENTS
+if(GPU_PCL)
+  add_definitions(-DGPU_CLUSTERING)
+  find_package(catkin REQUIRED COMPONENTS
+  geometry_msgs
+  roscpp
+  rospy
+  sensor_msgs
+  std_msgs
+  robotx_msgs
+  image_transport
+  cv_bridge
+  visualization_msgs
+  tf2
+  tf2_ros
+  tf2_msgs
+  tf2_sensor_msgs
+  jsk_recognition_msgs
+  nodelet
+  robotx_build_flags
+  pcl_ros
+  )
+  find_package(PCL REQUIRED)
+  include_directories(${PCL_INCLUDE_DIRS})
+  link_directories(${PCL_LIBRARY_DIRS})
+  add_definitions(${PCL_DEFINITIONS})
+else()
+  find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   pcl_ros
   roscpp
@@ -30,7 +58,8 @@ find_package(catkin REQUIRED COMPONENTS
   jsk_recognition_msgs
   nodelet
   robotx_build_flags
-)
+  )
+endif()
 
 find_package(Boost REQUIRED COMPONENTS system thread)
 
@@ -125,7 +154,7 @@ target_link_libraries(passthrough_filter_node ${catkin_LIBRARIES})
 set(pointcloud_merger_src src/pointcloud_merger.cpp)
 add_executable(pointcloud_merger_node src/pointcloud_merger_node.cpp ${pointcloud_merger_src})
 add_dependencies(pointcloud_merger_node robotx_msgs_generate_messages_cpp)
-target_link_libraries(pointcloud_merger_node ${catkin_LIBRARIES})
+target_link_libraries(pointcloud_merger_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 #clang_format(pointcloud_merger_node)
 #add_library(pointcloud_merger_nodelet src/pointcloud_merger_nodelet.cpp ${pointcloud_merger_src})
 #add_dependencies(pointcloud_merger_nodelet robotx_msgs_generate_messages_cpp)
@@ -136,7 +165,7 @@ set(pcl_plane_removal_src src/pcl_plane_removal.cpp)
 add_executable(pcl_plane_removal_node src/pcl_plane_removal_node.cpp ${pcl_plane_removal_src})
 target_link_libraries(pcl_plane_removal_node ${catkin_LIBRARIES})
 
-option(USE_CNN "Use CNN" OFF)
+option(USE_CNN "Use CNN" ON)
 
 # cnn_prediction
 # If found cuda, build infer.cu. If not found cuda , build infer.cpp

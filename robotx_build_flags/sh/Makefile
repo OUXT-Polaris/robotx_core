@@ -38,4 +38,3 @@ extract: transfer
 	$(SSH) $(aibox1) 'cd && tar xf catkin_ws.tar.gz'
 	$(SSH) $(aibox2) 'cd && tar xf catkin_ws.tar.gz'
 	$(SSH) $(aibox3) 'cd && tar xf catkin_ws.tar.gz'
-

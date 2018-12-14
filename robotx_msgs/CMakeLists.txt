@@ -43,6 +43,14 @@ add_message_files(
   CoastLineArray.msg
   ObstacleMap.msg
   FieldMap.msg
+  EntranceAndExitGatesReport.msg
+  IdentifySymbolsAndDockReport.msg
+  DetectAndDeliverReport.msg
+  ScanTheCodeReport.msg
+  CarrotPlannerConfigure.msg
+  ObstacleAvoidConfigure.msg
+  SignalLamp.msg
+  PowerStatus.msg
 )
 ## Generate added messages and services with any dependencies listed here
 generate_messages(

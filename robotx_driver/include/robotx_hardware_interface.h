@@ -16,6 +16,8 @@
 #include <std_msgs/Float32.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/UInt8.h>
+#include <std_msgs/String.h>
+#include <std_msgs/Empty.h>
 
 // headers in boost
 #include <boost/thread.hpp>
@@ -72,11 +74,6 @@ class robotx_hardware_interface {
      */
     int left_motor_port;
     /**
-     * @brief parameter for team ID (default: OUXT Polaris)
-     *
-     */
-    std::string team_id;
-    /**
      * @brief set parameters
      *
      */
@@ -90,7 +87,6 @@ class robotx_hardware_interface {
                                      "127.0.0.1");
       ros::param::param<int>(ros::this_node::getName() + "/left_motor_port", left_motor_port, 50000);
       ros::param::param<int>(ros::this_node::getName() + "/right_motor_port", right_motor_port, 50001);
-      ros::param::param<std::string>(ros::this_node::getName() + "/team_id", team_id, "OUXT Polaris");
     };
   };
   robotx_hardware_interface();
@@ -294,6 +290,12 @@ class robotx_hardware_interface {
    * @brief parameter for current control state
    */
   robotx_msgs::State current_control_state_;
+  ros::Publisher light_cmd_pub_;
+  ros::Publisher left_thrust_cmd_str_pub_;
+  ros::Publisher right_thrust_cmd_str_pub_;
+  ros::Subscriber kill_cmd_sub_;
+  void kill_cmd_callback_(const std_msgs::Empty::ConstPtr msg);
+  bool kill_cmd_flag_;
 };
 
 #endif  // ROBOTX_HARDWARE_INTERFACE_H_INCLUDEDE

@@ -2,10 +2,5 @@
     <init_state name="remote_operated"/>
 
     <transition from = "remote_operated" to="autonomous" name="system_bringup"/>
-    <transition from = "remote_operated" to="emergency" name="fatal_error"/>
-
     <transition from = "autonomous" to="remote_operated" name="manual_override"/>
-    <transition from = "autonomous" to="emergency" name="fatal_error"/>
-
-    <transition from = "emergency" to="remote_operated" name="manual_reset"/>
 </state_machine>

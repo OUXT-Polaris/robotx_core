@@ -10,6 +10,7 @@
 #include <ros/ros.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
+#include <visualization_msgs/MarkerArray.h>
 
 // headers in Boost
 #include <boost/circular_buffer.hpp>
@@ -61,16 +62,12 @@ class obstacle_map_server {
      * @brief name of world frame
      *
      */
-    std::string world_frame;
+    std::string map_frame;
     /**
      * @brief name of robot frame
      *
      */
     std::string robot_frame;
-    /**
-     * @brief publish occupancy grid or not
-     */
-    bool publish_occupancy_grid;
     /**
      * @brief Construct a new parameters object
      *
@@ -82,11 +79,10 @@ class obstacle_map_server {
       ros::param::param<int>(ros::this_node::getName() + "/map_height", map_height, 400);
       ros::param::param<int>(ros::this_node::getName() + "/map_width", map_width, 400);
       ros::param::param<int>(ros::this_node::getName() + "/buffer_length", buffer_length, 10);
-      ros::param::param<bool>(ros::this_node::getName() + "/publish_occupancy_grid", publish_occupancy_grid, false);
       ros::param::param<std::string>(ros::this_node::getName() + "/object_bbox_topic", object_bbox_topic,
                                      ros::this_node::getName() + "/object_bbox");
-      ros::param::param<std::string>(ros::this_node::getName() + "/world_frame", world_frame,
-                                     ros::this_node::getName() + "/world_frame");
+      ros::param::param<std::string>(ros::this_node::getName() + "/map_frame", map_frame,
+                                     ros::this_node::getName() + "/map_frame");
       ros::param::param<std::string>(ros::this_node::getName() + "/robot_frame", robot_frame,
                                      ros::this_node::getName() + "/robot_frame");
     }
@@ -122,17 +118,12 @@ class obstacle_map_server {
    */
   ros::Subscriber objects_bbox_sub_;
   /**
-   * @brief ROS publisher for /obstacle_map/grid_map topic (message type :
-   * nav_msgs/OccupancyGrid)
-   *
-   */
-  ros::Publisher grid_map_pub_;
-  /**
    * @brief ROS publisher for /obstacle_map topic (message type :
    * robotx_msgs/ObstacleMap)
    *
    */
   ros::Publisher obstacle_map_pub_;
+  ros::Publisher marker_pub_;
   /**
    * @brief ROS callback function for (object_bbox_topic) topic (message type :
    * jsk_recognition_msgs/BoundingBoxArray)
