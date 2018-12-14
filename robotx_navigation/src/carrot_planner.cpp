@@ -148,7 +148,7 @@ void carrot_planner::_publish_twist_cmd()
                 else
                 {
                     geometry_msgs::Twist twist_cmd;
-                    twist_cmd.angular.z = -1 * _angular_velocity;
+                    twist_cmd.angular.z = -1*_angular_velocity;
                     _twist_pub.publish(twist_cmd);
                     rate.sleep();
                     continue;
@@ -212,7 +212,7 @@ void carrot_planner::_publish_twist_cmd()
             else if(diff_yaw < -1*_angular_tolerance)
             {
                 geometry_msgs::Twist twist_cmd;
-                twist_cmd.angular.z = -1 * _angular_velocity;
+                twist_cmd.angular.z = -1*_angular_velocity;
                 _twist_pub.publish(twist_cmd);
                 rate.sleep();
                 continue;
