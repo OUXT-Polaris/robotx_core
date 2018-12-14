@@ -85,7 +85,6 @@ robotx_msgs::ObjectRegionOfInterestArray cnn_predictor::_image_recognition(const
         roi_y = roi.roi_2d.y_offset,
         img_h = image.rows,
         img_w = image.cols;
-    ROS_INFO("h:%d, w:%d, x:%d, y:%d, H:%d, W:%d", roi_h, roi_w, roi_x, roi_y, img_h, img_w);
     if (roi_x >= 0 && roi_y >= 0 && roi_x + roi_w <= img_w && roi_y + roi_h <= img_h && roi_w > 0 && roi_h > 0) {
       // ROI is valid
       cv::Rect rect(cv::Point(roi_x, roi_y), cv::Size(roi_w, roi_h));
