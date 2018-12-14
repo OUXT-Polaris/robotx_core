@@ -100,7 +100,7 @@ boost::optional<geometry_msgs::QuaternionStamped> sc30_driver::get_true_course_(
         true_course_buf_.push_back(data);
         true_course.header = sentence->header;
         tf::Quaternion quat;
-        quat.setRPY(0,0,-1*data.second);
+        quat.setRPY(0,0,data.second);
         quaternionTFToMsg(quat, true_course.quaternion);
     }
     catch(...)
