@@ -24,6 +24,7 @@
   <build_depend>robotx_build_flags</build_depend>
   <build_depend>dynamic_reconfigure</build_depend>
   <build_depend>tf2_ros</build_depend>
+  <build_depend>geodesy</build_depend>
   
   <build_export_depend>joy</build_export_depend>
   <build_export_depend>robotx_msgs</build_export_depend>
@@ -36,6 +37,7 @@
   <build_export_depend>nmea_msgs</build_export_depend>
   <build_export_depend>dynamic_reconfigure</build_export_depend>
   <build_export_depend>tf2_ros</build_export_depend>
+  <build_export_depend>geodesy</build_export_depend>
   
   <exec_depend>joy</exec_depend>
   <exec_depend>robotx_msgs</exec_depend>
@@ -68,6 +70,7 @@
   <exec_depend>rqt_reconfigure</exec_depend>
   <exec_depend>rosserial_python</exec_depend>
   <exec_depend>rt_usb_9axisimu_driver</exec_depend>
+  <exec_depend>geodesy</exec_depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->

@@ -124,10 +124,18 @@ boost::optional<geometry_msgs::TwistStamped> sc30_driver::get_twist_(const nmea_
         double twist_dir = std::stod(twist_dir_str)/180*M_PI;
         double true_course = true_course_buf_[true_course_buf_.size()-1].second;
         double diff_angle_ = get_diff_angle_(true_course,twist_dir);
-        double speed = std::stod(speed_str);
+        double speed = 0;
+        if(std::fabs(diff_angle_) > (M_PI*0.5))
+        {
+            speed = -1 * std::stod(speed_str);
+        }
+        else
+        {
+            speed = std::stod(speed_str);
+        }
         twist.header = sentence->header;
-        twist.twist.linear.x =  speed*cos(diff_angle_)+speed*sin(diff_angle_); 
-        twist.twist.linear.y = -speed*sin(diff_angle_)+speed*cos(diff_angle_);
+        twist.twist.linear.x = speed; 
+        twist.twist.linear.y = 0;
         twist.twist.linear.z = 0;
         twist.twist.angular.x = 0;
         twist.twist.angular.y = 0;
@@ -175,6 +183,10 @@ boost::optional<sensor_msgs::NavSatFix> sc30_driver::get_nav_sat_fix_(const nmea
         {
             fix.longitude = fix.longitude * -1;
         }
+        geographic_msgs::GeoPoint geo_poinst;
+        geo_poinst.latitude = fix.latitude;
+        geo_poinst.longitude = fix.longitude;
+        geodesy::UTMPoint utm_point(geo_poinst);
         fix.header = sentence->header;
     }
     catch(...)
