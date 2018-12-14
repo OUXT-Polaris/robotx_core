@@ -109,9 +109,10 @@ void world_pose_publisher::twist_callback_(geometry_msgs::TwistStamped msg) {
 void world_pose_publisher::true_course_callback_(geometry_msgs::QuaternionStamped msg) {
   mtx_.lock();
   true_course_ = msg;
-  if (fix_ && twist_ && true_course_) {  // TODO
+  /* if (fix_ && twist_ && true_course_) {  // TODO */
+  if (1) {  // TODO
     mtx_.unlock();
-    gnss_callback()
+    gnss_callback_();
   } else {
     mtx_.unlock();
   }
@@ -121,13 +122,13 @@ void world_pose_publisher::gnss_callback_()
 {
     mtx_.lock();
     data_recieved_ = true;
-    twist_header_ = twist_->header;
+    twist_header_ = twist_.header;
     imu_reset_flag_ = true;
     x_trans_imu_ = 0;
     y_trans_imu_ = 0;
     theta_trans_imu_ = 0;
     dv_ = 0;
-    v_ = twist->twist.linear.x;
+    v_ = twist_.twist.linear.x;
     mtx_.unlock();
 }
 
