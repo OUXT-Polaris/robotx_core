@@ -135,7 +135,7 @@ void carrot_planner::_publish_twist_cmd()
                 rate.sleep();
                 continue;
             }
-            if(std::fabs(diff_yaw_to_target) > 0.05)
+            if(std::fabs(diff_yaw_to_target) > 0.2)
             {
                 if(diff_yaw_to_target > 0)
                 {
@@ -167,6 +167,7 @@ void carrot_planner::_publish_twist_cmd()
         }
         if(_current_state->current_state == "moving_to_next_waypoint")
         {
+            //ROS_ERROR_STREAM(diff_yaw_to_target);
             if(std::sqrt(std::pow(_goal_pose_2d.x-_robot_pose_2d.x,2)+std::pow(_goal_pose_2d.y-_robot_pose_2d.y,2)) < _torelance)
             {
                 geometry_msgs::Twist twist_cmd;
@@ -177,8 +178,9 @@ void carrot_planner::_publish_twist_cmd()
                 rate.sleep();
                 continue;
             }
-            else if(diff_yaw_to_target && std::fabs(diff_yaw_to_target > 0.1))
+            else if(std::fabs(diff_yaw_to_target) > 0.2)
             {
+                //ROS_ERROR_STREAM("hi");
                 geometry_msgs::Twist twist_cmd;
                 _twist_pub.publish(twist_cmd);
                 robotx_msgs::Event event_msg;
