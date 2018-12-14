@@ -60,7 +60,7 @@ void carrot_planner::_robot_pose_callback(const geometry_msgs::PoseStamped::Cons
     tf::Matrix3x3(quat).getRPY(r,p,y);
     _robot_pose_2d.x = robot_pose.pose.position.x;
     _robot_pose_2d.y = robot_pose.pose.position.y;
-    _robot_pose_2d.theta = -y;
+    _robot_pose_2d.theta = y;// - M_PI/2;
     lock.unlock();
     return;
 }
@@ -125,7 +125,7 @@ void carrot_planner::_publish_twist_cmd()
         double diff_yaw_to_target = _get_diff_yaw_to_target();
         if(_current_state->current_state == "heading_to_next_waypoint")
         {
-            ROS_ERROR_STREAM(diff_yaw_to_target);
+            //ROS_ERROR_STREAM(diff_yaw_to_target);
             if(std::sqrt(std::pow(_goal_pose_2d.x-_robot_pose_2d.x,2)+std::pow(_goal_pose_2d.y-_robot_pose_2d.y,2)) < _torelance)
             {
                 geometry_msgs::Twist twist_cmd;
@@ -136,7 +136,8 @@ void carrot_planner::_publish_twist_cmd()
                 rate.sleep();
                 continue;
             }
-            if(std::fabs(diff_yaw_to_target) > 0.2)
+            //ROS_ERROR_STREAM(std::fabs(diff_yaw_to_target));
+            if(std::fabs(diff_yaw_to_target) > 0.3)
             {
                 if(diff_yaw_to_target > 0)
                 {
@@ -179,7 +180,7 @@ void carrot_planner::_publish_twist_cmd()
                 rate.sleep();
                 continue;
             }
-            else if(std::fabs(diff_yaw_to_target) > 0.2)
+            else if(std::fabs(diff_yaw_to_target) > 0.3)
             {
                 //ROS_ERROR_STREAM("hi");
                 geometry_msgs::Twist twist_cmd;
@@ -258,6 +259,7 @@ double carrot_planner::_get_diff_yaw()
 
 double carrot_planner::_get_diff_yaw_to_target()
 {
-    double yaw_to_target = std::atan2(_goal_pose_2d.y-_robot_pose_2d.y, _goal_pose_2d.x-_robot_pose_2d.x);
+    double yaw_to_target = -1*std::atan2(_goal_pose_2d.x-_robot_pose_2d.x,_goal_pose_2d.y-_robot_pose_2d.y);
+    //ROS_WARN_STREAM("robot : " << _robot_pose_2d.theta << ",robot to target : " << yaw_to_target);
     return get_diff_angle_(_robot_pose_2d.theta,yaw_to_target);
 }
