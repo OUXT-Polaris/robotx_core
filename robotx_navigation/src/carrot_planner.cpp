@@ -137,7 +137,7 @@ void carrot_planner::_publish_twist_cmd()
                 continue;
             }
             //ROS_ERROR_STREAM(std::fabs(diff_yaw_to_target));
-            if(std::fabs(diff_yaw_to_target) > 0.3)
+            if(std::fabs(diff_yaw_to_target) > 0.2)
             {
                 if(diff_yaw_to_target > 0)
                 {
@@ -180,7 +180,7 @@ void carrot_planner::_publish_twist_cmd()
                 rate.sleep();
                 continue;
             }
-            else if(std::fabs(diff_yaw_to_target) > 0.3)
+            else if(std::fabs(diff_yaw_to_target) > 0.2)
             {
                 //ROS_ERROR_STREAM("hi");
                 geometry_msgs::Twist twist_cmd;
