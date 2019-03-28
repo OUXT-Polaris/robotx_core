@@ -125,7 +125,6 @@ void carrot_planner::_publish_twist_cmd()
         double diff_yaw_to_target = _get_diff_yaw_to_target();
         if(_current_state->current_state == "heading_to_next_waypoint")
         {
-            //ROS_ERROR_STREAM(diff_yaw_to_target);
             if(std::sqrt(std::pow(_goal_pose_2d.x-_robot_pose_2d.x,2)+std::pow(_goal_pose_2d.y-_robot_pose_2d.y,2)) < _torelance)
             {
                 geometry_msgs::Twist twist_cmd;
@@ -136,7 +135,6 @@ void carrot_planner::_publish_twist_cmd()
                 rate.sleep();
                 continue;
             }
-            //ROS_ERROR_STREAM(std::fabs(diff_yaw_to_target));
             if(std::fabs(diff_yaw_to_target) > 0.2)
             {
                 if(diff_yaw_to_target > 0)
@@ -169,7 +167,6 @@ void carrot_planner::_publish_twist_cmd()
         }
         if(_current_state->current_state == "moving_to_next_waypoint")
         {
-            //ROS_ERROR_STREAM(diff_yaw_to_target);
             if(std::sqrt(std::pow(_goal_pose_2d.x-_robot_pose_2d.x,2)+std::pow(_goal_pose_2d.y-_robot_pose_2d.y,2)) < _torelance)
             {
                 geometry_msgs::Twist twist_cmd;
@@ -182,7 +179,6 @@ void carrot_planner::_publish_twist_cmd()
             }
             else if(std::fabs(diff_yaw_to_target) > 0.2)
             {
-                //ROS_ERROR_STREAM("hi");
                 geometry_msgs::Twist twist_cmd;
                 _twist_pub.publish(twist_cmd);
                 robotx_msgs::Event event_msg;
@@ -259,7 +255,7 @@ double carrot_planner::_get_diff_yaw()
 
 double carrot_planner::_get_diff_yaw_to_target()
 {
-    double yaw_to_target = -1*std::atan2(_goal_pose_2d.x-_robot_pose_2d.x,_goal_pose_2d.y-_robot_pose_2d.y);
+    double yaw_to_target = std::atan2(_goal_pose_2d.y-_robot_pose_2d.y,_goal_pose_2d.x-_robot_pose_2d.x);
     //ROS_WARN_STREAM("robot : " << _robot_pose_2d.theta << ",robot to target : " << yaw_to_target);
     return get_diff_angle_(_robot_pose_2d.theta,yaw_to_target);
 }

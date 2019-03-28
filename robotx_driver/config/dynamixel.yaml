@@ -1,4 +1,4 @@
-device_name: /dev/ttyUSB0
+device_name: /dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT2KQBT3-if00-port0 #/dev/ttyUSB0
 baud_rate: 57600
 scan_range: 10
 profile_velocity: 200

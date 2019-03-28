@@ -96,7 +96,8 @@ boost::optional<geometry_msgs::QuaternionStamped> sc30_driver::get_true_course_(
         double true_course_value = std::stod(true_course_str);
         std::pair<ros::Time,double> data;
         data.first = sentence->header.stamp;
-        data.second = -1*(true_course_value/180*M_PI)-0.5*M_PI;
+        //data.second = -1*(true_course_value/180*M_PI)-0.5*M_PI;
+        data.second = -1*(true_course_value/180*M_PI);
         true_course_buf_.push_back(data);
         true_course.header = sentence->header;
         tf::Quaternion quat;
