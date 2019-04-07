@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <launch>
+<!--
   <node name="position_control" pkg="dynamixel_workbench_controllers" type="position_control" output="screen" respawn="true">
     <rosparam command="load" file="$(find robotx_driver)/config/dynamixel.yaml"/>
   </node>
+  -->
 </launch>

@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   dynamic_reconfigure
   tf2_ros
   geodesy
+  dynamixel_workbench_msgs
 )
 
 find_package(Boost REQUIRED COMPONENTS thread system chrono)
@@ -64,9 +65,9 @@ target_link_libraries(robotx_hardware_interface_node ${catkin_LIBRARIES} ${Boost
 #add_document(robotx_hardware_interface_node)
 #clang_format(robotx_hardware_interface_node)
 
-add_executable(dynamixel_driver_node src/dynamixel_driver_node.cpp src/dynamixel_driver.cpp)
-add_dependencies(dynamixel_driver_node robotx_msgs_generate_messages_cpp)
-target_link_libraries(dynamixel_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+#add_executable(dynamixel_driver_node src/dynamixel_driver_node.cpp src/dynamixel_driver.cpp)
+#add_dependencies(dynamixel_driver_node robotx_msgs_generate_messages_cpp)
+#target_link_libraries(dynamixel_driver_node ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 add_executable(sc30_driver_node src/sc30_driver_node.cpp src/sc30_driver.cpp)
 add_dependencies(sc30_driver_node robotx_msgs_generate_messages_cpp robotx_driver_gencfg)
@@ -116,12 +117,12 @@ endif()
 #############
 if(CUDA_FOUND)
   install(TARGETS robotx_hardware_interface_node technical_network_bridge_node serial_sender_node gps_to_base_link_node
-  dynamixel_driver_node sc30_driver_node frame_publisher_node #cuda_diagnostic_node
+  sc30_driver_node frame_publisher_node #cuda_diagnostic_node dynamixel_driver_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 else()
   install(TARGETS robotx_hardware_interface_node technical_network_bridge_node serial_sender_node gps_to_base_link_node
-  dynamixel_driver_node sc30_driver_node frame_publisher_node
+  sc30_driver_node frame_publisher_node #dynamixel_driver_node 
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   )
 endif()
