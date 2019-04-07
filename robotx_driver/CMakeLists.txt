@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   dynamic_reconfigure
   tf2_ros
   geodesy
+  dynamixel_workbench
 )
 
 find_package(Boost REQUIRED COMPONENTS thread system chrono)
