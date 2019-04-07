@@ -1,4 +1,6 @@
-ip_address : "127.0.0.1"
-port : 8080
+#ip_address : "127.0.0.1"
+use_hostname : true
+hostname : robot.server
+port : 9000
 heartbeat_publish_rate : 1.0
-team_id : "OUXT Polaris"
+team_id : "OUXTP"

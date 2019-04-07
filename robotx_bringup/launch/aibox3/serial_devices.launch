@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find robotx_driver)/launch/left_thrust_driver.launch">
+    </include>
+    <include file="$(find robotx_driver)/launch/right_thrust_driver.launch">
+    </include>
+</launch>

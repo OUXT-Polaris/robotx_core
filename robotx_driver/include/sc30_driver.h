@@ -1,6 +1,9 @@
 #ifndef SC30_DRIVER_H_INCLUDED
 #define SC30_DRIVER_H_INCLUDED
 
+//headers in this package
+#include <robotx_driver/sc30_driverConfig.h>
+
 //headers in ROS
 #include <ros/ros.h>
 #include <nmea_msgs/Sentence.h>
@@ -8,6 +11,8 @@
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/QuaternionStamped.h>
 #include <tf/tf.h>
+#include <dynamic_reconfigure/server.h>
+#include <geodesy/utm.h>
 
 //headers in STL
 #include <vector>
@@ -20,6 +25,7 @@
 
 #define SENTENCE_UNDEFINED 0
 #define SENTENCE_GPRMC 1
+#define SENTENCE_GPHDT 2
 
 class sc30_driver
 {
@@ -45,6 +51,11 @@ private:
     std::string fix_topic_;
     std::string true_course_topic_;
     boost::circular_buffer<std::pair<ros::Time,double> > true_course_buf_;
+    boost::circular_buffer<geodesy::UTMPoint> utm_point_buf_;    
+    void configure_callback_(robotx_driver::sc30_driverConfig &config, uint32_t level);
+    double offset_angle_;
+    dynamic_reconfigure::Server<robotx_driver::sc30_driverConfig> server_;
+    dynamic_reconfigure::Server<robotx_driver::sc30_driverConfig>::CallbackType callback_func_type_;
 };
 
 #endif  //SC30_DRIVER_H_INCLUDED

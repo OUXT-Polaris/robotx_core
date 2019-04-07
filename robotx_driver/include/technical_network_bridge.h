@@ -43,6 +43,7 @@ class technical_network_bridge {
    *
    */
   boost::thread tcp_thread;
+  boost::thread io_service_thread;
   /**
    * @brief callback function for subscribing ~/heartbeat ROS topic.
    *
@@ -52,6 +53,7 @@ class technical_network_bridge {
   void entrance_and_exit_gates_report_callback_(const robotx_msgs::EntranceAndExitGatesReport::ConstPtr &msg);
   void identify_symbols_and_dock_report_callback_(const robotx_msgs::IdentifySymbolsAndDockReport::ConstPtr &msg);
   void scan_the_code_report_callback_(const robotx_msgs::ScanTheCodeReport::ConstPtr &msg);
+  void run_io_service_();
   /**
    * @brief function for publishing ~/connection_status ROS topic.
    *
@@ -144,6 +146,8 @@ class technical_network_bridge {
   void get_local_time_(std::string& hst_hh, std::string& hst_mm, std::string& hst_ss);
   void get_local_date_(std::string& hst_dd, std::string& hst_mm, std::string& hst_yy);
   std::string team_id_;
+  std::string hostname_;
+  bool use_hostname_;
   ros::Subscriber entrance_and_exit_gates_report_sub_;
   ros::Subscriber identify_symbols_and_dock_report_sub_;
   ros::Subscriber scan_the_code_report_sub_;

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+    <rosparam command="load" file="$(find robotx_recognition)/config/pointcloud_merger.yaml" ns="pointcloud_merger_node"/>
+    <node pkg="robotx_recognition" type="pointcloud_merger_node" name="pointcloud_merger_node" args="" output="screen" respawn="true">
+    </node>
+
+    <rosparam command="load" file="$(find robotx_recognition)/config/passthrough_filter.yaml" ns="passthrough_filter_node"/>
+    <node pkg="robotx_recognition" type="passthrough_filter_node" name="passthrough_filter_node" args="" output="screen" respawn="true">
+    </node>
+
+    <rosparam command="load" file="$(find robotx_recognition)/config/euclidean_clustering.yaml" ns="euclidean_clustering_node"/>
+    <node name="euclidean_clustering_node" pkg="robotx_recognition" type="euclidean_clustering_node" args="" output="screen" respawn="true">
+    </node>
+</launch>

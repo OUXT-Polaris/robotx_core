@@ -2,10 +2,10 @@
 dictitems:
   ai_pilot_pitch: 0.0
   ai_pilot_roll: 0.0
-  ai_pilot_x: -1.0
+  ai_pilot_x: -0.9
   ai_pilot_y: 0.0
   ai_pilot_yaw: 0.0
-  ai_pilot_z: 0.5
+  ai_pilot_z: 0.35
   front_camera_pitch: 0.0
   front_camera_roll: 0.0
   front_camera_x: 0.7
@@ -18,20 +18,14 @@ dictitems:
   front_velodyne_y: 0.0
   front_velodyne_yaw: 0.0
   front_velodyne_z: -0.3
-  gps_pitch: 0.0
-  gps_roll: 0.0
-  gps_x: -1.6
-  gps_y: 0.0
-  gps_yaw: 0.0
-  gps_z: 0.1
   groups: !!python/object/new:dynamic_reconfigure.encoding.Config
     dictitems:
       ai_pilot_pitch: 0.0
       ai_pilot_roll: 0.0
-      ai_pilot_x: -1.0
+      ai_pilot_x: -0.9
       ai_pilot_y: 0.0
       ai_pilot_yaw: 0.0
-      ai_pilot_z: 0.5
+      ai_pilot_z: 0.35
       front_camera_pitch: 0.0
       front_camera_roll: 0.0
       front_camera_x: 0.7
@@ -44,21 +38,15 @@ dictitems:
       front_velodyne_y: 0.0
       front_velodyne_yaw: 0.0
       front_velodyne_z: -0.3
-      gps_pitch: 0.0
-      gps_roll: 0.0
-      gps_x: -1.6
-      gps_y: 0.0
-      gps_yaw: 0.0
-      gps_z: 0.1
       groups: !!python/object/new:dynamic_reconfigure.encoding.Config
         state: []
       id: 0
       imu_pitch: 0.0
       imu_roll: 0.0
-      imu_x: -0.1
-      imu_y: 0.0
+      imu_x: -0.7
+      imu_y: 0.4
       imu_yaw: 0.0
-      imu_z: 0.03
+      imu_z: 0.1
       name: Default
       parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
         state: []
@@ -68,8 +56,8 @@ dictitems:
     state: []
   imu_pitch: 0.0
   imu_roll: 0.0
-  imu_x: -0.1
-  imu_y: 0.0
+  imu_x: -0.7
+  imu_y: 0.4
   imu_yaw: 0.0
-  imu_z: 0.03
+  imu_z: 0.1
 state: []

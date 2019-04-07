@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find robotx_recognition)/launch/recognition.launch" />
+    <include file="$(find robotx_recognition)/launch_cuda/cnn_prediction_run.launch" />
+</launch>

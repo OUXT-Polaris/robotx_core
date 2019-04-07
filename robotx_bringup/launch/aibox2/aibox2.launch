@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+    <machine name="aibox2" address="192.168.1.101" env-loader="/home/nvidia/catkin_ws/devel/env.sh" user="nvidia" password="nvidia"/>
+
+    <include file="$(find robotx_bringup)/launch/aibox2/sensors.launch"/>
+    <include file="$(find robotx_bringup)/launch/aibox2/serial_devices.launch"/>
+    <include file="$(find robotx_bringup)/launch/aibox2/perception.launch"/>
+    <include file="$(find robotx_bringup)/launch/aibox2/navigation.launch"/>
+    <include file="$(find robotx_driver)/launch/frame_publisher.launch" />
+    <!--<include file="$(find robotx_bringup)/launch/aibox2/time_sync.launch" />-->
+</launch>

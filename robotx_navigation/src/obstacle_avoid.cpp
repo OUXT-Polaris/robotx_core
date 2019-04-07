@@ -14,9 +14,11 @@ obstacle_avoid::obstacle_avoid() : tf_listener_(tf_buffer_)
     nh_.param<std::string>(ros::this_node::getName()+"/target_pose_topic", target_pose_topic_, ros::this_node::getName()+"/target_pose");
     nh_.param<std::string>(ros::this_node::getName()+"/current_state_topic", current_state_topic_, ros::this_node::getName()+"current_state");
     nh_.param<std::string>(ros::this_node::getName()+"/trigger_event_topic", trigger_event_topic_, ros::this_node::getName()+"/trigger_event");
-    nh_.param<double>(ros::this_node::getName()+"/search_angle", search_angle_, 1.57);
-    nh_.param<double>(ros::this_node::getName()+"/search_radius", search_radius_, 5.0);
+    nh_.param<double>(ros::this_node::getName()+"/search_angle", search_angle_, 0.3);
+    nh_.param<double>(ros::this_node::getName()+"/search_radius", search_radius_, 8.0);
+    nh_.param<double>(ros::this_node::getName()+"/search_radius_side", search_radius_side_, 5.0);
     nh_.param<double>(ros::this_node::getName()+"/search_radius_behind", search_radius_behind_, 3.0);
+    nh_.param<double>(ros::this_node::getName()+"/search_angle_behind", search_angle_, 0.3);
     twist_cmd_pub_ = nh_.advertise<geometry_msgs::Twist>(cmd_vel_topic_, 10);
     nearest_obstacle_range_pub_ = nh_.advertise<std_msgs::Float32>(ros::this_node::getName()+"/nearest_obstacle_range", 10);
     trigger_event_pub_ = nh_.advertise<robotx_msgs::Event>(trigger_event_topic_, 1);
@@ -72,34 +74,31 @@ bool obstacle_avoid::obstacle_found_()
     {
         double yaw = std::atan2(map_.points[i].y,map_.points[i].x);
         double dist = std::sqrt(map_.points[i].x*map_.points[i].x + map_.points[i].y*map_.points[i].y);
-        if(std::fabs(search_angle_) > std::fabs(yaw) && search_radius_ > dist)
+        //ROS_WARN_STREAM("yaw : " << yaw << ",dist" << dist);
+        if(std::fabs(search_angle_) > std::fabs(yaw))
         {
-            return true;
-        }
-        if(std::fabs(search_angle_) < std::fabs(yaw) && search_radius_behind_ > dist)
-        {
-            return true;
-        }
-        /*
-        if(current_state_->current_state == "turn_left" || current_state_->current_state == "turn_right")
-        {
-            if(std::fabs(search_angle_) > std::fabs(yaw))
+            if(search_radius_ > dist)
             {
+                ROS_WARN_STREAM("obstacle found in front");
+                return true;
+            }
+        }
+        else if(yaw > (M_PI-search_angle_behind_) || yaw > (-M_PI+search_angle_behind_) )
+        {
+            if(search_radius_behind_ > dist)
+            {
+                ROS_WARN_STREAM("obstacle found in behind");
                 return true;
             }
         }
         else
         {
-            if(std::fabs(search_angle_) > std::fabs(yaw) && search_radius_ > dist)
+            if(search_radius_side_ > dist)
             {
-                return true;
-            }
-            if(std::fabs(search_angle_) < std::fabs(yaw) && search_radius_behind_ > dist)
-            {
+                ROS_WARN_STREAM("obstacle found in side");
                 return true;
             }
         }
-        */
     }
     return false;
 }
@@ -189,6 +188,10 @@ void obstacle_avoid::odom_callback_(const nav_msgs::Odometry::ConstPtr msg)
         geometry_msgs::Pose2D target_pose_2d;
         geometry_msgs::PoseStamped target_pose;
         geometry_msgs::TransformStamped transform_stamped;
+        if(!target_pose_)
+        {
+            return;
+        }
         try
         {
             transform_stamped = tf_buffer_.lookupTransform(target_pose_->header.frame_id, robot_frame_, ros::Time(0), ros::Duration(1));

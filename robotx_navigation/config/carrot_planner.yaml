@@ -3,7 +3,7 @@ linear_velocity_topic: /carrot_planner_node/linear_velocity
 twist_topic: /carrot_planner_node/cmd_vel
 default_torelance: 5.0
 default_angular_tolerance : 0.5
-default_linear_velocity: 1.0
+default_linear_velocity: 2.0
 default_angular_velocity : 0.1
 robot_frame: base_link
 map_frame: map

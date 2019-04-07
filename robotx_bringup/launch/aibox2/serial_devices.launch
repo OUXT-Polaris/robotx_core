@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find robotx_driver)/launch/signal_light_driver.launch">
+    </include>
+</launch>
