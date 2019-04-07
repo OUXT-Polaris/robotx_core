@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <launch>
+<!--
     <node pkg="robotx_driver" type="dynamixel_driver_node" name="left_motor_driver_node" output="screen" respawn="true" respawn_delay="0">
         <rosparam file="$(find robotx_driver)/config/left_engine_dynamixel_driver.yaml" command="load"/>
     </node>
@@ -7,4 +8,5 @@
     <node pkg="robotx_driver" type="dynamixel_driver_node" name="right_motor_driver_node" output="screen" respawn="true" respawn_delay="0">
         <rosparam file="$(find robotx_driver)/config/right_engine_dynamixel_driver.yaml" command="load"/>
     </node>
+-->
 </launch>
