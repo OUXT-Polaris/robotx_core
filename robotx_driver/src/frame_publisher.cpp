@@ -38,13 +38,23 @@ void frame_publisher::configure_callback_(robotx_driver::frame_publisherConfig &
     geometry_msgs::TransformStamped transform_stamped_front_camera_;
     transform_stamped_front_camera_.header.frame_id = "base_link";
     transform_stamped_front_camera_.header.stamp = now;
-    transform_stamped_front_camera_.child_frame_id = "front_camera_link";
+    transform_stamped_front_camera_.child_frame_id = "front_camera";
     transform_stamped_front_camera_.transform.translation.x = config.front_camera_x;
     transform_stamped_front_camera_.transform.translation.y = config.front_camera_y;
     transform_stamped_front_camera_.transform.translation.z = config.front_camera_z;
     transform_stamped_front_camera_.transform.rotation = convert(config.front_camera_roll*M_PI,config.front_camera_pitch*M_PI,config.front_camera_yaw*M_PI);
     broadcaster_.sendTransform(transform_stamped_front_camera_);
     
+    geometry_msgs::TransformStamped transform_stamped_front_camera_optical_;
+    transform_stamped_front_camera_optical_.header.frame_id = "front_camera";
+    transform_stamped_front_camera_optical_.header.stamp = now;
+    transform_stamped_front_camera_optical_.child_frame_id = "front_camera_optical";
+    transform_stamped_front_camera_optical_.transform.translation.x = 0;
+    transform_stamped_front_camera_optical_.transform.translation.y = 0;
+    transform_stamped_front_camera_optical_.transform.translation.z = 0;
+    transform_stamped_front_camera_optical_.transform.rotation = convert(-0.5*M_PI,0,-0.5*M_PI);
+    broadcaster_.sendTransform(transform_stamped_front_camera_optical_);
+
     /*
     geometry_msgs::TransformStamped transform_stamped_gps_;
     transform_stamped_gps_.header.frame_id = "base_link";

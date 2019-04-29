@@ -97,7 +97,7 @@ Visualization Manager:
           Value: true
         base_link:
           Value: true
-        front_camera_link:
+        front_camera:
           Value: true
         front_velodyne:
           Value: true
@@ -123,7 +123,7 @@ Visualization Manager:
                   {}
                 base_footprint:
                   {}
-                front_camera_link:
+                front_camera:
                   {}
                 front_velodyne:
                   {}
